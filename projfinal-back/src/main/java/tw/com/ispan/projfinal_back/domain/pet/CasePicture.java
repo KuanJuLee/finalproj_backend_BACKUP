@@ -8,7 +8,7 @@ public class CasePicture {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int casePictureId;
+	private Integer casePictureId;
 
 	@Column(name = "pictureUrl", length = 255, nullable = false)
 	private String pictureUrl;
@@ -19,18 +19,18 @@ public class CasePicture {
 		super();
 	}
 
-	public CasePicture(int casePictureId, String pictureUrl) {
+	public CasePicture(Integer casePictureId, String pictureUrl) {
 		super();
 		this.casePictureId = casePictureId;
 		this.pictureUrl = pictureUrl;
 	}
 
 	// Getters and Setters
-	public int getCasePictureId() {
+	public Integer getCasePictureId() {
 		return casePictureId;
 	}
 
-	public void setCasePictureId(int casePictureId) {
+	public void setCasePictureId(Integer casePictureId) {
 		this.casePictureId = casePictureId;
 	}
 
@@ -41,4 +41,6 @@ public class CasePicture {
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
 	}
+	
+	
 }

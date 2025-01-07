@@ -17,7 +17,7 @@ public class Distint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int distintId;
+    private Integer distintId;
 
     @Column(columnDefinition = "NVARCHAR(5)", name = "distintName", nullable = false)
     private String distintName;
@@ -31,13 +31,13 @@ public class Distint {
 		super();
 	}
 
-	public Distint(int distintId, String distintName) {
+	public Distint(Integer distintId, String distintName) {
 		super();
 		this.distintId = distintId;
 		this.distintName = distintName;
 	}
 
-	public int getDistintId() {
+	public Integer getDistintId() {
 		return distintId;
 	}
 

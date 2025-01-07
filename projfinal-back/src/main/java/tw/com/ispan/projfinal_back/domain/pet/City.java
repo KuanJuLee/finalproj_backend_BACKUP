@@ -9,7 +9,7 @@ public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int cityId;
+    private Integer cityId;
 
     @Column(name = "city", columnDefinition = "NVARCHAR(5)", nullable = false)
     private String city;
@@ -19,25 +19,24 @@ public class City {
     private List<RescueCase> rescueCases;
 
     
-    
 	public City() {
 		super();
 	}
 
 
-	public City(int cityId, String city) {
+	public City(Integer cityId, String city) {
 		super();
 		this.cityId = cityId;
 		this.city = city;
 	}
 
 
-	public int getCityId() {
+	public Integer getCityId() {
 		return cityId;
 	}
 
 
-	public void setCityId(int cityId) {
+	public void setCityId(Integer cityId) {
 		this.cityId = cityId;
 	}
 
@@ -61,6 +60,4 @@ public class City {
 		this.rescueCases = rescueCases;
 	}
 
-    
-    
 }

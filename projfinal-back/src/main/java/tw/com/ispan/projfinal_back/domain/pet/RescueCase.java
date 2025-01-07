@@ -2,7 +2,9 @@ package tw.com.ispan.projfinal_back.domain.pet;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,9 +14,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import tw.com.ispan.projfinal_back.domain.pet.forRescue.RescueDemand;
 
 @Entity
 @Table(name = "RescueCase")
@@ -22,30 +27,30 @@ public class RescueCase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer rescueCaseId;
 
 	@Column(columnDefinition = "NVARCHAR(30)", name = "caseTitle", nullable = false)
 	private String caseTitle;
 
-	// 關聯到member表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
-	private int memberId;
+//	// 關聯到member表，雙向多對一
+//	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+//	@JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
+//	private Member memberId;
 
-	// 關聯到species表，單向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "specieId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Specie"))
-	private int specieId;
-
-	// 關聯到breed表，單向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "breedId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Breed"))
-	private int breedId;
-
-	// 關聯到furColor表，單向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "furColorId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
-	private int furColorId;
+//	// 關聯到species表，單向多對一
+//	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+//	@JoinColumn(name = "specieId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Specie"))
+//	private Integer specieId;
+//
+//	// 關聯到breed表，單向多對一
+//	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+//	@JoinColumn(name = "breedId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Breed"))
+//	private Integer breedId;
+//
+//	// 關聯到furColor表，單向多對一
+//	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+//	@JoinColumn(name = "furColorId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
+//	private Integer furColorId;
 
 	@Column(columnDefinition = "NVARCHAR(5)", name = "gender")
 	private String gender;
@@ -54,10 +59,10 @@ public class RescueCase {
 	private String sterilization;
 
 	@Column(name = "age")
-	private int age;
+	private Integer age;
 
 	@Column(name = "microChipNumber")
-	private int microChipNumber;
+	private Integer microChipNumber;
 
 	@Column(name = "suspLost")
 	private boolean suspLost;
@@ -65,12 +70,12 @@ public class RescueCase {
 	// 關聯到city表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
-	private int cityId;
+	private City cityId;
 
 	// 關聯到distint表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	@JoinColumn(name = "distintId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Distint"))
-	private int distintId;
+	private Distint distintId;
 
 	@Column(columnDefinition = "NVARCHAR(10)", name = "street", nullable = false)
 	private String street;
@@ -84,13 +89,13 @@ public class RescueCase {
 	private BigDecimal longitude;
 
 	@Column(name = "donationAmount")
-	private int donationAmount;
+	private Integer donationAmount;
 
-	@Column(name = "view")
-	private int view;
+	@Column(name = "viewCount")
+	private Integer viewCount;   
 
 	@Column(name = "follow")
-	private int follow;
+	private Integer follow;
 
 	@Column(name = "publicationTime", nullable = false)
 	private LocalDateTime publicationTime;
@@ -98,10 +103,10 @@ public class RescueCase {
 	@Column(name = "lastUpdateTime", nullable = false)
 	private LocalDateTime lastUpdateTime;
 
-	// 關聯到rescueState表，單向多對一
+	// 關聯到CaseState表，單向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "rescueStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_RescueState"))
-	private int rescueStateId;
+	@JoinColumn(name = "CaseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_CaseState"))
+	private CaseState caseStateId;
 
 	@Column(name = "rescueReason", columnDefinition = "nvarchar(max)")
 	private String rescueReason;
@@ -114,24 +119,34 @@ public class RescueCase {
 	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_RescueCase"))
 	private List<CasePicture> casePictures;
 	
+    @ManyToMany
+    @JoinTable(
+        name = "RescueCase_RescueDemand",
+        joinColumns = @JoinColumn(name = "rescueCaseId"),
+        inverseJoinColumns = @JoinColumn(name = "rescueDemandId")
+    )
+    private Set<RescueDemand> rescueDemands = new HashSet<>();
+	
+	
 	
 	// Hibernate 進行實體的初始化需要用到空參建構子
 	public RescueCase() {
 		super();
 	}
 
-	public RescueCase(int id, String caseTitle, int memberId, int specieId, int breedId, int furColorId, String gender,
-			String sterilization, int age, int microChipNumber, boolean suspLost, int cityId, int distintId,
-			String street, BigDecimal latitude, BigDecimal longitude, int donationAmount, int view, int follow,
-			LocalDateTime publicationTime, LocalDateTime lastUpdateTime, int rescueStateId, String rescueReason,
-			String caseUrl) {
+
+
+	
+
+
+	public RescueCase(Integer rescueCaseId, String caseTitle, String gender, String sterilization, Integer age,
+			Integer microChipNumber, boolean suspLost, City cityId, Distint distintId, String street,
+			BigDecimal latitude, BigDecimal longitude, Integer donationAmount, Integer viewCount, Integer follow,
+			LocalDateTime publicationTime, LocalDateTime lastUpdateTime, CaseState caseStateId, String rescueReason,
+			String caseUrl, List<CasePicture> casePictures, Set<RescueDemand> rescueDemands) {
 		super();
-		this.id = id;
+		this.rescueCaseId = rescueCaseId;
 		this.caseTitle = caseTitle;
-		this.memberId = memberId;
-		this.specieId = specieId;
-		this.breedId = breedId;
-		this.furColorId = furColorId;
 		this.gender = gender;
 		this.sterilization = sterilization;
 		this.age = age;
@@ -143,22 +158,27 @@ public class RescueCase {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.donationAmount = donationAmount;
-		this.view = view;
+		this.viewCount = viewCount;
 		this.follow = follow;
 		this.publicationTime = publicationTime;
 		this.lastUpdateTime = lastUpdateTime;
-		this.rescueStateId = rescueStateId;
+		this.caseStateId = caseStateId;
 		this.rescueReason = rescueReason;
 		this.caseUrl = caseUrl;
+		this.casePictures = casePictures;
+		this.rescueDemands = rescueDemands;
 	}
 
-	public int getId() {
-		return id;
+
+
+	public Integer getRescueCaseId() {
+		return rescueCaseId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setRescueCaseId(Integer rescueCaseId) {
+		this.rescueCaseId = rescueCaseId;
 	}
+
 
 	public String getCaseTitle() {
 		return caseTitle;
@@ -168,37 +188,37 @@ public class RescueCase {
 		this.caseTitle = caseTitle;
 	}
 
-	public int getMemberId() {
-		return memberId;
-	}
+//	public Integer getMemberId() {
+//		return memberId;
+//	}
+//
+//	public void setMemberId(Integer memberId) {
+//		this.memberId = memberId;
+//	}
 
-	public void setMemberId(int memberId) {
-		this.memberId = memberId;
-	}
-
-	public int getSpecieId() {
-		return specieId;
-	}
-
-	public void setSpecieId(int specieId) {
-		this.specieId = specieId;
-	}
-
-	public int getBreedId() {
-		return breedId;
-	}
-
-	public void setBreedId(int breedId) {
-		this.breedId = breedId;
-	}
-
-	public int getFurColorId() {
-		return furColorId;
-	}
-
-	public void setFurColorId(int furColorId) {
-		this.furColorId = furColorId;
-	}
+//	public Integer getSpecieId() {
+//		return specieId;
+//	}
+//
+//	public void setSpecieId(Integer specieId) {
+//		this.specieId = specieId;
+//	}
+//
+//	public Integer getBreedId() {
+//		return breedId;
+//	}
+//
+//	public void setBreedId(Integer breedId) {
+//		this.breedId = breedId;
+//	}
+//
+//	public Integer getFurColorId() {
+//		return furColorId;
+//	}
+//
+//	public void setFurColorId(Integer furColorId) {
+//		this.furColorId = furColorId;
+//	}
 
 	public String getGender() {
 		return gender;
@@ -216,19 +236,19 @@ public class RescueCase {
 		this.sterilization = sterilization;
 	}
 
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 
-	public int getMicroChipNumber() {
+	public Integer getMicroChipNumber() {
 		return microChipNumber;
 	}
 
-	public void setMicroChipNumber(int microChipNumber) {
+	public void setMicroChipNumber(Integer microChipNumber) {
 		this.microChipNumber = microChipNumber;
 	}
 
@@ -240,19 +260,19 @@ public class RescueCase {
 		this.suspLost = suspLost;
 	}
 
-	public int getCityId() {
+	public City getCityId() {
 		return cityId;
 	}
 
-	public void setCityId(int cityId) {
+	public void setCityId(City cityId) {
 		this.cityId = cityId;
 	}
 
-	public int getDistintId() {
+	public Distint getDistintId() {
 		return distintId;
 	}
 
-	public void setDistintId(int distintId) {
+	public void setDistintId(Distint distintId) {
 		this.distintId = distintId;
 	}
 
@@ -280,27 +300,29 @@ public class RescueCase {
 		this.longitude = longitude;
 	}
 
-	public int getDonationAmount() {
+	public Integer getDonationAmount() {
 		return donationAmount;
 	}
 
-	public void setDonationAmount(int donationAmount) {
+	public void setDonationAmount(Integer donationAmount) {
 		this.donationAmount = donationAmount;
 	}
+	
 
-	public int getView() {
-		return view;
+	public Integer getViewCount() {
+		return viewCount;
 	}
 
-	public void setView(int view) {
-		this.view = view;
+	public void setViewCount(Integer viewCount) {
+		this.viewCount = viewCount;
 	}
 
-	public int getFollow() {
+
+	public Integer getFollow() {
 		return follow;
 	}
 
-	public void setFollow(int follow) {
+	public void setFollow(Integer follow) {
 		this.follow = follow;
 	}
 
@@ -320,12 +342,12 @@ public class RescueCase {
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
-	public int getRescueStateId() {
-		return rescueStateId;
+	public CaseState getCaseStateId() {
+		return caseStateId;
 	}
 
-	public void setRescueStateId(int rescueStateId) {
-		this.rescueStateId = rescueStateId;
+	public void setCaseStateId(CaseState caseStateId) {
+		this.caseStateId = caseStateId;
 	}
 
 	public String getRescueReason() {
@@ -352,5 +374,11 @@ public class RescueCase {
 		this.casePictures = casePictures;
 	}
 
-	
+	public Set<RescueDemand> getRescueDemands() {
+		return rescueDemands;
+	}
+
+	public void setRescueDemands(Set<RescueDemand> rescueDemands) {
+		this.rescueDemands = rescueDemands;
+	}
 }
