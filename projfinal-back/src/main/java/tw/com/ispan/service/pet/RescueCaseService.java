@@ -24,40 +24,37 @@ public class RescueCaseService {
 
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
-	
+
 	@Autowired
 	private SpeciesRepository speciesRepository;
-	
+
 	@Autowired
 	private BreedRepository breedRepository;
-	
+
 	@Autowired
 	private CasePictureRepository casePictureRepository;
-	
+
 	@Autowired
 	private FurColorRepository furColorRepository;
-	
-	
-//	private String caseTitle;
-//	private Integer speciesId;
-//	private Integer breedId;
-//	private Integer furColorId;
-//	private String gender;
-//	private String sterilization;
-//	private Integer age;
-//	private Integer microChipNumber;
-//	private Boolean suspLost;
-//	private Integer cityId;
-//	private Integer distinctId;
-//	private String street;
-//	private String rescueReason;
-//	private List<Integer> casePictures;
-//	private  List<Integer> rescueDemands;
-//	private  List<Integer> canAffords;
-	
-	
-	
-	//新增案件-> 手動將傳進來的dto轉entity
+
+	// private String caseTitle;
+	// private Integer speciesId;
+	// private Integer breedId;
+	// private Integer furColorId;
+	// private String gender;
+	// private String sterilization;
+	// private Integer age;
+	// private Integer microChipNumber;
+	// private Boolean suspLost;
+	// private Integer cityId;
+	// private Integer distinctId;
+	// private String street;
+	// private String rescueReason;
+	// private List<Integer> casePictures;
+	// private List<Integer> rescueDemands;
+	// private List<Integer> canAffords;
+
+	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
 		 
 		RescueCase rescueCase = new RescueCase();
@@ -109,16 +106,14 @@ public class RescueCaseService {
 		 
 		 return rescueCase;
 	}
-	
-	
-	//insert新增案件: 
+
+	// insert新增案件:
 	public RescueCase addRescueCase(RescueCase rescueCase) {
-		 
-		//id資料庫中自動生成
-		//最後把關:要確保member、species、city、distinct、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、rescueReason等必填資料塞進來，才能存進資料庫中
-		
+
+		// id資料庫中自動生成
+		// 最後把關:要確保member、species、city、distinct、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、rescueReason等必填資料塞進來，才能存進資料庫中
+
 		return rescueCase;
 	}
-	
 
 }
