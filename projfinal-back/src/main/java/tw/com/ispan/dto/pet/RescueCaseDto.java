@@ -14,7 +14,7 @@ import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 public class RescueCaseDto {
 
 	private String caseTitle;
-	private Integer specieId;
+	private Integer speciesId;
 	private Integer breedId;
 	private Integer furColorId;
 	private String gender;
@@ -26,8 +26,111 @@ public class RescueCaseDto {
 	private Integer distinctId;
 	private String street;
 	private String rescueReason;
-	private List<CasePicture> casePictures;
-	private Set<RescueDemand> rescueDemands = new HashSet<>();
-	private Set<CanAfford> canAffords;
-
+	
+	//傳遞照片id集合，到service中再用id的list去找圖片
+	private List<Integer> casePictures;
+	private  List<Integer> rescueDemands;
+	private  List<Integer> canAffords;
+	
+	
+	//getter & setter
+	public String getCaseTitle() {
+		return caseTitle;
+	}
+	public void setCaseTitle(String caseTitle) {
+		this.caseTitle = caseTitle;
+	}
+	public Integer getSpeciesId() {
+		return speciesId;
+	}
+	public void setSpeciesId(Integer speciesId) {
+		this.speciesId = speciesId;
+	}
+	public Integer getBreedId() {
+		return breedId;
+	}
+	public void setBreedId(Integer breedId) {
+		this.breedId = breedId;
+	}
+	public Integer getFurColorId() {
+		return furColorId;
+	}
+	public void setFurColorId(Integer furColorId) {
+		this.furColorId = furColorId;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getSterilization() {
+		return sterilization;
+	}
+	public void setSterilization(String sterilization) {
+		this.sterilization = sterilization;
+	}
+	public Integer getAge() {
+		return age;
+	}
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+	public Integer getMicroChipNumber() {
+		return microChipNumber;
+	}
+	public void setMicroChipNumber(Integer microChipNumber) {
+		this.microChipNumber = microChipNumber;
+	}
+	public Boolean getSuspLost() {
+		return suspLost;
+	}
+	public void setSuspLost(Boolean suspLost) {
+		this.suspLost = suspLost;
+	}
+	public Integer getCityId() {
+		return cityId;
+	}
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+	public Integer getDistinctId() {
+		return distinctId;
+	}
+	public void setDistinctId(Integer distinctId) {
+		this.distinctId = distinctId;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public void setStreet(String street) {
+		this.street = street;
+	}
+	public String getRescueReason() {
+		return rescueReason;
+	}
+	public void setRescueReason(String rescueReason) {
+		this.rescueReason = rescueReason;
+	}
+	public List<Integer> getCasePictures() {
+		return casePictures;
+	}
+	public void setCasePictures(List<Integer> casePictures) {
+		this.casePictures = casePictures;
+	}
+	public List<Integer> getRescueDemands() {
+		return rescueDemands;
+	}
+	public void setRescueDemands(List<Integer> rescueDemands) {
+		this.rescueDemands = rescueDemands;
+	}
+	public List<Integer> getCanAffords() {
+		return canAffords;
+	}
+	public void setCanAffords(List<Integer> canAffords) {
+		this.canAffords = canAffords;
+	}
+	
+	
+	
 }
