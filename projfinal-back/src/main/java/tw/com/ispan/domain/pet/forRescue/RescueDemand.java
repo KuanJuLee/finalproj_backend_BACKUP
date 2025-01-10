@@ -1,4 +1,4 @@
-package tw.com.ispan.projfinal_back.domain.pet.forRescue;
+package tw.com.ispan.domain.pet.forRescue;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
