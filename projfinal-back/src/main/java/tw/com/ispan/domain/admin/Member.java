@@ -21,11 +21,10 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer memberId;
-    // Othe ields rel
-
-    // @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval =
-    // true)
-    // private List<Order> orders;
+    
+     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval =
+     true)
+     private List<Order> orders;
 
     @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private List<RescueCase> rescueCases;
@@ -38,9 +37,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
     private Follow follows;
-
-    @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    private List<RescueCase> rescueCases;
 
     // Constructors, getters, setters, toString()
 }
