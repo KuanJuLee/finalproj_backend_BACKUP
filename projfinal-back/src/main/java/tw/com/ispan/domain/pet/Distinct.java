@@ -12,44 +12,44 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Distint")
-public class Distint {
+@Table(name = "Distinct")
+public class Distinct {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer distintId;
+	private Integer distinctId;
 
-	@Column(columnDefinition = "NVARCHAR(5)", name = "distintName", nullable = false)
-	private String distintName;
+	@Column(columnDefinition = "NVARCHAR(5)", name = "distinctName", nullable = false)
+	private String distinctName;
 
 	// 和RescueCase表雙向一對多
-	@OneToMany(mappedBy = "distintId", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "distinctId", cascade = CascadeType.PERSIST)
 	private List<RescueCase> rescueCases;
 
-	public Distint() {
+	public Distinct() {
 		super();
 	}
 
-	public Distint(Integer distintId, String distintName) {
+	public Distinct(Integer distinctId, String distinctName) {
 		super();
-		this.distintId = distintId;
-		this.distintName = distintName;
+		this.distinctId = distinctId;
+		this.distinctName = distinctName;
 	}
 
-	public Integer getDistintId() {
-		return distintId;
+	public Integer getDistinctId() {
+		return distinctId;
 	}
 
-	public void setDistintId(int distintId) {
-		this.distintId = distintId;
+	public void setDistinctId(int distinctId) {
+		this.distinctId = distinctId;
 	}
 
-	public String getDistintName() {
-		return distintName;
+	public String getDistinctName() {
+		return distinctName;
 	}
 
-	public void setDistintName(String distintName) {
-		this.distintName = distintName;
+	public void setDistinctName(String distinctName) {
+		this.distinctName = distinctName;
 	}
 
 	public List<RescueCase> getRescueCases() {

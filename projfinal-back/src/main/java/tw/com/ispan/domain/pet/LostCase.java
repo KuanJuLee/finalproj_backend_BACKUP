@@ -2,37 +2,58 @@ package tw.com.ispan.domain.pet;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import tw.com.ispan.domain.admin.Member;
 
 @Entity
 @Table(name = "LostCase")
-public class lostCase {
+public class LostCase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 自增流水號
     @Column(name = "lostCaseId")
     private Integer lostCaseId;
 
-    @Column(name = "caseTitle", nullable = false, length = 30)
+    @Column(columnDefinition = "NVARCHAR(30)", name = "caseTitle", nullable = false)
     private String caseTitle;
 
-    @Column(name = "memberId", nullable = false)
-    private Integer memberId; // 外鍵（需自行處理關聯）
+    // 關聯到member表，雙向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Member"))
+    private Member member;
 
-    @Column(name = "specieId", nullable = false)
-    private Integer specieId; // 外鍵（需自行處理關聯）
+    // 關聯到speciess表，單向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_species"))
+    private Integer speciesId;
 
-    @Column(name = "breedId", nullable = false)
-    private Integer breedId; // 外鍵（需自行處理關聯）
+    // 關聯到breed表，單向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "breedId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Breed"))
+    private Integer breedId;
 
-    @Column(name = "furColorId", nullable = false)
-    private Integer furColorId; // 外鍵（需自行處理關聯）
+    // 關聯到furColor表，單向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "furColorId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
+    private Integer furColorId;
 
-    @Column(name = "gender", length = 5)
+    @Column(columnDefinition = "NVARCHAR(5)", name = "gender")
     private String gender;
 
-    @Column(name = "sterilization", length = 5)
+    @Column(columnDefinition = "NVARCHAR(5)", name = "sterilization", nullable = false)
     private String sterilization;
 
     @Column(name = "age")
@@ -42,30 +63,36 @@ public class lostCase {
     private Integer microChipNumber;
 
     @Column(name = "suspLost")
-    private Boolean suspLost;
+    private boolean suspLost;
 
-    @Column(name = "cityId", nullable = false)
-    private Integer cityId; // 外鍵（需自行處理關聯）
+    // 關聯到city表，雙向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
+    private City cityId;
 
-    @Column(name = "distintId", nullable = false)
-    private Integer distintId; // 外鍵（需自行處理關聯）
+    // 關聯到distinct表，雙向多對一
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "distinctId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Distinct"))
+    private Distinct distinctId;
 
-    @Column(name = "street", length = 10)
+    @Column(columnDefinition = "NVARCHAR(10)", name = "street", nullable = false)
     private String street;
 
+    // 10位數，8位小數
     @Column(name = "latitude", precision = 10, scale = 8, nullable = false)
-    private BigDecimal latitude; // 經度
+    private BigDecimal latitude;// 經度
 
+    // 11位數，8位小數
     @Column(name = "longitude", precision = 11, scale = 8, nullable = false)
-    private BigDecimal longitude; // 緯度
+    private BigDecimal longitude;// 緯度
 
-    @Column(name = "donationAmount", nullable = false)
+    @Column(name = "donationAmount")
     private Integer donationAmount;
 
-    @Column(name = "view", nullable = false)
-    private Integer view;
+    @Column(name = "viewCount")
+    private Integer viewCount;
 
-    @Column(name = "follow", nullable = false)
+    @Column(name = "follow")
     private Integer follow;
 
     @Column(name = "publicationTime", nullable = false)
@@ -86,6 +113,11 @@ public class lostCase {
     @Column(name = "featureDescription")
     private String featureDescription;
 
+    // 關聯到CasePicture表，單向一對多，rescueCaseId外鍵會在CasePicture表中
+    @OneToMany
+    @JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_LostCase"))
+    private List<CasePicture> casePictures;
+
     // Getters and Setters
     public Integer getLostCaseId() {
         return lostCaseId;
@@ -103,20 +135,14 @@ public class lostCase {
         this.caseTitle = caseTitle;
     }
 
-    public Integer getMemberId() {
-        return memberId;
+ 
+    
+    public Integer getspeciesId() {
+        return speciesId;
     }
 
-    public void setMemberId(Integer memberId) {
-        this.memberId = memberId;
-    }
-
-    public Integer getSpecieId() {
-        return specieId;
-    }
-
-    public void setSpecieId(Integer specieId) {
-        this.specieId = specieId;
+    public void setspeciesId(Integer speciesId) {
+        this.speciesId = speciesId;
     }
 
     public Integer getBreedId() {
@@ -175,20 +201,20 @@ public class lostCase {
         this.suspLost = suspLost;
     }
 
-    public Integer getCityId() {
+    public City getCityId() {
         return cityId;
     }
 
-    public void setCityId(Integer cityId) {
+    public void setCityId(City cityId) {
         this.cityId = cityId;
     }
 
-    public Integer getDistintId() {
-        return distintId;
+    public Distinct getDistinctId() {
+        return distinctId;
     }
 
-    public void setDistintId(Integer distintId) {
-        this.distintId = distintId;
+    public void setDistinctId(Distinct distinctId) {
+        this.distinctId = distinctId;
     }
 
     public String getStreet() {
@@ -223,12 +249,12 @@ public class lostCase {
         this.donationAmount = donationAmount;
     }
 
-    public Integer getView() {
-        return view;
+    public Integer getViewCount() {
+        return viewCount;
     }
 
-    public void setView(Integer view) {
-        this.view = view;
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 
     public Integer getFollow() {
@@ -253,6 +279,14 @@ public class lostCase {
 
     public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public List<CasePicture> getCasePictures() {
+        return casePictures;
+    }
+
+    public void setCasePictures(List<CasePicture> casePictures) {
+        this.casePictures = casePictures;
     }
 
     public String getLostExperience() {

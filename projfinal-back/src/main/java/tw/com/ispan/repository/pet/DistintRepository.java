@@ -2,8 +2,8 @@ package tw.com.ispan.repository.pet;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import tw.com.ispan.domain.pet.Distint;
+import tw.com.ispan.domain.pet.Distinct;
 
-public interface DistintRepository extends JpaRepository<Distint, Integer> {
+public interface DistinctRepository extends JpaRepository<Distinct, Integer> {
 
 }
