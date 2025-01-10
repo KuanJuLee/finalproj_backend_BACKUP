@@ -68,7 +68,7 @@ public class RescueCase {
 	private Integer microChipNumber;
 
 	@Column(name = "suspLost")
-	private boolean suspLost;
+	private Boolean suspLost;
 
 	// 關聯到city表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })

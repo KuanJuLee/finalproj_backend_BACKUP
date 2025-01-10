@@ -14,6 +14,7 @@ import tw.com.ispan.domain.pet.Activity;
 import tw.com.ispan.domain.pet.ActivityParticipantList;
 import tw.com.ispan.domain.pet.Follow;
 import tw.com.ispan.domain.pet.RescueCase;
+import tw.com.ispan.domain.shop.Order;
 
 @Entity
 @Table(name = "Member")
