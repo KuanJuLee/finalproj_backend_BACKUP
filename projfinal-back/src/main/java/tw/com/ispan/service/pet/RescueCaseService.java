@@ -1,12 +1,21 @@
 package tw.com.ispan.service.pet;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tw.com.ispan.domain.pet.Breed;
+import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
+import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.dto.pet.RescueCaseDto;
+import tw.com.ispan.repository.pet.BreedRepository;
+import tw.com.ispan.repository.pet.CasePictureRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
+import tw.com.ispan.repository.pet.SpeciesRepository;
 
 @Service
 @Transactional
@@ -14,15 +23,52 @@ public class RescueCaseService {
 
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
-
 	
-	//新增案件-> 手動將傳進來的dto轉回entity
-	public RescueCase convertToEntity(RescueCaseDto rescueCaseDto) {
-		 RescueCase rescueCase = new RescueCase();
+	@Autowired
+	private SpeciesRepository speciesRepository;
+	
+	@Autowired
+	private BreedRepository breedRepository;
+	
+	@Autowired
+	private CasePictureRepository casePictureRepository;
+	
+	
+	
+	//新增案件-> 手動將傳進來的dto轉entity
+	public RescueCase convertToEntity(RescueCaseDto dto) {
 		 
+		RescueCase rescueCase = new RescueCase();
 		 
-		 //關聯屬性，透過傳進的id尋找到對應物件
+		
+		rescueCase.setCaseTitle(dto.getCaseTitle());
+		
+		//以下傳id進來，找到對應資料再塞回enitity物件中
+		//物種
+		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
+		if(result1!= null && result1.isPresent()) {
+			rescueCase.setSpecies(result1.get());
+		}
+		
+		//品種
+		Optional<Breed> result2 = breedRepository.findById(dto.getBreedId());
+		if(result2!= null && result2.isPresent()) {
+			rescueCase.setBreed(result2.get());
+		}
+		
+		//
+		
+		
+		
+		
+		//圖片
+		List<CasePicture> casePictures = dto.getCasePictureId().stream()
+		        .map(id -> casePictureRepository.findById(id)
+		
 		 
+		//關聯屬性，透過傳進的id尋找到對應物件塞進去
+		 
+		
 	
 		 
 		 return rescueCase;
@@ -32,7 +78,8 @@ public class RescueCaseService {
 	//insert新增案件: 
 	public RescueCase addRescueCase(RescueCase rescueCase) {
 		 
-		 //要在這member、species、city、distinct、經緯度、等必填資料(notNull)塞進來，才能存進資料庫中
+		//id資料庫中自動生成
+		//最後把關:要確保member、species、city、distinct、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、rescueReason等必填資料塞進來，才能存進資料庫中
 		
 		return rescueCase;
 	}
