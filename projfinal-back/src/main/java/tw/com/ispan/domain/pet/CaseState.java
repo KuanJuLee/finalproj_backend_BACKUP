@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 public class CaseState {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //
     @Column(name = "CaseStateId")
     private Integer CaseStateId;
 
@@ -19,8 +18,6 @@ public class CaseState {
 	public CaseState() {
 		super();
 	}
-
-
 
 	public CaseState(Integer caseStateId, String caseStatement) {
 		super();

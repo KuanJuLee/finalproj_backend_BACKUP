@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ import tw.com.ispan.service.pet.RescueCaseService;
 //此controller為會員限定功能
 @RestController
 @RequestMapping(path = { "/member" })
-public class MemberController {
+public class MemberRescueController {
 
 	@Autowired
 	private RescueCaseService rescueCaseService;
@@ -29,20 +30,20 @@ public class MemberController {
 	private ImageService imageService;
 
 
-	// 新增一筆案件
+	// 新增一筆救援案件
 	@PostMapping(path= {"/addRescueCase"})
 	public RescueCaseResponse addRescueCase(@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto, @RequestPart MultipartFile file) {
 		
 		 //專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
 		 //rescueCaseDto傳進service存資料，RescueCaseResponse回傳給前端
-		 RescueCaseResponse response = new RescueCaseResponse();
+		 //MultipartFile接收圖片
 		 
 		//傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
-		//要驗證什麼???
+		//這裡要驗證什麼???
 		 
-		 //存入資料庫中
+		 //先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
 		 RescueCase rescueCase = rescueCaseService.convertToEntity(rescueCaseDto);
-		 rescueCaseService.addRescueCase(rescueCase, token);
+		 RescueCase result = rescueCaseService.addRescueCase(rescueCase, token);
 		 
 		//圖片存入本地+資料庫中
 		 try {
@@ -54,7 +55,8 @@ public class MemberController {
 		 
 		
 		//組裝返回訊息 
-		
+		 RescueCaseResponse response = new RescueCaseResponse();
+		 
 		 
 		 
 //				ProductBean insert = rescueCaseRepository.create(json);
@@ -74,4 +76,15 @@ public class MemberController {
 		 return response;
 }
 
+	// 修改救援案件
+//	@PutMapping(path= {"/modifiedRescueCase/{id}"})
+//	public RescueCaseResponse modifiedRescueCase(@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto, @RequestPart MultipartFile file) {
+//		
+//	}
+	
+	
+	
+	// 刪除救援案件
+	
+	
 }

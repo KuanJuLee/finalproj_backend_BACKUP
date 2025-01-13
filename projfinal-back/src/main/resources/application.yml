@@ -17,12 +17,17 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl		
-#圖片大小ㄒㄧㄢ				
-  #設定圖片上傳
+    #圖片大小限制
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB		
+
+  #圖片下載路徑
 file:
   upload-dir: /images				
 
@@ -38,3 +43,8 @@ file:
 jwt:
   token:
     expire: 10
+
+#google座標api
+google:
+  api:
+    key: AIzaSyATLMpyW2m1qnNAAQf0rZSpcl6TadBobBg

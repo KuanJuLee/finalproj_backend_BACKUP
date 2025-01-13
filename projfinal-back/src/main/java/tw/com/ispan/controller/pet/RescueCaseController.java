@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path= {"member/rescue"})
 public class RescueCaseController {
-	
-	 @PostMapping
+
 	 
 }

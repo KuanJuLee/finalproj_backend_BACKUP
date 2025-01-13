@@ -27,10 +27,18 @@ public class Species {
 
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
     private List<RescueCase> rescueCases;
+    
+
+    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+    private List<AdoptionCase> adoptionCase;	
 
     
     
-    public Species(Integer speciesId, String species) {
+    public Species() {
+		super();
+	}
+
+	public Species(Integer speciesId, String species) {
 		super();
 		this.speciesId = speciesId;
 		this.species = species;

@@ -1,5 +1,6 @@
 package tw.com.ispan.service.pet;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import tw.com.ispan.domain.pet.Breed;
+import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
-import tw.com.ispan.domain.pet.Distinct;
+import tw.com.ispan.domain.pet.DistinctArea;
 import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
@@ -18,14 +22,16 @@ import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CityRepository;
-import tw.com.ispan.repository.pet.DistinctRepository;
+import tw.com.ispan.repository.pet.DistinctAreaRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
-import tw.com.ispan.service.JwtService;
+import tw.com.ispan.service.GeocodingService;
+//import tw.com.ispan.service.JwtService;
+import tw.com.ispan.util.LatLng;
 
 @Service
 @Transactional
@@ -42,15 +48,18 @@ public class RescueCaseService {
 	@Autowired
 	private CityRepository cityRepository;
 	@Autowired
-	private DistinctRepository distinctRepository;
+	private DistinctAreaRepository distinctAreaRepository;
 	@Autowired
 	private RescueDemandRepository rescueDemandRepository;
 	@Autowired
 	private RescueProgressRepository rescueProgressRepository;
 	@Autowired
 	private CanAffordRepository canAffordRepository;
+//	@Autowired
+//	private JwtService jwtService;
+	
 	@Autowired
-	private JwtService jwtService;
+	private GeocodingService geocodingService;
 
 	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
@@ -89,13 +98,13 @@ public class RescueCaseService {
 		//city
 		Optional<City> result4 = cityRepository.findById(dto.getCityId());
 		if(result4!= null && result4.isPresent()) {
-			rescueCase.setCityId(result4.get());
+			rescueCase.setCity(result4.get());
 		}
 		
-		//distinct
-		Optional<Distinct> result5 = distinctRepository.findById(dto.getDistinctId());
+		//distinctArea
+		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
 		if(result5!= null && result5.isPresent()) {
-			rescueCase.setDistinctId(result5.get());
+			rescueCase.setDistinctArea(result5.get());
 		}
 		
 		//rescueDemands
@@ -117,6 +126,7 @@ public class RescueCaseService {
 		// id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
 		
+		
 		// 從 JWT 中解析出 memberId
 //	    try {
 //			Integer memberId = JwtService.getMemberIdFromToken(token);
@@ -126,11 +136,31 @@ public class RescueCaseService {
 //		}
 		
 		
+		//設置經緯度
+		String adress = rescueCase.getCity().getCity()+rescueCase.getDistinctArea().getDistinctAreaName()+rescueCase.getStreet();
+		try {
+			LatLng latLng= geocodingService.getCoordinatesFromAddress(adress);
+			rescueCase.setLatitude(latLng.getLat());
+			rescueCase.setLongitude(latLng.getLng());
+		} catch (JsonProcessingException e) {
+			System.out.println("請求座標API失敗");
+			e.printStackTrace();
+		}
+		
+		//設置發布時間、最後修改時間
+		rescueCase.setPublicationTime(LocalDateTime.now());
+		rescueCase.setLastUpdateTime(LocalDateTime.now());
+		
+		//設置預設caseState(待救援id為3)
+		CaseState caseState = new CaseState(3,"待救援");
+		rescueCase.setCaseState(caseState);
+	
 		
 		
-		
-		
+		rescueCaseRepository.save(rescueCase);
 		return rescueCase;
 	}
-
+	
+	
+	
 }

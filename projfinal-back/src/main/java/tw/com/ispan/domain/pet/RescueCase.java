@@ -1,10 +1,9 @@
 package tw.com.ispan.domain.pet;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import org.hibernate.sql.ast.tree.expression.Distinct;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -77,27 +76,27 @@ public class RescueCase {
 	//必填
 	// 關聯到city表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
-	private City cityId;
+	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_City"))
+	private City city;
 
 	//必填
-	// 關聯到distinct表，雙向多對一
+	// 關聯到distinctArea表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "distinctId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Distinct"))
-	private Distinct distinctId;
+	@JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_DistinctArea"))
+	private DistinctArea distinctArea;
 
 	@Column(columnDefinition = "NVARCHAR(10)", name = "street")
 	private String street;
 	
 	//必填
 	// 10位數，8位小數
-	@Column(name = "latitude", precision = 10, scale = 8, nullable = false)
-	private BigDecimal latitude;
+	@Column(name = "latitude", precision = 10, nullable = false)
+	private Double latitude;
 	
 	//必填
 	// 11位數，8位小數
-	@Column(name = "longitude", precision = 11, scale = 8, nullable = false)
-	private BigDecimal longitude;
+	@Column(name = "longitude", precision = 11,  nullable = false)
+	private Double longitude;
 
 	@Column(name = "donationAmount")
 	private Integer donationAmount;
@@ -120,7 +119,7 @@ public class RescueCase {
 	// 關聯到CaseState表，單向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	@JoinColumn(name = "CaseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_CaseState"))
-	private CaseState caseStateId;
+	private CaseState caseState;
 	
 	//必填
 	@Column(name = "rescueReason", columnDefinition = "nvarchar(max)", nullable = false)
@@ -167,7 +166,7 @@ public class RescueCase {
     
     
     // 關聯到ReportCase表，單向一對多
-    @OneToMany(mappedBy = "lostCaseId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "rescueCase", cascade = CascadeType.ALL)
     private List<ReportCase> reportCases; 
     
 	
@@ -182,9 +181,9 @@ public class RescueCase {
 
 	public RescueCase(Integer rescueCaseId, String caseTitle, Member member, Species species, Breed breed,
 			FurColor furColor, String gender, String sterilization, Integer age, Integer microChipNumber,
-			Boolean suspLost, City cityId, Distinct distinctId, String street, BigDecimal latitude, BigDecimal longitude,
+			Boolean suspLost, City city, DistinctArea distinctArea, String street, Double latitude, Double longitude,
 			Integer donationAmount, Integer viewCount, Integer follow, LocalDateTime publicationTime,
-			LocalDateTime lastUpdateTime, CaseState caseStateId, String rescueReason, String caseUrl,
+			LocalDateTime lastUpdateTime, CaseState caseState, String rescueReason, String caseUrl,
 			List<CasePicture> casePictures, List<RescueDemand> rescueDemands, List<CanAfford> canAffords,
 			List<RescueProgress> rescueProgresses, List<Follow> follows) {
 		super();
@@ -199,8 +198,8 @@ public class RescueCase {
 		this.age = age;
 		this.microChipNumber = microChipNumber;
 		this.suspLost = suspLost;
-		this.cityId = cityId;
-		this.distinctId = distinctId;
+		this.city = city;
+		this.distinctArea = distinctArea;
 		this.street = street;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -209,7 +208,7 @@ public class RescueCase {
 		this.follow = follow;
 		this.publicationTime = publicationTime;
 		this.lastUpdateTime = lastUpdateTime;
-		this.caseStateId = caseStateId;
+		this.caseState = caseState;
 		this.rescueReason = rescueReason;
 		this.caseUrl = caseUrl;
 		this.casePictures = casePictures;
@@ -333,23 +332,23 @@ public class RescueCase {
 	}
 
 
-	public City getCityId() {
-		return cityId;
+	public City getCity() {
+		return city;
 	}
 
 
-	public void setCityId(City cityId) {
-		this.cityId = cityId;
+	public void setCity(City city) {
+		this.city = city;
 	}
 
 
-	public Distinct getDistinctId() {
-		return distinctId;
+	public DistinctArea getDistinctArea() {
+		return distinctArea;
 	}
 
 
-	public void setDistinctId(Distinct distinctId) {
-		this.distinctId = distinctId;
+	public void setDistinctArea(DistinctArea distinctArea) {
+		this.distinctArea = distinctArea;
 	}
 
 
@@ -363,22 +362,22 @@ public class RescueCase {
 	}
 
 
-	public BigDecimal getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
 
-	public void setLatitude(BigDecimal latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
 
-	public BigDecimal getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
 
-	public void setLongitude(BigDecimal longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
@@ -433,13 +432,13 @@ public class RescueCase {
 	}
 
 
-	public CaseState getCaseStateId() {
-		return caseStateId;
+	public CaseState getCaseState() {
+		return caseState;
 	}
 
 
-	public void setCaseStateId(CaseState caseStateId) {
-		this.caseStateId = caseStateId;
+	public void setCaseState(CaseState caseState) {
+		this.caseState = caseState;
 	}
 
 
@@ -530,10 +529,10 @@ public class RescueCase {
 		return "RescueCase [rescueCaseId=" + rescueCaseId + ", caseTitle=" + caseTitle + ", member=" + member
 				+ ", species=" + species + ", breed=" + breed + ", furColor=" + furColor + ", gender=" + gender
 				+ ", sterilization=" + sterilization + ", age=" + age + ", microChipNumber=" + microChipNumber
-				+ ", suspLost=" + suspLost + ", cityId=" + cityId + ", distinctId=" + distinctId + ", street=" + street
+				+ ", suspLost=" + suspLost + ", city=" + city + ", distinctArea=" + distinctArea + ", street=" + street
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", donationAmount=" + donationAmount
 				+ ", viewCount=" + viewCount + ", follow=" + follow + ", publicationTime=" + publicationTime
-				+ ", lastUpdateTime=" + lastUpdateTime + ", caseStateId=" + caseStateId + ", rescueReason="
+				+ ", lastUpdateTime=" + lastUpdateTime + ", caseState=" + caseState + ", rescueReason="
 				+ rescueReason + ", caseUrl=" + caseUrl + ", casePictures=" + casePictures + ", rescueDemands="
 				+ rescueDemands + ", canAffords=" + canAffords + ", rescueProgresses=" + rescueProgresses + ", follows="
 				+ follows + "]";

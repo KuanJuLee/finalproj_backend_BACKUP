@@ -15,7 +15,7 @@ public class RescueCaseDto {
 	private Integer microChipNumber;
 	private Boolean suspLost;
 	private Integer cityId;
-	private Integer distinctId;
+	private Integer distinctAreaId;
 	private String street;
 	private String rescueReason;
 	
@@ -86,11 +86,11 @@ public class RescueCaseDto {
 	public void setCityId(Integer cityId) {
 		this.cityId = cityId;
 	}
-	public Integer getDistinctId() {
-		return distinctId;
+	public Integer getDistinctAreaId() {
+		return distinctAreaId;
 	}
-	public void setDistinctId(Integer distinctId) {
-		this.distinctId = distinctId;
+	public void setDistinctAreaId(Integer distinctAreaId) {
+		this.distinctAreaId = distinctAreaId;
 	}
 	public String getStreet() {
 		return street;

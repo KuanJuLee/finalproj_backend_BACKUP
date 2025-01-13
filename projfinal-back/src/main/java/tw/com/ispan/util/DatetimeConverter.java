@@ -1,10 +1,11 @@
 package tw.com.ispan.util;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class DatetimeConverter {
-	public static String toString(Date datetime, String format) {
+	public static String toString(LocalDateTime datetime, String format) {
 		String result = "";
 		try {
 			if (datetime != null) {

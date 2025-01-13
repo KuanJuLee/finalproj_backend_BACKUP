@@ -35,20 +35,21 @@ public class LostCase {
     @JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Member"))
     private Member member;
 
-    // 關聯到speciess表，單向多對一
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_species"))
-    private Integer speciesId;
+    //必填
+  	// 關聯到species表，雙向多對一
+  	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+  	@JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Species"))
+  	private Species species;
 
-    // 關聯到breed表，單向多對一
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "breedId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Breed"))
-    private Integer breedId;
+ // 關聯到breed表，雙向多對一
+ 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+ 	@JoinColumn(name = "breedId", foreignKey = @ForeignKey(name = "FK_LostCase_Breed"))
+ 	private Breed breed;
 
-    // 關聯到furColor表，單向多對一
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "furColorId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
-    private Integer furColorId;
+ // 關聯到furColor表，雙向多對一
+ 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+ 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
+ 	private FurColor furColor;
 
     @Column(columnDefinition = "NVARCHAR(5)", name = "gender")
     private String gender;
@@ -68,12 +69,12 @@ public class LostCase {
     // 關聯到city表，雙向多對一
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
-    private City cityId;
+    private City city;
 
-    // 關聯到distinct表，雙向多對一
+    // 關聯到distinctArea表，雙向多對一
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "distinctId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_Distinct"))
-    private Distinct distinctId;
+    @JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_distinctAreaArea"))
+    private DistinctArea distinctArea;
 
     @Column(columnDefinition = "NVARCHAR(10)", name = "street", nullable = false)
     private String street;
@@ -137,28 +138,28 @@ public class LostCase {
 
  
     
-    public Integer getspeciesId() {
-        return speciesId;
+    public Species getspecies() {
+        return species;
     }
 
-    public void setspeciesId(Integer speciesId) {
-        this.speciesId = speciesId;
+    public void setspecies(Species species) {
+        this.species = species;
     }
 
-    public Integer getBreedId() {
-        return breedId;
+    public Breed getBreed() {
+        return breed;
     }
 
-    public void setBreedId(Integer breedId) {
-        this.breedId = breedId;
+    public void setBreed(Breed breed) {
+        this.breed = breed;
     }
 
-    public Integer getFurColorId() {
-        return furColorId;
+    public FurColor getFurColor() {
+        return furColor;
     }
 
-    public void setFurColorId(Integer furColorId) {
-        this.furColorId = furColorId;
+    public void setFurColor(FurColor furColor) {
+        this.furColor = furColor;
     }
 
     public String getGender() {
@@ -201,20 +202,20 @@ public class LostCase {
         this.suspLost = suspLost;
     }
 
-    public City getCityId() {
-        return cityId;
+    public City getCity() {
+        return city;
     }
 
-    public void setCityId(City cityId) {
-        this.cityId = cityId;
+    public void setCity(City city) {
+        this.city = city;
     }
 
-    public Distinct getDistinctId() {
-        return distinctId;
+    public DistinctArea getDistinctArea() {
+        return distinctArea;
     }
 
-    public void setDistinctId(Distinct distinctId) {
-        this.distinctId = distinctId;
+    public void setDistinctArea(DistinctArea distinctArea) {
+        this.distinctArea = distinctArea;
     }
 
     public String getStreet() {
