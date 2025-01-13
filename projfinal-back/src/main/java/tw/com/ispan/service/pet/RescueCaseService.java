@@ -156,9 +156,15 @@ public class RescueCaseService {
 		rescueCase.setCaseState(caseState);
 	
 		
+		if(rescueCaseRepository.save(rescueCase)!= null) {
+			System.out.println("新增成功");
+			return rescueCase;
+		}
 		
-		rescueCaseRepository.save(rescueCase);
-		return rescueCase;
+		
+		System.out.println("新增失敗");
+		return null;
+		
 	}
 	
 	

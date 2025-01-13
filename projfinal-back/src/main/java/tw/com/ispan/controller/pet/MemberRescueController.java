@@ -42,8 +42,8 @@ public class MemberRescueController {
 		//這裡要驗證什麼???
 		 
 		 //先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
-		 RescueCase rescueCase = rescueCaseService.convertToEntity(rescueCaseDto);
-		 RescueCase result = rescueCaseService.addRescueCase(rescueCase, token);
+		 RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
+		 RescueCase rescueCase = rescueCaseService.addRescueCase(rescueCaseEntity, token);
 		 
 		//圖片存入本地+資料庫中
 		 try {
@@ -56,8 +56,11 @@ public class MemberRescueController {
 		
 		//組裝返回訊息 
 		 RescueCaseResponse response = new RescueCaseResponse();
-		 
-		 
+		 if(rescueCase != null) {
+			 //新增成功
+			 
+			 
+		 }
 		 
 //				ProductBean insert = rescueCaseRepository.create(json);
 //				if (insert == null) {
