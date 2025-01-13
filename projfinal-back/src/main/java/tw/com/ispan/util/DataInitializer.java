@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.EntityManager;
 import tw.com.ispan.domain.pet.City;
+import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.repository.pet.CityRepository;
+import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 
 @Component
@@ -16,28 +17,54 @@ public class DataInitializer implements CommandLineRunner {
 	@Autowired
 	private SpeciesRepository speciesRepository;
 	@Autowired
-	private EntityManager entityManager;
-	@Autowired
 	private CityRepository cityRepository;
+	@Autowired
+	private FurColorRepository furColorRepository;
 
-	// 此run()方法會在專案啟動同時執行一次，進行資料初始化
+	// 此方法會在專案啟動同時執行一次，進行資料初始化
 	@Override
 	public void run(String... args) throws Exception {
 
+		
 		// 存入物種資料
-
 		if (!speciesRepository.existsById(1)) {
-			speciesRepository.save(new Species("dog"));
+			speciesRepository.save(new Species("狗"));
 		}
 		if (!speciesRepository.existsById(2)) {
-			speciesRepository.save(new Species("cat"));
+			speciesRepository.save(new Species("貓"));
 		}
 
 		// 存入品種資料
 		
 
+		//存入毛色資料(主要給米克斯用)
+		if (!furColorRepository.existsById(1)) {
+			furColorRepository.save(new FurColor("土黃"));
+		}
+		if (!furColorRepository.existsById(2)) {
+			furColorRepository.save(new FurColor("白"));
+		}
+		if (!furColorRepository.existsById(3)) {
+			furColorRepository.save(new FurColor("黑"));
+		}
+		if (!furColorRepository.existsById(4)) {
+			furColorRepository.save(new FurColor("橘白貓"));
+		}
+		if (!furColorRepository.existsById(5)) {
+			furColorRepository.save(new FurColor("三花貓"));
+		}
+		if (!furColorRepository.existsById(6)) {
+			furColorRepository.save(new FurColor("虎斑"));
+		}
+		if (!furColorRepository.existsById(7)) {
+			furColorRepository.save(new FurColor("賓士"));
+		}
+		
+		
+		
+		
 		// 存入city資料
-//		臺北市、新北市、基隆市、新竹市、桃園市、新竹縣及宜蘭縣。 中部區域：包括臺中市、苗栗縣、彰化縣、南投縣及雲林縣。 南部區域：包括高雄市、臺南市、嘉義市、嘉義縣、屏東縣及澎湖縣。 東部區域：包括花蓮縣及臺東縣
+		//臺北市、新北市、基隆市、新竹市、桃園市、新竹縣及宜蘭縣。 中部區域：包括臺中市、苗栗縣、彰化縣、南投縣及雲林縣。 南部區域：包括高雄市、臺南市、嘉義市、嘉義縣、屏東縣及澎湖縣。 東部區域：包括花蓮縣及臺東縣
 		if (!cityRepository.existsById(1)) {
 			cityRepository.save(new City("臺北市"));
 		}
@@ -105,11 +132,9 @@ public class DataInitializer implements CommandLineRunner {
 			cityRepository.save(new City("連江縣"));
 		}
 
-
-
-
 		
 		// 存入distinct資料
+		
 
 	}
 

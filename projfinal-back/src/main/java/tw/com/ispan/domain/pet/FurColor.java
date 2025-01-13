@@ -24,7 +24,20 @@ public class FurColor {
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
     private List<AdoptionCase> adoptionCase;
 
-    // Getters and Setters
+    
+    
+    //constructor
+    public FurColor() {
+		super();
+	}
+    
+	public FurColor(String furColor) {
+		super();
+		this.furColor = furColor;
+	}
+
+
+	// Getters and Setters
     public Integer getFurColorId() {
         return furColorId;
     }
