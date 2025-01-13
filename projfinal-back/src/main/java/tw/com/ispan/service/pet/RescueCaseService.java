@@ -63,9 +63,9 @@ public class RescueCaseService {
 
 	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
-		 
+		
 		RescueCase rescueCase = new RescueCase();
-		 
+		
 		//沒有對應的資料表直接塞
 		rescueCase.setCaseTitle(dto.getCaseTitle());
 		rescueCase.setGender(dto.getGender());
@@ -75,7 +75,7 @@ public class RescueCaseService {
 		rescueCase.setSuspLost(dto.getSuspLost());
 		rescueCase.setStreet(dto.getStreet());
 		rescueCase.setRescueReason(dto.getRescueReason());
-		
+
 		//以下傳id進來，找到對應資料再塞回enitity物件中
 		//物種
 		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
@@ -99,12 +99,14 @@ public class RescueCaseService {
 		Optional<City> result4 = cityRepository.findById(dto.getCityId());
 		if(result4!= null && result4.isPresent()) {
 			rescueCase.setCity(result4.get());
+			System.out.println("有進來444444");
 		}
 		
 		//distinctArea
 		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
 		if(result5!= null && result5.isPresent()) {
 			rescueCase.setDistinctArea(result5.get());
+			System.out.println("有進來呦9999");
 		}
 		
 		//rescueDemands

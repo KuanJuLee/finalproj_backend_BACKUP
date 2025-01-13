@@ -30,11 +30,12 @@ public class City {
 		super();
 	}
 
-	public City(Integer cityId, String city) {
+
+	public City(String city) {
 		super();
-		this.cityId = cityId;
 		this.city = city;
 	}
+
 
 	public Integer getCityId() {
 		return cityId;

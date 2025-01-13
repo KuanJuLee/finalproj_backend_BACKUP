@@ -122,6 +122,15 @@ public class RescueCaseDto {
 	public void setCanAffords(List<Integer> canAffords) {
 		this.canAffords = canAffords;
 	}
+	@Override
+	public String toString() {
+		return "RescueCaseDto [caseTitle=" + caseTitle + ", speciesId=" + speciesId + ", breedId=" + breedId
+				+ ", furColorId=" + furColorId + ", gender=" + gender + ", sterilization=" + sterilization + ", age="
+				+ age + ", microChipNumber=" + microChipNumber + ", suspLost=" + suspLost + ", cityId=" + cityId
+				+ ", distinctAreaId=" + distinctAreaId + ", street=" + street + ", rescueReason=" + rescueReason
+				+ ", casePictures=" + casePictures + ", rescueDemands=" + rescueDemands + ", canAffords=" + canAffords
+				+ "]";
+	}
 	
 	
 	

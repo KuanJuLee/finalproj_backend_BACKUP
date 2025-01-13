@@ -38,11 +38,14 @@ public class Species {
 		super();
 	}
 
-	public Species(Integer speciesId, String species) {
+	
+
+	public Species(String species) {
 		super();
-		this.speciesId = speciesId;
 		this.species = species;
 	}
+
+
 
 	// Getters and Setters
     public Integer getSpeciesId() {
