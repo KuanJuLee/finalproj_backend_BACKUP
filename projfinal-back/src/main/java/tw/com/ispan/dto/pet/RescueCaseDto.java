@@ -1,15 +1,6 @@
 package tw.com.ispan.dto.pet;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import tw.com.ispan.domain.admin.Member;
-import tw.com.ispan.domain.pet.CasePicture;
-import tw.com.ispan.domain.pet.City;
-import tw.com.ispan.domain.pet.Distinct;
-import tw.com.ispan.domain.pet.forRescue.CanAfford;
-import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 
 public class RescueCaseDto {
 

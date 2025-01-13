@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import tw.com.ispan.domain.pet.Breed;
-import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.Distinct;
 import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
+import tw.com.ispan.domain.pet.forRescue.CanAfford;
+import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.repository.pet.BreedRepository;
-import tw.com.ispan.repository.pet.CasePictureRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.DistinctRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
@@ -25,6 +25,7 @@ import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
+import tw.com.ispan.service.JwtService;
 
 @Service
 @Transactional
@@ -37,8 +38,6 @@ public class RescueCaseService {
 	@Autowired
 	private BreedRepository breedRepository;
 	@Autowired
-	private CasePictureRepository casePictureRepository;
-	@Autowired
 	private FurColorRepository furColorRepository;
 	@Autowired
 	private CityRepository cityRepository;
@@ -50,9 +49,8 @@ public class RescueCaseService {
 	private RescueProgressRepository rescueProgressRepository;
 	@Autowired
 	private CanAffordRepository canAffordRepository;
-	
-
-	// private List<Integer> casePictures;
+	@Autowired
+	private JwtService jwtService;
 
 	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
@@ -68,8 +66,6 @@ public class RescueCaseService {
 		rescueCase.setSuspLost(dto.getSuspLost());
 		rescueCase.setStreet(dto.getStreet());
 		rescueCase.setRescueReason(dto.getRescueReason());
-		
-		
 		
 		//以下傳id進來，找到對應資料再塞回enitity物件中
 		//物種
@@ -96,42 +92,45 @@ public class RescueCaseService {
 			rescueCase.setCityId(result4.get());
 		}
 		
-		
 		//distinct
 		Optional<Distinct> result5 = distinctRepository.findById(dto.getDistinctId());
 		if(result5!= null && result5.isPresent()) {
 			rescueCase.setDistinctId(result5.get());
 		}
 		
-		
-		//圖片
-		List<CasePicture> casePictures = dto.getCasePictureId().stream()
-		        .map(id -> casePictureRepository.findById(id)
-		
-		
 		//rescueDemands
 		List<RescueDemand> rescueDemands= rescueDemandRepository.findAllById(dto.getRescueDemands());
         rescueCase.setRescueDemands(rescueDemands);      		
 		        		
 		//canAffords
-		List<CanAfford> canAffords= canAffordRepository.findAllById(dto.getCanAffords());
+        List<CanAfford> canAffords= canAffordRepository.findAllById(dto.getCanAffords());
 		rescueCase.setCanAffords(canAffords);
 		
-		
+		//不完整的，僅含有新增案件中用戶自填資料，所以要給addRescueCase繼續使用
 		 return rescueCase;
 	}
 
 	
-	// insert新增案件:
-	public RescueCase addRescueCase(RescueCase rescueCase) {
+	//insert新增一筆案件
+	public RescueCase addRescueCase(RescueCase rescueCase, String token) {
 
 		// id資料庫中自動生成
-		// 最後把關:要確保member、species、city、distinct、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、rescueReason等必填資料塞進來，才能存進資料庫中
-
+		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
+		
+		// 從 JWT 中解析出 memberId
+//	    try {
+//			Integer memberId = JwtService.getMemberIdFromToken(token);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
+		
+		
+		
+		
 		return rescueCase;
 	}
 
-	
-	//儲存圖片
-	public image 
 }

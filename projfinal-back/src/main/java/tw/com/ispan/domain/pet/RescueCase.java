@@ -132,7 +132,7 @@ public class RescueCase {
 	//必填
 	//關聯到CasePicture表，單向一對多，rescueCaseId外鍵會在CasePicture表中
 	@OneToMany
-	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_RescueCase"), nullable = false)
+	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_RescueCase"))
 	private List<CasePicture> casePictures;
 	
 	//必填
@@ -143,7 +143,7 @@ public class RescueCase {
         joinColumns = @JoinColumn(name = "rescueCaseId"),
         inverseJoinColumns = @JoinColumn(name = "rescueDemandId")
     )
-    private Set<RescueDemand> rescueDemands = new HashSet<>();
+    private List<RescueDemand> rescueDemands;
 	
     //必填
     //和canAfford表為單向多對多(case找去afford)
@@ -153,17 +153,17 @@ public class RescueCase {
         joinColumns = @JoinColumn(name = "rescueCaseId"),
         inverseJoinColumns = @JoinColumn(name = "canAffordId")
     )
-    private Set<CanAfford> canAffords;
+    private List<CanAfford> canAffords;
     
     
     //和RescueProgress表單向一對多(case找去RescueProgress)
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JoinColumn(name = "rescueCaseId")
-    private Set<RescueProgress> rescueProgresses;
+    private List<RescueProgress> rescueProgresses;
 	
     
     @OneToMany(mappedBy = "rescueCase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> follows;
+    private List<Follow> follows;
     
     
     // 關聯到ReportCase表，單向一對多
@@ -185,8 +185,8 @@ public class RescueCase {
 			Boolean suspLost, City cityId, Distinct distinctId, String street, BigDecimal latitude, BigDecimal longitude,
 			Integer donationAmount, Integer viewCount, Integer follow, LocalDateTime publicationTime,
 			LocalDateTime lastUpdateTime, CaseState caseStateId, String rescueReason, String caseUrl,
-			List<CasePicture> casePictures, Set<RescueDemand> rescueDemands, Set<CanAfford> canAffords,
-			Set<RescueProgress> rescueProgresses, Set<Follow> follows) {
+			List<CasePicture> casePictures, List<RescueDemand> rescueDemands, List<CanAfford> canAffords,
+			List<RescueProgress> rescueProgresses, List<Follow> follows) {
 		super();
 		this.rescueCaseId = rescueCaseId;
 		this.caseTitle = caseTitle;
@@ -473,42 +473,42 @@ public class RescueCase {
 	}
 
 
-	public Set<RescueDemand> getRescueDemands() {
+	public List<RescueDemand> getRescueDemands() {
 		return rescueDemands;
 	}
 
 
-	public void setRescueDemands(Set<RescueDemand> rescueDemands) {
+	public void setRescueDemands(List<RescueDemand> rescueDemands) {
 		this.rescueDemands = rescueDemands;
 	}
 
 
-	public Set<CanAfford> getCanAffords() {
+	public List<CanAfford> getCanAffords() {
 		return canAffords;
 	}
 
 
-	public void setCanAffords(Set<CanAfford> canAffords) {
+	public void setCanAffords(List<CanAfford> canAffords) {
 		this.canAffords = canAffords;
 	}
 
 
-	public Set<RescueProgress> getRescueProgresses() {
+	public List<RescueProgress> getRescueProgresses() {
 		return rescueProgresses;
 	}
 
 
-	public void setRescueProgresses(Set<RescueProgress> rescueProgresses) {
+	public void setRescueProgresses(List<RescueProgress> rescueProgresses) {
 		this.rescueProgresses = rescueProgresses;
 	}
 
 
-	public Set<Follow> getFollows() {
+	public List<Follow> getFollows() {
 		return follows;
 	}
 
 
-	public void setFollows(Set<Follow> follows) {
+	public void setFollows(List<Follow> follows) {
 		this.follows = follows;
 	}
 

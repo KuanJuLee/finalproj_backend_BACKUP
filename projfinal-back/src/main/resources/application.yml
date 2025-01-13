@@ -20,11 +20,12 @@ spring:
       ddl-auto: validate
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl		
+#圖片大小ㄒㄧㄢ				
+  #設定圖片上傳
+file:
+  upload-dir: /images				
 
-				
-				
-				
   #conosle顏色
   output:
     ansi:
