@@ -13,6 +13,7 @@ import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 
 public class RescueCaseDto {
 
+	//想傳資料進入資料庫的類別
 	private String caseTitle;
 	private Integer speciesId;
 	private Integer breedId;

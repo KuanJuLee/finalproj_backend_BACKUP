@@ -9,14 +9,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.CasePicture;
+import tw.com.ispan.domain.pet.City;
+import tw.com.ispan.domain.pet.Distinct;
+import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CasePictureRepository;
+import tw.com.ispan.repository.pet.CityRepository;
+import tw.com.ispan.repository.pet.DistinctRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
+import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
+import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
+import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
 
 @Service
 @Transactional
@@ -24,49 +32,44 @@ public class RescueCaseService {
 
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
-
 	@Autowired
 	private SpeciesRepository speciesRepository;
-
 	@Autowired
 	private BreedRepository breedRepository;
-
 	@Autowired
 	private CasePictureRepository casePictureRepository;
-
 	@Autowired
 	private FurColorRepository furColorRepository;
+	@Autowired
+	private CityRepository cityRepository;
+	@Autowired
+	private DistinctRepository distinctRepository;
+	@Autowired
+	private RescueDemandRepository rescueDemandRepository;
+	@Autowired
+	private RescueProgressRepository rescueProgressRepository;
+	@Autowired
+	private CanAffordRepository canAffordRepository;
+	
 
-	// private String caseTitle;
-	// private Integer speciesId;
-	// private Integer breedId;
-	// private Integer furColorId;
-	// private String gender;
-	// private String sterilization;
-	// private Integer age;
-	// private Integer microChipNumber;
-	// private Boolean suspLost;
-	// private Integer cityId;
-	// private Integer distinctId;
-	// private String street;
-	// private String rescueReason;
 	// private List<Integer> casePictures;
-	// private List<Integer> rescueDemands;
-	// private List<Integer> canAffords;
 
 	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
 		 
 		RescueCase rescueCase = new RescueCase();
 		 
-		//沒有對應的資料，直接塞
+		//沒有對應的資料表直接塞
 		rescueCase.setCaseTitle(dto.getCaseTitle());
 		rescueCase.setGender(dto.getGender());
 		rescueCase.setSterilization(dto.getSterilization());
 		rescueCase.setAge(dto.getAge());
 		rescueCase.setMicroChipNumber(dto.getMicroChipNumber());
 		rescueCase.setSuspLost(dto.getSuspLost());
-		rescueCase.set
+		rescueCase.setStreet(dto.getStreet());
+		rescueCase.setRescueReason(dto.getRescueReason());
+		
+		
 		
 		//以下傳id進來，找到對應資料再塞回enitity物件中
 		//物種
@@ -82,31 +85,43 @@ public class RescueCaseService {
 		}
 		
 		//毛色
-		
+		Optional<FurColor> result3 = furColorRepository.findById(dto.getFurColorId());
+		if(result3!= null && result3.isPresent()) {
+			rescueCase.setFurColor(result3.get());
+		}
 		
 		//city
+		Optional<City> result4 = cityRepository.findById(dto.getCityId());
+		if(result4!= null && result4.isPresent()) {
+			rescueCase.setCityId(result4.get());
+		}
 		
 		
 		//distinct
-		
-		
+		Optional<Distinct> result5 = distinctRepository.findById(dto.getDistinctId());
+		if(result5!= null && result5.isPresent()) {
+			rescueCase.setDistinctId(result5.get());
+		}
 		
 		
 		//圖片
 		List<CasePicture> casePictures = dto.getCasePictureId().stream()
 		        .map(id -> casePictureRepository.findById(id)
 		
-		 
-		        		
-		        		
-		//關聯屬性，透過傳進的id尋找到對應物件塞進去
-		 
 		
-	
-		 
+		//rescueDemands
+		List<RescueDemand> rescueDemands= rescueDemandRepository.findAllById(dto.getRescueDemands());
+        rescueCase.setRescueDemands(rescueDemands);      		
+		        		
+		//canAffords
+		List<CanAfford> canAffords= canAffordRepository.findAllById(dto.getCanAffords());
+		rescueCase.setCanAffords(canAffords);
+		
+		
 		 return rescueCase;
 	}
 
+	
 	// insert新增案件:
 	public RescueCase addRescueCase(RescueCase rescueCase) {
 
@@ -116,4 +131,7 @@ public class RescueCaseService {
 		return rescueCase;
 	}
 
+	
+	//儲存圖片
+	public image 
 }
