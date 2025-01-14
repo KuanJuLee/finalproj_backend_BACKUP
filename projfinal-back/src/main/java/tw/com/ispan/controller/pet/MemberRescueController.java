@@ -38,9 +38,12 @@ public class MemberRescueController {
 		// 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
 		// rescueCaseDto傳進service存資料，而RescueCaseResponse回傳給前端
 		// MultipartFile接收圖片
-
+		RescueCaseResponse response = new RescueCaseResponse();
+		
+		
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
-		// 這裡要驗證什麼???
+		
+		// 1.驗證token
 
 		// 先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
@@ -50,34 +53,28 @@ public class MemberRescueController {
 		try {
 			if (file != null) {
 				imageService.saveImage(file);
+			} else {
+				response.setSuccess(false);
+				response.setMessage("請上傳圖片檔");
+				return response;
 			}
 		} catch (IOException e) {
 			System.out.println("圖片儲存失敗");
 			e.printStackTrace();
 		}
 
-		// 組裝返回訊息
-		RescueCaseResponse response = new RescueCaseResponse();
+		
 		if (rescueCase != null) {
 			// 新增成功
-
+			response.setSuccess(true);
+			response.setMessage("新增案件成功");
+			return response;
+		} else {
+			//新增失敗，如果rescueCase == null
+			response.setSuccess(false);
+			response.setMessage("新增案件失敗");
+			return response;
 		}
-
-//				ProductBean insert = rescueCaseRepository.create(json);
-//				if (insert == null) {
-//					response.setSuccess(false);
-//					response.setMessage("新增失敗");
-//					// responseJson.put("success", false);
-//					// responseJson.put("message", "新增失敗");
-//				} else {
-//					response.setSuccess(true);
-//					response.setMessage("新增成功");
-//					// responseJson.put("success", true);
-//					// responseJson.put("message", "新增成功");
-//				}
-//			}return response;
-		// return responseJson.toString();
-		return response;
 	}
 
 	// 修改救援案件
