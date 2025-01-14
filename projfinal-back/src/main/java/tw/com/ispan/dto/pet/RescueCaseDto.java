@@ -18,6 +18,7 @@ public class RescueCaseDto {
 	private Integer distinctAreaId;
 	private String street;
 	private String rescueReason;
+	private Integer caseStateId;
 	
 	//傳遞照片id集合，到service中再用id的list去找圖片
 	private List<Integer> casePictures;
@@ -122,15 +123,24 @@ public class RescueCaseDto {
 	public void setCanAffords(List<Integer> canAffords) {
 		this.canAffords = canAffords;
 	}
+	
+	
+	public Integer getCaseStateId() {
+		return caseStateId;
+	}
+	public void setCaseStateId(Integer caseStateId) {
+		this.caseStateId = caseStateId;
+	}
 	@Override
 	public String toString() {
 		return "RescueCaseDto [caseTitle=" + caseTitle + ", speciesId=" + speciesId + ", breedId=" + breedId
 				+ ", furColorId=" + furColorId + ", gender=" + gender + ", sterilization=" + sterilization + ", age="
 				+ age + ", microChipNumber=" + microChipNumber + ", suspLost=" + suspLost + ", cityId=" + cityId
 				+ ", distinctAreaId=" + distinctAreaId + ", street=" + street + ", rescueReason=" + rescueReason
-				+ ", casePictures=" + casePictures + ", rescueDemands=" + rescueDemands + ", canAffords=" + canAffords
-				+ "]";
+				+ ", caseStateId=" + caseStateId + ", casePictures=" + casePictures + ", rescueDemands=" + rescueDemands
+				+ ", canAffords=" + canAffords + "]";
 	}
+	
 	
 	
 	
