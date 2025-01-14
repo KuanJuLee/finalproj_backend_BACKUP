@@ -111,6 +111,9 @@ public class AdoptionCase {
 	@Column(name = "lastUpdateTime", nullable = false)
 	private LocalDateTime lastUpdateTime;
 	
+	@Column(name = "tag", nullable = true, columnDefinition = "nvarchar(100)")
+	private String tag;
+	
 	//必填
 	// 關聯到CaseState表，單向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })

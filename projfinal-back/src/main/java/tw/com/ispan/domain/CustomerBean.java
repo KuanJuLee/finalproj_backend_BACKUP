@@ -31,10 +31,10 @@ public class CustomerBean {
 	public void setCustid(String custid) {
 		this.custid = custid;
 	}
-	public byte[] getPassword() {
+	public byte[]  getPassword() {
 		return password;
 	}
-	public void setPassword(byte[] password) {
+	public void setPassword(byte[]  password) {
 		this.password = password;
 	}
 	public String getEmail() {

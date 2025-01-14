@@ -106,6 +106,9 @@ public class LostCase {
     @Column(name = "lastUpdateTime", nullable = false)
     private LocalDateTime lastUpdateTime;
 
+	@Column(name = "tag", nullable = true, columnDefinition = "nvarchar(100)")
+	private String tag;
+    
     @Lob
     @Column(name = "lostExperience")
     private String lostExperience;

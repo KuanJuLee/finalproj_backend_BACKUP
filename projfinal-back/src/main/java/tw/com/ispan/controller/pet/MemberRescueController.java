@@ -25,45 +25,44 @@ public class MemberRescueController {
 
 	@Autowired
 	private RescueCaseService rescueCaseService;
-	
+
 	@Autowired
 	private ImageService imageService;
 
-
 	// 新增一筆救援案件
-	@PostMapping(path= {"/addRescueCase"})
-	public RescueCaseResponse addRescueCase(@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto, @RequestPart(name = "file", required = false) MultipartFile file) {
-		
-		 //專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
-		 //rescueCaseDto傳進service存資料，RescueCaseResponse回傳給前端
-		 //MultipartFile接收圖片
-		 
-		//傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
-		//這裡要驗證什麼???
-		 System.out.println("有進來呦1111");
-		 System.out.println(rescueCaseDto.toString());
-		 //先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
-		 RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
-		 System.out.println("有進來呦222");
-		 RescueCase rescueCase = rescueCaseService.addRescueCase(rescueCaseEntity, token);
-		 
-		//圖片存入本地+資料庫中
-		 try {
-			imageService.saveImage(file);
+	@PostMapping(path = { "/addRescueCase" })
+	public RescueCaseResponse addRescueCase(@RequestHeader("Authorization") String token,
+			@RequestBody RescueCaseDto rescueCaseDto,
+			@RequestPart(name = "file", required = false) MultipartFile file) {
+
+		// 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
+		// rescueCaseDto傳進service存資料，而RescueCaseResponse回傳給前端
+		// MultipartFile接收圖片
+
+		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
+		// 這裡要驗證什麼???
+
+		// 先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
+		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
+		RescueCase rescueCase = rescueCaseService.addRescueCase(rescueCaseEntity, token);
+
+		// 圖片存入本地+資料庫中
+		try {
+			if (file != null) {
+				imageService.saveImage(file);
+			}
 		} catch (IOException e) {
 			System.out.println("圖片儲存失敗");
 			e.printStackTrace();
 		}
-		 
-		
-		//組裝返回訊息 
-		 RescueCaseResponse response = new RescueCaseResponse();
-		 if(rescueCase != null) {
-			 //新增成功
-			 
-			 
-		 }
-		 
+
+		// 組裝返回訊息
+		RescueCaseResponse response = new RescueCaseResponse();
+		if (rescueCase != null) {
+			// 新增成功
+
+		}
+
 //				ProductBean insert = rescueCaseRepository.create(json);
 //				if (insert == null) {
 //					response.setSuccess(false);
@@ -77,19 +76,16 @@ public class MemberRescueController {
 //					// responseJson.put("message", "新增成功");
 //				}
 //			}return response;
-	// return responseJson.toString();
-		 return response;
-}
+		// return responseJson.toString();
+		return response;
+	}
 
 	// 修改救援案件
 //	@PutMapping(path= {"/modifiedRescueCase/{id}"})
 //	public RescueCaseResponse modifiedRescueCase(@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto, @RequestPart MultipartFile file) {
 //		
 //	}
-	
-	
-	
+
 	// 刪除救援案件
-	
-	
+
 }

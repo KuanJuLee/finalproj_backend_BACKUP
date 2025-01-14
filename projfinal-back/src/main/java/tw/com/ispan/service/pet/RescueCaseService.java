@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.dto.pet.RescueCaseDto;
+import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.DistinctAreaRepository;
@@ -55,18 +57,18 @@ public class RescueCaseService {
 	private RescueProgressRepository rescueProgressRepository;
 	@Autowired
 	private CanAffordRepository canAffordRepository;
-//	@Autowired
-//	private JwtService jwtService;
-	
+	@Autowired
+	private JsonWebTokenUtility jsonWebTokenUtility;
+
 	@Autowired
 	private GeocodingService geocodingService;
 
 	// 新增案件-> 手動將傳進來的dto轉entity
 	public RescueCase convertToEntity(RescueCaseDto dto) {
-		
+
 		RescueCase rescueCase = new RescueCase();
-		
-		//沒有對應的資料表直接塞
+
+		// 沒有對應的資料表直接塞
 		rescueCase.setCaseTitle(dto.getCaseTitle());
 		rescueCase.setGender(dto.getGender());
 		rescueCase.setSterilization(dto.getSterilization());
@@ -76,99 +78,96 @@ public class RescueCaseService {
 		rescueCase.setStreet(dto.getStreet());
 		rescueCase.setRescueReason(dto.getRescueReason());
 
-		//以下傳id進來，找到對應資料再塞回enitity物件中
-		//物種
+		// 以下傳id進來，找到對應資料再塞回enitity物件中
+		// 物種
 		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
-		if(result1!= null && result1.isPresent()) {
-			rescueCase.setSpecies(result1.get());
+		if (result1 != null && result1.isPresent()) {
+			rescueCase.setSpecies(result1.get()); // 是存一個Species物件在內，result1.get()是此物件的地址!
+													// 要印出對應的物種必須result1.get().getSpecies()
 		}
-		
-		//品種
+
+		// 品種
 		Optional<Breed> result2 = breedRepository.findById(dto.getBreedId());
-		if(result2!= null && result2.isPresent()) {
+		if (result2 != null && result2.isPresent()) {
 			rescueCase.setBreed(result2.get());
 		}
-		
-		//毛色
+
+		// 毛色
 		Optional<FurColor> result3 = furColorRepository.findById(dto.getFurColorId());
-		if(result3!= null && result3.isPresent()) {
+		if (result3 != null && result3.isPresent()) {
 			rescueCase.setFurColor(result3.get());
 		}
-		
-		//city
+
+		// city
 		Optional<City> result4 = cityRepository.findById(dto.getCityId());
-		if(result4!= null && result4.isPresent()) {
+		if (result4 != null && result4.isPresent()) {
 			rescueCase.setCity(result4.get());
-			System.out.println("有進來444444");
 		}
-		
-		//distinctArea
+
+		// distinctArea
 		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
-		if(result5!= null && result5.isPresent()) {
+		if (result5 != null && result5.isPresent()) {
 			rescueCase.setDistinctArea(result5.get());
-			System.out.println("有進來呦9999");
 		}
-		
-		//rescueDemands
-		List<RescueDemand> rescueDemands= rescueDemandRepository.findAllById(dto.getRescueDemands());
-        rescueCase.setRescueDemands(rescueDemands);      		
-		        		
-		//canAffords
-        List<CanAfford> canAffords= canAffordRepository.findAllById(dto.getCanAffords());
+
+		// rescueDemands
+		List<RescueDemand> rescueDemands = rescueDemandRepository.findAllById(dto.getRescueDemands());
+		rescueCase.setRescueDemands(rescueDemands);
+		System.out.println("12222" + rescueCase);
+//        rescueDemandService.frontRescueDemandConvert(rescueDemands);
+
+		// canAffords
+		List<CanAfford> canAffords = canAffordRepository.findAllById(dto.getCanAffords());
 		rescueCase.setCanAffords(canAffords);
-		
-		//不完整的，僅含有新增案件中用戶自填資料，所以要給addRescueCase繼續使用
-		 return rescueCase;
+		System.out.println("1111" + rescueCase);
+		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給addRescueCase繼續使用
+		return rescueCase;
 	}
 
-	
-	//insert新增一筆案件
+	// insert新增一筆案件到資料庫
 	public RescueCase addRescueCase(RescueCase rescueCase, String token) {
 
 		// id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
-		
-		
-		// 從 JWT 中解析出 memberId
+
+//		 從 JWT 中解析出 memberId
 //	    try {
-//			Integer memberId = JwtService.getMemberIdFromToken(token);
+//			Integer memberId = jsonWebTokenUtility.getMemberId(token);
 //		} catch (Exception e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		
-		
-		//設置經緯度
-		String adress = rescueCase.getCity().getCity()+rescueCase.getDistinctArea().getDistinctAreaName()+rescueCase.getStreet();
+
+		// 設置經緯度
+		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
+				+ rescueCase.getStreet();
 		try {
-			LatLng latLng= geocodingService.getCoordinatesFromAddress(adress);
-			rescueCase.setLatitude(latLng.getLat());
-			rescueCase.setLongitude(latLng.getLng());
+			LatLng latLng = geocodingService.getCoordinatesFromAddress(adress);
+			if (latLng != null) {
+				rescueCase.setLatitude(latLng.getLat());
+				rescueCase.setLongitude(latLng.getLng());
+			}
 		} catch (JsonProcessingException e) {
 			System.out.println("請求座標API失敗");
 			e.printStackTrace();
 		}
-		
-		//設置發布時間、最後修改時間
+
+		// 設置發布時間、最後修改時間
 		rescueCase.setPublicationTime(LocalDateTime.now());
 		rescueCase.setLastUpdateTime(LocalDateTime.now());
-		
-		//設置預設caseState(待救援id為3)
+
+		// 設置預設caseState(待救援id為3)
 		CaseState caseState = new CaseState("待救援");
 		rescueCase.setCaseState(caseState);
-	
-		
-		if(rescueCaseRepository.save(rescueCase)!= null) {
+
+		if (rescueCaseRepository.save(rescueCase) != null) {
 			System.out.println("新增成功");
 			return rescueCase;
 		}
-		
-		
+
 		System.out.println("新增失敗");
 		return null;
-		
+
 	}
-	
-	
-	
+
 }

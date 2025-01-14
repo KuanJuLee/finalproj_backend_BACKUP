@@ -239,27 +239,28 @@ public class PetDataInitializer implements CommandLineRunner {
 		// 存入distinct資料
 		//Jackson 或 Gson 在將 JSON 轉換為 Java物件時，只會映射與dto類別中字段名稱匹配的JSON屬性(大小寫敏感)，額外的屬性會被自動忽略，而不會影響轉換過程
 		//檔案位於 resources 資料夾內，建議使用 ClassLoader 來讀取檔案，這樣可以避免路徑解析問題
-		String filePath = getClass().getClassLoader().getResource("data/CityCountyData.json").getPath();
-		ObjectMapper objectMapper3 = new ObjectMapper();
-
-		List<CityDto> cityDtoList = objectMapper3.readValue(new File(filePath), new TypeReference<List<CityDto>>() {
-		});
 		
-		for (CityDto cityDto : cityDtoList) {
-			City city = new City();
-			city.setCity(cityDto.getCityName());
-
-			List<DistinctArea> areas = cityDto.getAreaList().stream().map(areaDto -> {
-				DistinctArea area = new DistinctArea();
-				area.setDistinctAreaName(areaDto.getAreaName());
-				return area;
-			}).toList();
-
-			city.setDistinctAreas(areas);
-
-			// 儲存 City（會同時儲存其相關的 DistinctArea）
-			cityRepository.save(city);
-		}
+//		String filePath = getClass().getClassLoader().getResource("data/CityCountyData.json").getPath();
+//		ObjectMapper objectMapper3 = new ObjectMapper();
+//
+//		List<CityDto> cityDtoList = objectMapper3.readValue(new File(filePath), new TypeReference<List<CityDto>>() {
+//		});
+//		
+//		for (CityDto cityDto : cityDtoList) {
+//			City city = new City();
+//			city.setCity(cityDto.getCityName());
+//
+//			List<DistinctArea> areas = cityDto.getAreaList().stream().map(areaDto -> {
+//				DistinctArea area = new DistinctArea();
+//				area.setDistinctAreaName(areaDto.getAreaName());
+//				return area;
+//			}).toList();
+//
+//			city.setDistinctAreas(areas);
+//
+//			// 儲存 City（會同時儲存其相關的 DistinctArea）
+//			cityRepository.save(city);
+//		}
 
 	}
 

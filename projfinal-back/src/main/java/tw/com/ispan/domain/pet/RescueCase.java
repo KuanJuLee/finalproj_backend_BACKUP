@@ -35,10 +35,10 @@ public class RescueCase {
 	@Column(columnDefinition = "NVARCHAR(30)", name = "caseTitle", nullable = false)
 	private String caseTitle;
 	
-	//必填
+	//必填(但為了測試先改成非必填)
 	// 關聯到member表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
+	@JoinColumn(name = "memberId", nullable = true, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
 	private Member member;
 
 	//必填
@@ -88,14 +88,14 @@ public class RescueCase {
 	@Column(columnDefinition = "NVARCHAR(10)", name = "street")
 	private String street;
 	
-	//必填
+	//必填(請求成功後記得改回來)
 	// 10位數，8位小數
-	@Column(name = "latitude", precision = 10, nullable = false)
+	@Column(name = "latitude", precision = 10, nullable = true)
 	private Double latitude;
 	
 	//必填
 	// 11位數，8位小數
-	@Column(name = "longitude", precision = 11,  nullable = false)
+	@Column(name = "longitude", precision = 11,  nullable = true)
 	private Double longitude;
 
 	@Column(name = "donationAmount")
@@ -114,6 +114,9 @@ public class RescueCase {
 	//必填
 	@Column(name = "lastUpdateTime", nullable = false)
 	private LocalDateTime lastUpdateTime;
+	
+	@Column(name = "tag", nullable = true, columnDefinition = "nvarchar(100)")
+	private String tag;
 	
 	//必填
 	// 關聯到CaseState表，單向多對一
