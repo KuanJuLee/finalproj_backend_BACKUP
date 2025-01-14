@@ -131,7 +131,11 @@ public class MemberRescueController {
 			response.setMessage("修改案件成功");
 			return response;
 		} else {
+<<<<<<< HEAD
 			// 修改失敗，回傳rescueCase == null
+=======
+			// 修改失敗，rescueCase == null
+>>>>>>> dd70f20a11da9fd8da52d75133d7298ea8826516
 			response.setSuccess(false);
 			response.setMessage("修改案件失敗");
 			return response;
