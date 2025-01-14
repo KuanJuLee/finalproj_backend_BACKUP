@@ -1,18 +1,28 @@
 package tw.com.ispan.util;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.Species;
+import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 
 @Component
-public class DataInitializer implements CommandLineRunner {
+public class PetDataInitializer implements CommandLineRunner {
 
 	@Autowired
 	private SpeciesRepository speciesRepository;
@@ -20,7 +30,9 @@ public class DataInitializer implements CommandLineRunner {
 	private CityRepository cityRepository;
 	@Autowired
 	private FurColorRepository furColorRepository;
-
+	@Autowired
+	private BreedRepository breedRepository;
+	
 	// 此方法會在專案啟動同時執行一次，進行資料初始化
 	@Override
 	public void run(String... args) throws Exception {
@@ -35,7 +47,29 @@ public class DataInitializer implements CommandLineRunner {
 		}
 
 		// 存入品種資料
+		Resource catResource = new ClassPathResource("data/catBreeds.json");
+	    ObjectMapper objectMapper1 = new ObjectMapper();
 		
+	    try {
+	    	List<Breed> catBreed = objectMapper1.readValue(catResource.getInputStream(), new TypeReference<List<Breed>>() {});
+			catBreed.forEach(breed->breedRepository.save(breed));
+		} catch (IOException e) {
+			System.out.println("資料注入失敗");
+			e.printStackTrace();
+		}
+	    
+	    Resource dogResource = new ClassPathResource("data/dogBreeds.json");
+	    ObjectMapper objectMapper2 = new ObjectMapper();
+		
+	    try {
+	    	List<Breed> dogBreed = objectMapper2.readValue(dogResource.getInputStream(), new TypeReference<List<Breed>>() {});
+	    	dogBreed.forEach(breed->breedRepository.save(breed));
+		} catch (IOException e) {
+			System.out.println("資料注入失敗");
+			e.printStackTrace();
+		}
+        
+        
 
 		//存入毛色資料(主要給米克斯用)
 		if (!furColorRepository.existsById(1)) {

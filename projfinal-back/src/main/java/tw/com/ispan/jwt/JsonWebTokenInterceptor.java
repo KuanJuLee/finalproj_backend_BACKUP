@@ -1,5 +1,6 @@
 package tw.com.ispan.jwt;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private JSONObject processAuthorizationHeader(String auth) {
+    private JSONObject processAuthorizationHeader(String auth) throws JSONException {
         if (auth != null && auth.length() != 0) {
             String token = auth.substring(7); // 移除前綴的'Bearer '
             String data = jsonWebTokenUtility.validateToken(token);

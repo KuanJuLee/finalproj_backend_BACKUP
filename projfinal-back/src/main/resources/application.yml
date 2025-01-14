@@ -8,7 +8,7 @@ spring:
   #資料庫連線設定
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://localhost:1433;database=meowdb;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost:1433;database=meowdb;trustServerCertificate=true;
     username: admin
     password: a123
 
@@ -20,16 +20,23 @@ spring:
       ddl-auto: update
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl		
-    #圖片大小限制
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  #圖片大小限制
   servlet:
     multipart:
       max-file-size: 5MB
-      max-request-size: 5MB		
+      max-request-size: 5MB
+
+    #spring手動設定 HTTP 請求和回應的字符編碼
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
   #圖片下載路徑
 file:
-  upload-dir: /images				
+  upload-dir: /images
 
   #conosle顏色
   output:

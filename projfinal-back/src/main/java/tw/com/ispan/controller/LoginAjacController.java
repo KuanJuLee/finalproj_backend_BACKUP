@@ -1,5 +1,6 @@
 package tw.com.ispan.controller;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class LoginAjacController {
     private JsonWebTokenUtility jsonWebTokenUtility;
 
     @PostMapping("/ajax/secure/login")
-    public String login(@RequestBody String entity) {
+    public String login(@RequestBody String entity) throws JSONException {
         JSONObject responseJson = new JSONObject();
 
         // 接收資料
