@@ -12,11 +12,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import tw.com.ispan.domain.admin.Member;
+import tw.com.ispan.domain.pet.forRescue.CanAfford;
+import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 
 @Entity
 @Table(name = "LostCase")
@@ -118,6 +122,26 @@ public class LostCase {
     @OneToMany
     @JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_LostCase"))
     private List<CasePicture> casePictures;
+    
+	//必填
+	//和rescueDemand單向多對多
+    @ManyToMany
+    @JoinTable(
+        name = "LostCase_RescueDemand",
+        joinColumns = @JoinColumn(name = "lostCaseId"),
+        inverseJoinColumns = @JoinColumn(name = "rescueDemandId")
+    )
+    private List<RescueDemand> rescueDemands;
+    
+    //必填
+    //和canAfford表為單向多對多(case找去afford)
+    @ManyToMany
+    @JoinTable(
+        name = "CanAfford_LostCase",
+        joinColumns = @JoinColumn(name = "lostCaseId"),
+        inverseJoinColumns = @JoinColumn(name = "canAffordId")
+    )
+    private List<CanAfford> canAffords;
 
     // Getters and Setters
     public Integer getLostCaseId() {
