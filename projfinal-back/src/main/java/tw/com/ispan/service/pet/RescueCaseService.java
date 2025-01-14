@@ -154,7 +154,7 @@ public class RescueCaseService {
 		rescueCase.setLastUpdateTime(LocalDateTime.now());
 		
 		//設置預設caseState(待救援id為3)
-		CaseState caseState = new CaseState(3,"待救援");
+		CaseState caseState = new CaseState("待救援");
 		rescueCase.setCaseState(caseState);
 	
 		

@@ -68,7 +68,7 @@ public class LostCase {
 
     // 關聯到city表，雙向多對一
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_FurColor"))
+    @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_LostCase_City"))
     private City city;
 
     // 關聯到distinctArea表，雙向多對一

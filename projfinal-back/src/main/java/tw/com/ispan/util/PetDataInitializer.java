@@ -13,13 +13,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tw.com.ispan.domain.pet.Breed;
+import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.Species;
+import tw.com.ispan.domain.pet.forRescue.CanAfford;
+import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.repository.pet.BreedRepository;
+import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
+import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
+import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
 
 @Component
 public class PetDataInitializer implements CommandLineRunner {
@@ -32,6 +38,12 @@ public class PetDataInitializer implements CommandLineRunner {
 	private FurColorRepository furColorRepository;
 	@Autowired
 	private BreedRepository breedRepository;
+	@Autowired
+	CaseStateRepository caseStateRepository;
+	@Autowired
+	RescueDemandRepository rescueDemandRepository;
+	@Autowired
+	CanAffordRepository canAffordRepository;
 	
 	// 此方法會在專案啟動同時執行一次，進行資料初始化
 	@Override
@@ -69,7 +81,6 @@ public class PetDataInitializer implements CommandLineRunner {
 			e.printStackTrace();
 		}
         
-        
 
 		//存入毛色資料(主要給米克斯用)
 		if (!furColorRepository.existsById(1)) {
@@ -95,7 +106,63 @@ public class PetDataInitializer implements CommandLineRunner {
 		}
 		
 		
+		//存入casestate (狀態描述 ( 認養: 待認養/已認養; 救援: 待救援/已救援; 協尋: 待協尋/已尋回 三種共用: 變成小天使、案件失敗))
+		if (!caseStateRepository.existsById(1)) {
+			caseStateRepository.save(new CaseState("待認養"));
+		}
+		if (!caseStateRepository.existsById(2)) {
+			caseStateRepository.save(new CaseState("已認養"));
+		}
+		if (!caseStateRepository.existsById(3)) {
+			caseStateRepository.save(new CaseState("待救援"));
+		}
+		if (!caseStateRepository.existsById(4)) {
+			caseStateRepository.save(new CaseState("已救援"));
+		}
+		if (!caseStateRepository.existsById(5)) {
+			caseStateRepository.save(new CaseState("待協尋"));
+		}
+		if (!caseStateRepository.existsById(6)) {
+			caseStateRepository.save(new CaseState("已尋回"));
+		}
+		if (!caseStateRepository.existsById(7)) {
+			caseStateRepository.save(new CaseState("變成小天使"));
+		}
+		if (!caseStateRepository.existsById(8)) {
+			caseStateRepository.save(new CaseState("案件失敗"));
+		}
 		
+		//存入RescueDemand ((尋求抓紮協助/尋求安置協助/需就醫/尋求誘捕協助))
+		if (!rescueDemandRepository.existsById(1)) {
+			rescueDemandRepository.save(new RescueDemand("尋求抓紮協助"));
+		}
+		if (!rescueDemandRepository.existsById(2)) {
+			rescueDemandRepository.save(new RescueDemand("尋求安置協助"));
+		}
+		if (!rescueDemandRepository.existsById(3)) {
+			rescueDemandRepository.save(new RescueDemand("需就醫"));
+		}
+		if (!rescueDemandRepository.existsById(4)) {
+			rescueDemandRepository.save(new RescueDemand("尋求誘捕協助"));
+		}
+		
+		
+		//存入canAfford (可提供安置照顧空間/救援後可自行收編/無法負擔任何事項/願意負擔救援所需物資/願意負擔救援所需費用)
+		if (!canAffordRepository.existsById(1)) {
+			canAffordRepository.save(new CanAfford("可提供安置照顧空間"));
+		}
+		if (!canAffordRepository.existsById(2)) {
+			canAffordRepository.save(new CanAfford("救援後可自行收編"));
+		}
+		if (!canAffordRepository.existsById(3)) {
+			canAffordRepository.save(new CanAfford("無法負擔任何事項"));
+		}
+		if (!canAffordRepository.existsById(4)) {
+			canAffordRepository.save(new CanAfford("願意負擔救援物資"));
+		}
+		if (!canAffordRepository.existsById(1)) {
+			canAffordRepository.save(new CanAfford("願意負擔救援費用"));
+		}
 		
 		// 存入city資料
 		//臺北市、新北市、基隆市、新竹市、桃園市、新竹縣及宜蘭縣。 中部區域：包括臺中市、苗栗縣、彰化縣、南投縣及雲林縣。 南部區域：包括高雄市、臺南市、嘉義市、嘉義縣、屏東縣及澎湖縣。 東部區域：包括花蓮縣及臺東縣
