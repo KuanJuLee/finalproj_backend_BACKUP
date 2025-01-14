@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +22,7 @@ import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.repository.pet.BreedRepository;
+import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.DistinctAreaRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
@@ -58,17 +58,19 @@ public class RescueCaseService {
 	@Autowired
 	private CanAffordRepository canAffordRepository;
 	@Autowired
+	private CaseStateRepository caseStateRepository;
+	@Autowired
 	private JsonWebTokenUtility jsonWebTokenUtility;
 
 	@Autowired
 	private GeocodingService geocodingService;
 
-	// 新增案件-> 手動將傳進來的dto轉entity
+	// 手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
 	public RescueCase convertToEntity(RescueCaseDto dto) {
 
 		RescueCase rescueCase = new RescueCase();
 
-		// 沒有對應的資料表直接塞
+		// 沒有對應資料表的屬性直接塞
 		rescueCase.setCaseTitle(dto.getCaseTitle());
 		rescueCase.setGender(dto.getGender());
 		rescueCase.setSterilization(dto.getSterilization());
@@ -113,19 +115,25 @@ public class RescueCaseService {
 		// rescueDemands
 		List<RescueDemand> rescueDemands = rescueDemandRepository.findAllById(dto.getRescueDemands());
 		rescueCase.setRescueDemands(rescueDemands);
-		System.out.println("12222" + rescueCase);
 //        rescueDemandService.frontRescueDemandConvert(rescueDemands);
 
 		// canAffords
 		List<CanAfford> canAffords = canAffordRepository.findAllById(dto.getCanAffords());
 		rescueCase.setCanAffords(canAffords);
-		System.out.println("1111" + rescueCase);
-		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給addRescueCase繼續使用
+		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給add繼續使用
+		
+		//caseState
+		Optional<CaseState> result6 = caseStateRepository.findById(dto.getCaseStateId());
+		if (result6 != null && result6.isPresent()) {
+			rescueCase.setCaseState(result6.get());
+		}
+		
+		
 		return rescueCase;
 	}
 
 	// insert新增一筆案件到資料庫
-	public RescueCase addRescueCase(RescueCase rescueCase, String token) {
+	public RescueCase add(RescueCase rescueCase, String token) {
 
 		// id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
@@ -156,18 +164,59 @@ public class RescueCaseService {
 		rescueCase.setPublicationTime(LocalDateTime.now());
 		rescueCase.setLastUpdateTime(LocalDateTime.now());
 
-		// 設置預設caseState(待救援id為3)
-		CaseState caseState = new CaseState("待救援");
-		rescueCase.setCaseState(caseState);
+		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去)
+		Optional<CaseState> result = caseStateRepository.findById(3);
+		if(result != null && result.isPresent()) {
+		rescueCase.setCaseState(result.get());
+		}
 
 		if (rescueCaseRepository.save(rescueCase) != null) {
 			System.out.println("新增成功");
 			return rescueCase;
 		}
-
 		System.out.println("新增失敗");
 		return null;
 
 	}
-
+	
+	
+	//修改案件----------------------------------------------------------------------------------------------
+	public RescueCase modify(RescueCase rescueCase, Integer id) {
+		
+		//必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接sqve()這些資訊會空掉
+		Optional<RescueCase> result = rescueCaseRepository.findById(id);
+		if(result != null && result.isPresent()) {
+			
+			RescueCase old = result.get();
+			
+			//以下寫成三元
+			if(rescueCase.getCaseTitle() != null) {
+				old.setCaseTitle(rescueCase.getCaseTitle());
+			} 
+			
+			
+		}
+		
+		
+		
+		if (rescueCaseRepository.save(rescueCase) != null) {
+			System.out.println("新增成功");
+			return rescueCase;
+		}
+		System.out.println("新增失敗");
+		return null;
+	}
+	
+	
+	//確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
+	public boolean exists(Integer id) {
+		if(id!=null) {
+			return rescueCaseRepository.existsById(id);
+		}
+		return false;
+	}
+	
+	
+	//
+	
 }
