@@ -37,23 +37,23 @@ public class RescueCase {
 	
 	//必填(但為了測試先改成非必填)
 	// 關聯到member表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "memberId", nullable = true, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
 	private Member member;
 
 	//必填
 	// 關聯到species表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Species"))
 	private Species species;
 
 	// 關聯到breed表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "breedId", foreignKey = @ForeignKey(name = "FK_RescueCase_Breed"))
 	private Breed breed;
 
 	// 關聯到furColor表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
 	private FurColor furColor;
 
@@ -75,13 +75,13 @@ public class RescueCase {
 	
 	//必填
 	// 關聯到city表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_City"))
 	private City city;
 
 	//必填
 	// 關聯到distinctArea表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_DistinctArea"))
 	private DistinctArea distinctArea;
 
@@ -120,7 +120,7 @@ public class RescueCase {
 	
 	//必填
 	// 關聯到CaseState表，單向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "CaseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_CaseState"))
 	private CaseState caseState;
 	
@@ -164,33 +164,25 @@ public class RescueCase {
     private List<RescueProgress> rescueProgresses;
 	
     
-    @OneToMany(mappedBy = "rescueCase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST, orphanRemoval = true)
     private List<Follow> follows;
     
     
     // 關聯到ReportCase表，單向一對多
-    @OneToMany(mappedBy = "rescueCase", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST)
     private List<ReportCase> reportCases; 
-    
-	
-    
+     
     
     // Hibernate 進行實體的初始化需要用到空參建構子
 	public RescueCase() {
 		super();
 	}
 
-
-
 	//設定初始值(publicationTime、lastUpdateTime、caseState為待救援id=3)，在物件永續化存入之前會觸發
 	@PrePersist
 	public void prePersist() {
 	    this.publicationTime = LocalDateTime.now();
 	    this.lastUpdateTime = LocalDateTime.now();
-//	    		Optional<CaseState> result = caseStateRepository.findById(3);
-//	    		if (result != null && result.isPresent()) {
-//	    			rescueCase.setCaseState(result.get());
-//	    		}
 	}
 	
 	//實體更新操作(save,merge)前會觸發，更改更新時間

@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 //三個案件共用的單個圖片上傳
 @RestController
-@RequestMapping(path = { "/member/Case" })
+@RequestMapping(path = { "/Case" })
 public class UploadImageController {
 	
 	@PostMapping("/uploadImage")
