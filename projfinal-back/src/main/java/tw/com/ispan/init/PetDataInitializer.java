@@ -1,4 +1,4 @@
-package tw.com.ispan.util;
+package tw.com.ispan.init;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,32 +59,41 @@ public class PetDataInitializer implements CommandLineRunner {
 			speciesRepository.save(new Species("貓"));
 		}
 
-		// 存入品種資料
-		Resource catResource = new ClassPathResource("data/catBreeds.json");
-		ObjectMapper objectMapper1 = new ObjectMapper();
+		// 存入品種資料(狗貓放在同一表格，貓breedId為1~53 狗breedId 54~186)
+		//檢查邏輯為breed資料表內是否有id 1-53的資料，返回的list如果不是共53筆就做新增 (其實邏輯不太對，但基本上有執行過資料注入就應該一次是53筆，就先這樣吧)
+		List<Integer> catList = breedRepository.findBreedIdsInRange(1,53);
+		if(catList.size() != 53) {
+			Resource catResource = new ClassPathResource("data/catBreeds.json");
+			ObjectMapper objectMapper1 = new ObjectMapper();
 
-		try {
-			List<Breed> catBreed = objectMapper1.readValue(catResource.getInputStream(),
-					new TypeReference<List<Breed>>() {
-					});
-			catBreed.forEach(breed -> breedRepository.save(breed));
-		} catch (IOException e) {
-			System.out.println("資料注入失敗");
-			e.printStackTrace();
+			try {
+				List<Breed> catBreed = objectMapper1.readValue(catResource.getInputStream(),
+						new TypeReference<List<Breed>>() {
+						});
+				catBreed.forEach(breed -> breedRepository.save(breed));
+			} catch (IOException e) {
+				System.out.println("資料注入失敗");
+				e.printStackTrace();
+			}
+		}
+		
+		List<Integer> dogList = breedRepository.findBreedIdsInRange(54,186);
+		if(dogList.size() != 133) {
+			Resource dogResource = new ClassPathResource("data/dogBreeds.json");
+			ObjectMapper objectMapper2 = new ObjectMapper();
+
+			try {
+				List<Breed> dogBreed = objectMapper2.readValue(dogResource.getInputStream(),
+						new TypeReference<List<Breed>>() {
+						});
+				dogBreed.forEach(breed -> breedRepository.save(breed));
+			} catch (IOException e) {
+				System.out.println("資料注入失敗");
+				e.printStackTrace();
+			}
 		}
 
-		Resource dogResource = new ClassPathResource("data/dogBreeds.json");
-		ObjectMapper objectMapper2 = new ObjectMapper();
-
-		try {
-			List<Breed> dogBreed = objectMapper2.readValue(dogResource.getInputStream(),
-					new TypeReference<List<Breed>>() {
-					});
-			dogBreed.forEach(breed -> breedRepository.save(breed));
-		} catch (IOException e) {
-			System.out.println("資料注入失敗");
-			e.printStackTrace();
-		}
+		
 
 		// 存入毛色資料(主要給米克斯用)
 		if (!furColorRepository.existsById(1)) {
@@ -166,7 +175,7 @@ public class PetDataInitializer implements CommandLineRunner {
 			canAffordRepository.save(new CanAfford("願意負擔救援費用"));
 		}
 
-		// 存入city資料
+		// 存入city資料(舊版!!!!)
 		// 臺北市、新北市、基隆市、新竹市、桃園市、新竹縣及宜蘭縣。 中部區域：包括臺中市、苗栗縣、彰化縣、南投縣及雲林縣。
 		// 南部區域：包括高雄市、臺南市、嘉義市、嘉義縣、屏東縣及澎湖縣。 東部區域：包括花蓮縣及臺東縣
 //		if (!cityRepository.existsById(1)) {
@@ -237,31 +246,37 @@ public class PetDataInitializer implements CommandLineRunner {
 //		}
 
 		// 存入distinct資料
-		//Jackson 或 Gson 在將 JSON 轉換為 Java物件時，只會映射與dto類別中字段名稱匹配的JSON屬性(大小寫敏感)，額外的屬性會被自動忽略，而不會影響轉換過程
-		//檔案位於 resources 資料夾內，建議使用 ClassLoader 來讀取檔案，這樣可以避免路徑解析問題
-		
-//		String filePath = getClass().getClassLoader().getResource("data/CityCountyData.json").getPath();
-//		ObjectMapper objectMapper3 = new ObjectMapper();
-//
-//		List<CityDto> cityDtoList = objectMapper3.readValue(new File(filePath), new TypeReference<List<CityDto>>() {
-//		});
-//		
-//		for (CityDto cityDto : cityDtoList) {
-//			City city = new City();
-//			city.setCity(cityDto.getCityName());
-//
-//			List<DistinctArea> areas = cityDto.getAreaList().stream().map(areaDto -> {
-//				DistinctArea area = new DistinctArea();
-//				area.setDistinctAreaName(areaDto.getAreaName());
-//				return area;
-//			}).toList();
-//
-//			city.setDistinctAreas(areas);
-//
-//			// 儲存 City（會同時儲存其相關的 DistinctArea）
-//			cityRepository.save(city);
-//		}
+		// Jackson 或 Gson 在將 JSON 轉換為
+		// Java物件時，只會映射與dto類別中字段名稱匹配的JSON屬性(大小寫敏感)，額外的屬性會被自動忽略，而不會影響轉換過程
+		// 檔案位於 resources 資料夾內，建議使用 ClassLoader 來讀取檔案，這樣可以避免路徑解析問題
+		// 這段在跑測試程式時，因為測試程式和專案啟動執行環境不同，僅測試不會去打包resource底下靜態資源，因此data/CityCountyData.json會找不到，導致需要先註解!!
 
+		//city和distinct資料會同時儲存，因此檢查city是否存在即可(邏輯不太完善但先這樣吧)
+		List<Integer> cityList = cityRepository.findCityIdsInRange(1,24);
+		if(cityList.size() != 24) {
+			String filePath = getClass().getClassLoader().getResource("data/CityCountyData.json").getPath();
+			ObjectMapper objectMapper3 = new ObjectMapper();
+
+			List<CityDto> cityDtoList = objectMapper3.readValue(new File(filePath), new TypeReference<List<CityDto>>() {
+			});
+
+			for (CityDto cityDto : cityDtoList) {
+				City city = new City();
+				city.setCity(cityDto.getCityName());
+
+				List<DistinctArea> areas = cityDto.getAreaList().stream().map(areaDto -> {
+					DistinctArea area = new DistinctArea();
+					area.setDistinctAreaName(areaDto.getAreaName());
+					return area;
+				}).toList();
+
+				city.setDistinctAreas(areas);
+
+				// 儲存 City（會同時儲存其相關的 DistinctArea）
+				cityRepository.save(city);
+			}
+		}
+		
 	}
 
 }

@@ -54,8 +54,6 @@ public class RescueCaseService {
 	@Autowired
 	private RescueDemandRepository rescueDemandRepository;
 	@Autowired
-	private RescueProgressRepository rescueProgressRepository;
-	@Autowired
 	private CanAffordRepository canAffordRepository;
 	@Autowired
 	private CaseStateRepository caseStateRepository;
@@ -121,14 +119,17 @@ public class RescueCaseService {
 		List<CanAfford> canAffords = canAffordRepository.findAllById(dto.getCanAffords());
 		rescueCase.setCanAffords(canAffords);
 		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給add繼續使用
-		
-		//caseState
-		Optional<CaseState> result6 = caseStateRepository.findById(dto.getCaseStateId());
-		if (result6 != null && result6.isPresent()) {
-			rescueCase.setCaseState(result6.get());
+
+		// caseState
+		//新增案件時dto內不會含caseState資料，而是等這個rescueCase被save()會自動觸發初始化程式塞入預設值待救援
+		//修改案件時dto內會有caseState資料，因此要塞到rescueCase物件中
+		if (dto.getCaseStateId() != null) {
+			Optional<CaseState> result6 = caseStateRepository.findById(dto.getCaseStateId());
+			if (result6 != null && result6.isPresent()) {
+				rescueCase.setCaseState(result6.get());
+			}
 		}
-		
-		
+
 		return rescueCase;
 	}
 
@@ -138,14 +139,14 @@ public class RescueCaseService {
 		// id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
 
-//		 從 JWT 中解析出 memberId
+//		從 JWT 中解析出 memberId
 //	    try {
 //			Integer memberId = jsonWebTokenUtility.getMemberId(token);
 //		} catch (Exception e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-
+		System.out.println("haaaaaa");
 		// 設置經緯度
 		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
 				+ rescueCase.getStreet();
@@ -160,14 +161,14 @@ public class RescueCaseService {
 			e.printStackTrace();
 		}
 
-		// 設置發布時間、最後修改時間
-		rescueCase.setPublicationTime(LocalDateTime.now());
-		rescueCase.setLastUpdateTime(LocalDateTime.now());
+		// 設置發布時間、最後修改時間(已寫在永續類別中初始化設置)
+//		rescueCase.setPublicationTime(LocalDateTime.now());
+//		rescueCase.setLastUpdateTime(LocalDateTime.now());
 
-		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去)
+		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去) (已寫在永續類別中初始化設置)
 		Optional<CaseState> result = caseStateRepository.findById(3);
-		if(result != null && result.isPresent()) {
-		rescueCase.setCaseState(result.get());
+		if (result != null && result.isPresent()) {
+			rescueCase.setCaseState(result.get());
 		}
 
 		if (rescueCaseRepository.save(rescueCase) != null) {
@@ -178,45 +179,105 @@ public class RescueCaseService {
 		return null;
 
 	}
-	
-	
-	//修改案件----------------------------------------------------------------------------------------------
+
+	// 修改案件----------------------------------------------------------------------------------------------
 	public RescueCase modify(RescueCase rescueCase, Integer id) {
-		
-		//必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接sqve()這些資訊會空掉
+
+		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接sqve()這些資訊會空掉，最後存修改後的舊物件
 		Optional<RescueCase> result = rescueCaseRepository.findById(id);
-		if(result != null && result.isPresent()) {
-			
+		if (result != null && result.isPresent()) {
+
 			RescueCase old = result.get();
-			
-			//以下寫成三元
-			if(rescueCase.getCaseTitle() != null) {
+
+			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到jpa註解自動改變)
+			if (rescueCase.getCaseTitle() != null) {
 				old.setCaseTitle(rescueCase.getCaseTitle());
-			} 
-			
-			
+			}
+			if (rescueCase.getSpecies() != null) {
+				old.setSpecies(rescueCase.getSpecies());
+			}
+			if (rescueCase.getBreed() != null) {
+				old.setBreed(rescueCase.getBreed());
+			}
+			if (rescueCase.getFurColor() != null) {
+				old.setFurColor(rescueCase.getFurColor());
+			}
+			if (rescueCase.getGender() != null) {
+				old.setGender(rescueCase.getGender());
+			}
+			if (rescueCase.getSterilization() != null) {
+				old.setSterilization(rescueCase.getSterilization());
+			}
+			if (rescueCase.getAge() != null) {
+				old.setAge(rescueCase.getAge());
+			}
+			if (rescueCase.getMicroChipNumber() != null) {
+				old.setMicroChipNumber(rescueCase.getMicroChipNumber());
+			}
+			if (rescueCase.getSuspLost() != null) {
+				old.setSuspLost(rescueCase.getSuspLost());
+			}
+			if (rescueCase.getDistinctArea() != null) {
+				old.setDistinctArea(rescueCase.getDistinctArea());
+			}
+			if (rescueCase.getStreet() != null) {
+				old.setStreet(rescueCase.getStreet());
+			}
+			if (rescueCase.getRescueReason() != null) {
+				old.setRescueReason(rescueCase.getRescueReason());
+			}
+			if (rescueCase.getCaseState() != null) {
+				old.setCaseState(rescueCase.getCaseState());
+			}
+			if (rescueCase.getCasePictures() != null) {
+				old.setCasePictures(rescueCase.getCasePictures());
+			}
+			if (rescueCase.getRescueDemands() != null) {
+				old.setRescueDemands(rescueCase.getRescueDemands());
+			}
+			if (rescueCase.getCanAffords() != null) {
+				old.setCanAffords(rescueCase.getCanAffords());
+			}
+
+			// 如果地址有更新到則經緯度要重新抓
+			// 設置經緯度
+			String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
+					+ rescueCase.getStreet();
+			try {
+				LatLng latLng = geocodingService.getCoordinatesFromAddress(adress);
+				if (latLng != null) {
+					rescueCase.setLatitude(latLng.getLat());
+					rescueCase.setLongitude(latLng.getLng());
+				}
+			} catch (JsonProcessingException e) {
+				System.out.println("請求座標API失敗");
+				e.printStackTrace();
+			}
+
+			// 修改完後，將含有新資料的舊物件存回去
+			RescueCase savedcase = rescueCaseRepository.save(old);
+			if (savedcase != null) {
+				System.out.println("新增成功");
+				return savedcase;
+			} else {
+				System.out.println("新增失敗");
+				return null;
+			}
+		} else {
+			// 表此id不存在於案件表中，但controller已經驗證過存在才會進來service，理論上跑不到這條
+			return null;
 		}
-		
-		
-		
-		if (rescueCaseRepository.save(rescueCase) != null) {
-			System.out.println("新增成功");
-			return rescueCase;
-		}
-		System.out.println("新增失敗");
-		return null;
+
 	}
-	
-	
-	//確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
+
+	// 刪除案件------------------------------------------------------------------------------------------
+
+	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
-		if(id!=null) {
+		if (id != null) {
 			return rescueCaseRepository.existsById(id);
 		}
 		return false;
 	}
-	
-	
-	//
-	
+
 }

@@ -34,7 +34,7 @@ public class MemberRescueController {
 	@PostMapping(path = { "/add" })
 	public RescueCaseResponse add(@RequestHeader("Authorization") String token,
 			@RequestBody RescueCaseDto rescueCaseDto,
-			@RequestPart(name = "file", required = false) MultipartFile file) {
+			@RequestPart(name = "file") MultipartFile file) {
 
 		// 方法參數用途: 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
 		// 2. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳給前端
@@ -44,21 +44,21 @@ public class MemberRescueController {
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
 		// 1.驗證token
 
-		// 2.驗證必填資料都要存在(沒寫傳進來會是預設初始值)
+		// 2.驗證必填資料都要存在(沒寫傳進來dto接收會是預設初始值)
 		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-				| rescueCaseDto.getBreedId() == null | rescueCaseDto.getSuspLost() == null
-				| rescueCaseDto.getCityId() == null | rescueCaseDto.getDistinctAreaId() == null
-				| rescueCaseDto.getRescueReason() == null | rescueCaseDto.getCasePictures() == null
-				| rescueCaseDto.getRescueDemands() == null | rescueCaseDto.getCanAffords() == null) {
+				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
+				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
+				| rescueCaseDto.getCasePictures() == null | rescueCaseDto.getRescueDemands() == null
+				| rescueCaseDto.getCanAffords() == null) {
 			response.setSuccess(false);
 			response.setMessage("請填入必填資料");
 			return response;
 		}
 
-		// 先轉為實體類別後，把該存的放進去(發布時間等..)再存入資料庫中
+		// 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
 		RescueCase rescueCase = rescueCaseService.add(rescueCaseEntity, token);
-
+		
 		// 圖片存入本地+資料庫中
 		try {
 			if (file != null) {
@@ -71,6 +71,7 @@ public class MemberRescueController {
 		} catch (IOException e) {
 			System.out.println("圖片儲存失敗");
 			e.printStackTrace();
+			return null;
 		}
 
 		if (rescueCase != null) {
@@ -90,7 +91,7 @@ public class MemberRescueController {
 	@PutMapping(path = { "/modify/{id}" })
 	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer id,
 			@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto,
-			@RequestPart(name = "file", required = false) MultipartFile file) {
+			@RequestPart(name = "file") MultipartFile file) {
 
 		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState，因此和新增案件不同點在於這裡dto內的caseState會有資料而非null
 		// 案件id要從前端點選修改按鈕(按鈕做成超連結)時同時送出，因此id即藏在超連結送出的request line裡
@@ -131,11 +132,7 @@ public class MemberRescueController {
 			response.setMessage("修改案件成功");
 			return response;
 		} else {
-<<<<<<< HEAD
 			// 修改失敗，回傳rescueCase == null
-=======
-			// 修改失敗，rescueCase == null
->>>>>>> dd70f20a11da9fd8da52d75133d7298ea8826516
 			response.setSuccess(false);
 			response.setMessage("修改案件失敗");
 			return response;
