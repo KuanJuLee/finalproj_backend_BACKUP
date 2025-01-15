@@ -1,5 +1,6 @@
 import org.springframework.data.jpa.domain.Specification;
 
+import jakarta.persistence.criteria.Predicate;
 import tw.com.ispan.domain.pet.RescueCase;
 
 public class RescueCaseSpecification {
