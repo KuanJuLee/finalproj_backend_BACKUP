@@ -147,7 +147,6 @@ public class RescueCaseService {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		System.out.println("haaaaaa");
 		// 設置經緯度
 		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
 				+ rescueCase.getStreet();
@@ -166,7 +165,7 @@ public class RescueCaseService {
 //		rescueCase.setPublicationTime(LocalDateTime.now());
 //		rescueCase.setLastUpdateTime(LocalDateTime.now());
 
-		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去) (已寫在永續類別中初始化設置)
+		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去，因為主實體rescueCae在save()時裏頭的關聯屬性的值都只能是永續狀態)
 		Optional<CaseState> result = caseStateRepository.findById(3);
 		if (result != null && result.isPresent()) {
 			rescueCase.setCaseState(result.get());
@@ -259,7 +258,7 @@ public class RescueCaseService {
 			}
 
 			// 修改完後，將含有新資料的舊物件存回去
-			RescueCase savedcase = rescueCaseRepository.save(old);
+			RescueCase savedcase = rescueCaseRepository.save(old);   
 			if (savedcase != null) {
 				System.out.println("新增成功");
 				return savedcase;

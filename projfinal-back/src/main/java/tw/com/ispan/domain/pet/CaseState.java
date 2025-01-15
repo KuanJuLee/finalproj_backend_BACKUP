@@ -25,6 +25,12 @@ public class CaseState {
 		super();
 	}
 
+	
+	public CaseState(Integer caseStateId) {
+		super();
+		CaseStateId = caseStateId;
+	}
+
 
 	public CaseState(String caseStatement) {
 		super();
