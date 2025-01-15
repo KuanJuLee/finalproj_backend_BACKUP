@@ -503,6 +503,16 @@ public class RescueCase {
 	}
 
 
+	public String getTag() {
+		return tag;
+	}
+
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+
 
 	@Override
 	public String toString() {
@@ -512,13 +522,10 @@ public class RescueCase {
 				+ ", suspLost=" + suspLost + ", city=" + city + ", distinctArea=" + distinctArea + ", street=" + street
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", donationAmount=" + donationAmount
 				+ ", viewCount=" + viewCount + ", follow=" + follow + ", publicationTime=" + publicationTime
-				+ ", lastUpdateTime=" + lastUpdateTime + ", caseState=" + caseState + ", rescueReason="
+				+ ", lastUpdateTime=" + lastUpdateTime + ", tag=" + tag + ", caseState=" + caseState + ", rescueReason="
 				+ rescueReason + ", caseUrl=" + caseUrl + ", casePictures=" + casePictures + ", rescueDemands="
 				+ rescueDemands + ", canAffords=" + canAffords + ", rescueProgresses=" + rescueProgresses + ", follows="
-				+ follows + "]";
+				+ follows + ", reportCases=" + reportCases + "]";
 	}
 
-
-
-	
 }

@@ -77,6 +77,7 @@ public class RescueCaseService {
 		rescueCase.setSuspLost(dto.getSuspLost());
 		rescueCase.setStreet(dto.getStreet());
 		rescueCase.setRescueReason(dto.getRescueReason());
+		rescueCase.setTag(dto.getTag());
 
 		// 以下傳id進來，找到對應資料再塞回enitity物件中
 		// 物種
@@ -121,8 +122,8 @@ public class RescueCaseService {
 		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給add繼續使用
 
 		// caseState
-		//新增案件時dto內不會含caseState資料，而是等這個rescueCase被save()會自動觸發初始化程式塞入預設值待救援
-		//修改案件時dto內會有caseState資料，因此要塞到rescueCase物件中
+		// 新增案件時dto內不會含caseState資料，而是等這個rescueCase被save()會自動觸發初始化程式塞入預設值待救援
+		// 修改案件時dto內會有caseState資料，因此要塞到rescueCase物件中
 		if (dto.getCaseStateId() != null) {
 			Optional<CaseState> result6 = caseStateRepository.findById(dto.getCaseStateId());
 			if (result6 != null && result6.isPresent()) {
@@ -238,6 +239,9 @@ public class RescueCaseService {
 			if (rescueCase.getCanAffords() != null) {
 				old.setCanAffords(rescueCase.getCanAffords());
 			}
+			if (rescueCase.getTag() != null) {
+				old.setTag(rescueCase.getTag());
+			}
 
 			// 如果地址有更新到則經緯度要重新抓
 			// 設置經緯度
@@ -267,11 +271,18 @@ public class RescueCaseService {
 			// 表此id不存在於案件表中，但controller已經驗證過存在才會進來service，理論上跑不到這條
 			return null;
 		}
-
 	}
 
 	// 刪除案件------------------------------------------------------------------------------------------
+	public boolean delete(Integer id) {
+		if (id != null && rescueCaseRepository.existsById(id)) {
+			rescueCaseRepository.deleteById(id);   //沒有返回值
+			return true;
+		}
+		return false;
+	}
 
+	
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
 		if (id != null) {
