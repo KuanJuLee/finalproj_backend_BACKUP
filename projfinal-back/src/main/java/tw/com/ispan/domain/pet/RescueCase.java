@@ -121,7 +121,7 @@ public class RescueCase {
 	//必填
 	// 關聯到CaseState表，單向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinColumn(name = "CaseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_CaseState"))
+	@JoinColumn(name = "caseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_CaseState"))
 	private CaseState caseState;
 	
 	//必填

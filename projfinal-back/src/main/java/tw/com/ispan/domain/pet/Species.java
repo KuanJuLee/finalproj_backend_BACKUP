@@ -79,4 +79,5 @@ public class Species {
     public void setLostCases(List<LostCase> lostCases) {
         this.lostCases = lostCases;
     }
+    
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.dto.pet.RescueCaseDto;
+import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
@@ -32,6 +35,7 @@ import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
 import tw.com.ispan.service.GeocodingService;
+import tw.com.ispan.specification.RescueCaseSpecification;
 //import tw.com.ispan.service.JwtService;
 import tw.com.ispan.util.LatLng;
 
@@ -161,16 +165,13 @@ public class RescueCaseService {
 			e.printStackTrace();
 		}
 
-		// 設置發布時間、最後修改時間(已寫在永續類別中初始化設置)
-//		rescueCase.setPublicationTime(LocalDateTime.now());
-//		rescueCase.setLastUpdateTime(LocalDateTime.now());
-
 		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去，因為主實體rescueCae在save()時裏頭的關聯屬性的值都只能是永續狀態)
 		Optional<CaseState> result = caseStateRepository.findById(3);
 		if (result != null && result.isPresent()) {
 			rescueCase.setCaseState(result.get());
 		}
-
+		
+		//存進資料庫中
 		if (rescueCaseRepository.save(rescueCase) != null) {
 			System.out.println("新增成功");
 			return rescueCase;
@@ -280,7 +281,15 @@ public class RescueCaseService {
 		}
 		return false;
 	}
-
+	
+	
+	//模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
+	 public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
+	        return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
+	    }
+	
+	
+	
 	
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
