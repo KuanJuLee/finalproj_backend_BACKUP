@@ -2,28 +2,91 @@ package tw.com.ispan.dto.pet;
 
 import java.util.List;
 
+import org.hibernate.validator.constraints.Length;
+
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 public class RescueCaseDto {
 
-	//想傳資料進入資料庫的類別
+	//接收使用者填的新增案件資料
+	
+	@NotNull(message = "案件標題必填")
+	@Length(min = 1, max = 15)         //限制小於15字
 	private String caseTitle;
+	
+	@DecimalMin("1")  
+	@DecimalMax("2")
+	@Positive(message = "物種ID必須為正數")
+	@NotNull(message = "物種必填")
+	@Pattern(regexp = "^(貓|狗)$", message = "物種必須為貓或狗")      //如果填的是固定值建議可用建立Enum類別與驗證
 	private Integer speciesId;
+	
+	@DecimalMin("1")  
+	@DecimalMax("186")
+	@Positive(message = "品種ID必須為正數")
+	@NotNull(message = "品種必填")
 	private Integer breedId;
+	
+	@DecimalMin("1")  
+	@DecimalMax("7")
+	@Positive(message = "毛色ID必須為正數")
 	private Integer furColorId;
+	
+	@Pattern(regexp = "^(公|母)$", message = "性別必須為公或母")
 	private String gender;
+	
+	@Pattern(regexp = "^(已絕育|未絕育)$", message = "絕育狀態必須為已絕育或未絕育")
 	private String sterilization;
+	
+	@Size(min = 0, max = 130)   //只能輸入0~30
 	private Integer age;
+	
+	@DecimalMin("1000000000")   //晶片號碼為10位數字
+	@DecimalMax("10000000000")
 	private Integer microChipNumber;
+	
+	@NotNull(message = "是否遺失為必填")
 	private Boolean suspLost;
+	
+	@DecimalMin("1")  
+	@DecimalMax("24")
+	@Positive(message = "縣市ID必須為正數")
+	@NotNull(message = "縣市為必填")
 	private Integer cityId;
+	
+	@DecimalMin("1")  
+	@DecimalMax("374")
+	@Positive(message = "區域ID必須為正數")
+	@NotNull(message = "區域為必填")
 	private Integer distinctAreaId;
+	
 	private String street;
+	
+	@NotNull(message = "區域為必填")
 	private String rescueReason;
-	private Integer caseStateId;
-	private String tag;
+	
+	@DecimalMin("1")  
+	@DecimalMax("9")
+	@Positive(message = "案件狀態ID必須為正數")
+	private Integer caseStateId;             //初次添加時使用者不會填所以可為null，但修改時則必填，應用到@validated分組驗證
+	
+	@Length(min = 0, max = 50)               //限制不得超過50字
+	private String tag;             
 	
 	//傳遞照片id集合，到service中再用id的list去找圖片
+	@NotEmpty(message = "照片為必填")
 	private List<Integer> casePictures;
+	
+	@NotEmpty(message = "救援需求為必填")
 	private  List<Integer> rescueDemands;
+	
+	@NotEmpty(message = "可負擔資助為必填")
 	private  List<Integer> canAffords;
 	
 	

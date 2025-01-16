@@ -1,6 +1,9 @@
 package tw.com.ispan.domain.pet;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,13 +26,15 @@ public class Species {
     private String species;
 
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<LostCase> lostCases;
 
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<RescueCase> rescueCases;
     
-
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<AdoptionCase> adoptionCase;	
 
     

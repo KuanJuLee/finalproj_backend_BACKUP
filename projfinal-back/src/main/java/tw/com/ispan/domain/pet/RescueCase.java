@@ -3,6 +3,9 @@ package tw.com.ispan.domain.pet;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,22 +42,26 @@ public class RescueCase {
 	// 關聯到member表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "memberId", nullable = true, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
+	@JsonManagedReference
 	private Member member;
 
 	//必填
 	// 關聯到species表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Species"))
+	@JsonManagedReference
 	private Species species;
 
 	// 關聯到breed表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "breedId", foreignKey = @ForeignKey(name = "FK_RescueCase_Breed"))
+	@JsonManagedReference
 	private Breed breed;
 
 	// 關聯到furColor表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
+	@JsonManagedReference
 	private FurColor furColor;
 
 	@Column(columnDefinition = "NVARCHAR(5)", name = "gender")
@@ -77,12 +84,14 @@ public class RescueCase {
 	// 關聯到city表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_City"))
+	@JsonManagedReference
 	private City city;
 
 	//必填
 	// 關聯到distinctArea表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_DistinctArea"))
+	@JsonManagedReference
 	private DistinctArea distinctArea;
 
 	@Column(columnDefinition = "NVARCHAR(10)", name = "street")
@@ -104,7 +113,7 @@ public class RescueCase {
 	@Column(name = "viewCount")
 	private Integer viewCount;   
 
-	@Column(name = "follow")
+	@Column(name = "follow")   //被追蹤數
 	private Integer follow;
 	
 	//必填
@@ -163,11 +172,11 @@ public class RescueCase {
     @JoinColumn(name = "rescueCaseId")
     private List<RescueProgress> rescueProgresses;
 	
+    //關聯到follow表(follow為會員和案件的追蹤中介表) 單向一對多(follow找來case，因為主要是關注某會員追蹤那些案件)
+//    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST, orphanRemoval = true)
+//    private List<Follow> follows;
     
-    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST, orphanRemoval = true)
-    private List<Follow> follows;
-    
-    
+    	
     // 關聯到ReportCase表，單向一對多
     @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST)
     private List<ReportCase> reportCases; 
@@ -474,16 +483,6 @@ public class RescueCase {
 	}
 
 
-	public List<Follow> getFollows() {
-		return follows;
-	}
-
-
-	public void setFollows(List<Follow> follows) {
-		this.follows = follows;
-	}
-
-	
 	
 	public List<ReportCase> getReportCases() {
 		return reportCases;
@@ -516,8 +515,7 @@ public class RescueCase {
 				+ ", viewCount=" + viewCount + ", follow=" + follow + ", publicationTime=" + publicationTime
 				+ ", lastUpdateTime=" + lastUpdateTime + ", tag=" + tag + ", caseState=" + caseState + ", rescueReason="
 				+ rescueReason + ", caseUrl=" + caseUrl + ", casePictures=" + casePictures + ", rescueDemands="
-				+ rescueDemands + ", canAffords=" + canAffords + ", rescueProgresses=" + rescueProgresses + ", follows="
-				+ follows + ", reportCases=" + reportCases + "]";
+				+ rescueDemands + ", canAffords=" + canAffords + ", rescueProgresses=" + rescueProgresses +", reportCases=" + reportCases + "]";
 	}
 
 }

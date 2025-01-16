@@ -1,9 +1,12 @@
 package tw.com.ispan.controller.pet;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +40,7 @@ public class RescueController {
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
 	@PostMapping(path = { "/add" })
 	public RescueCaseResponse add(@RequestHeader("Authorization") String token,
-			@RequestBody RescueCaseDto rescueCaseDto,
+			@Validated @RequestBody RescueCaseDto rescueCaseDto,
 			@RequestPart(name = "files", required = false) MultipartFile[] files) {
 
 		System.out.println("近來優");
@@ -51,7 +54,9 @@ public class RescueController {
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
 		// 1.驗證token
 
-		// 2.驗證必填資料都要存在(沒寫傳進來dto接收會是預設初始值)
+		// 2.驗證必填資料(沒寫傳進來dto接收會是預設初始值null或0)
+		//加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
+		
 //		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
 //				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
 //				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
@@ -62,14 +67,14 @@ public class RescueController {
 //			return response;
 //		}
 //		
-		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
-				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
-				| rescueCaseDto.getRescueDemands() == null | rescueCaseDto.getCanAffords() == null) {
-			response.setSuccess(false);
-			response.setMessage("請填入必填資料");
-			return response;
-		}
+//		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
+//				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
+//				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
+//				| rescueCaseDto.getRescueDemands() == null | rescueCaseDto.getCanAffords() == null) {
+//			response.setSuccess(false);
+//			response.setMessage("請填入必填資料");
+//			return response;
+//		}
 
 		// 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
@@ -214,12 +219,12 @@ public class RescueController {
 	
 	// 查詢救援案件-----------------------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
-    public Page<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
-                                              @RequestParam(defaultValue = "0") int page,
+    public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
+                                              @RequestParam(defaultValue = "0") int page,            //前端沒丟參數就用預設值
                                               @RequestParam(defaultValue = "10") int size) {
         System.out.println(criteria.toString());
 		Pageable pageable = PageRequest.of(page, size);
-        return rescueCaseService.searchRescueCases(criteria, pageable);
+        return rescueCaseService.searchRescueCases(criteria, pageable).getContent();
     }
 	
 	
