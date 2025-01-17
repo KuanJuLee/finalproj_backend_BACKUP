@@ -141,8 +141,8 @@ public class RescueCase {
 	private String caseUrl;
     
 	//必填
-	//關聯到CasePicture表，單向一對多，rescueCaseId外鍵會在CasePicture表中
-	@OneToMany
+	//關聯到CasePicture表，單向一對多，註釋在這但rescueCaseId外鍵會在CasePicture表中
+	@OneToMany( cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_RescueCase"))
 	private List<CasePicture> casePictures;
 	

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
@@ -45,7 +46,7 @@ public class RescueController {
 		System.out.println("近來優");
 
 		// 方法參數: 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
-		// 2. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳給前端
+		// 2. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳訊息給前端
 		RescueCaseResponse response = new RescueCaseResponse();
 
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
@@ -53,13 +54,14 @@ public class RescueController {
 
 		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
 		
-		// 3.前端傳圖片暫存url，先將暫存資料夾中圖片移轉至永存資料夾，操作正確則回傳圖片新路徑，將新路徑存置資料庫中
+		// 3.前端傳圖片暫存url list，先將暫存資料夾中圖片移轉至永存資料夾，操作正確則回傳圖片新路徑，將新路徑存置資料庫中
 		List<String> finalUrl = imageService.moveImage(rescueCaseDto.getCasePictures());
-		imageService.saveImage(finalUrl);
+		System.out.println("圖片移動完畢!");
+		List<CasePicture> casePictures = imageService.saveImage(finalUrl);
 		
 		// 4. 新增案件至資料庫 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
-		RescueCase rescueCase = rescueCaseService.add(rescueCaseEntity, token);
+		RescueCase rescueCase = rescueCaseService.add(rescueCaseEntity, token, casePictures);
 		
 		if (rescueCase != null) {
 			// 新增成功
@@ -77,8 +79,7 @@ public class RescueController {
 	// 修改救援案件-----------------------------------------------------------------------------------------------------------------------------
 	@PutMapping(path = { "/modify/{id}" })
 	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer id,
-			@RequestHeader("Authorization") String token, @RequestBody RescueCaseDto rescueCaseDto,
-			@RequestParam(name = "files", required = false) MultipartFile[] files) {
+			@RequestHeader("Authorization") String token, @Validated @RequestBody RescueCaseDto rescueCaseDto) {
 
 		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState，因此和新增案件不同點在於這裡dto內的caseState會有資料而非null
 		// 案件id要從前端點選修改按鈕(按鈕做成超連結)時同時送出，因此id即藏在超連結送出的request line裡
@@ -88,25 +89,7 @@ public class RescueController {
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
 		// 1.驗證token
 
-		// 2.驗證必填資料都要存在(沒寫傳進來會是預設初始值)
-//		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-//				| rescueCaseDto.getBreedId() == null | rescueCaseDto.getSuspLost() == null
-//				| rescueCaseDto.getCityId() == null | rescueCaseDto.getDistinctAreaId() == null
-//				| rescueCaseDto.getRescueReason() == null | rescueCaseDto.getCasePictures() == null
-//				| rescueCaseDto.getRescueDemands() == null | rescueCaseDto.getCanAffords() == null) {
-//			response.setSuccess(false);
-//			response.setMessage("請填入必填資料");
-//			return response;
-//		}
-		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-				| rescueCaseDto.getBreedId() == null | rescueCaseDto.getSuspLost() == null
-				| rescueCaseDto.getCityId() == null | rescueCaseDto.getDistinctAreaId() == null
-				| rescueCaseDto.getRescueReason() == null | rescueCaseDto.getRescueDemands() == null
-				| rescueCaseDto.getCanAffords() == null) {
-			response.setSuccess(false);
-			response.setMessage("請填入必填資料");
-			return response;
-		}
+		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
 
 		// 3. 驗證此id是否存在於資料表中，有存在才繼續往service丟
 		if (id == null) {
@@ -119,24 +102,12 @@ public class RescueController {
 			return response;
 		}
 
-		// 圖片存入本地+資料庫中
-//				try {
-//					if (files != null) {
-//						imageService.saveImage(files);
-//					} else {
-//						response.setSuccess(false);
-//						response.setMessage("請上傳圖片檔");
-//						return response;
-//					}
-//				} catch (IOException e) {
-//					System.out.println("圖片儲存失敗");
-//					e.printStackTrace();
-//					return null;
-//				}
-
-		// 若id存在，就去修改這筆資料
+		// 4. 驗證id存在，就去修改這筆資料 
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
 		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, id);
+		
+		
+		
 		if (rescueCase != null) {
 			// 修改成功
 			response.setSuccess(true);

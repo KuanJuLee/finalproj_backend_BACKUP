@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public class RescueCaseDto {
 
@@ -78,8 +79,9 @@ public class RescueCaseDto {
 	@Length(min = 0, max = 50)               //限制不得超過50字
 	private String tag;             
 	
-	//前端傳遞照片暫存url給後端處理
+	//前端傳遞照片暫存url給後端處理，因為前端只會有3個上傳檔案功能所以也只會收到3個url
 	@NotEmpty(message = "照片為必填")
+	@Size(min=1, max=3)   //至少一張，至多三張
 	private List<String> casePictures;
 	
 	@NotEmpty(message = "救援需求為必填")

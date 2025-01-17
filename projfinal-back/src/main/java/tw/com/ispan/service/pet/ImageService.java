@@ -95,7 +95,7 @@ public class ImageService {
 	// 將暫存資料夾中圖片移到永存資料夾
 	public List<String> moveImage(List<String> tmpUrls) {
 		
-		//保存新圖片路徑
+		//用來保存新圖片路徑
 		List<String> finalUrl = new ArrayList<String>();
 		
 		//step1 先把圖片一個個從暫存資料夾移到永存資料夾，並返回新圖片路徑
@@ -133,16 +133,21 @@ public class ImageService {
 	
 	
 	//將圖片路徑保存至資料庫中(casePicture表)
-	public String saveImage(List<String> finalUrls) {
+	public List<CasePicture> saveImage(List<String> finalUrls) {
+		
+		//用來返回圖片實體List
+		List<CasePicture> casePictures = new ArrayList<>();
+		
 		
 		for (String url : finalUrls) {
 			
 			CasePicture casePicture = new CasePicture();
 			casePicture.setPictureUrl(url);
-			casePictureRepository.save(casePicture);
+			CasePicture newCasePicture = casePictureRepository.save(casePicture);   //會返回包含ID的實體
+			casePictures.add(newCasePicture);
 		}
 		
-		return "圖片保存至永存資料夾";
+		return casePictures;
 	}
 	
 //	public List<String> saveImage(MultipartFile[] files) throws IOException {

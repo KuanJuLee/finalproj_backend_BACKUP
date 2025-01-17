@@ -1,6 +1,5 @@
 package tw.com.ispan.service.pet;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import tw.com.ispan.domain.pet.Breed;
+import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.DistinctArea;
@@ -33,7 +33,6 @@ import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
-import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
 import tw.com.ispan.service.GeocodingService;
 import tw.com.ispan.specification.RescueCaseSpecification;
 //import tw.com.ispan.service.JwtService;
@@ -136,8 +135,8 @@ public class RescueCaseService {
 		return rescueCase;
 	}
 
-	// insert新增一筆案件到資料庫
-	public RescueCase add(RescueCase rescueCase, String token) {
+	// 增加非使用者填寫資料並insert新增一筆案件到資料庫
+	public RescueCase add(RescueCase rescueCase, String token , List<CasePicture> casePicture) {
 
 		// id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
@@ -149,6 +148,7 @@ public class RescueCaseService {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		
 		// 設置經緯度
 		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
 				+ rescueCase.getStreet();
@@ -163,7 +163,8 @@ public class RescueCaseService {
 			e.printStackTrace();
 		}
 		
-		// 設置圖片關聯(此時圖片資料庫已有資料)
+		// 設置圖片關聯(此時圖片資料庫已有資料)，利用controller傳進來的CasePicture實體設置
+		rescueCase.setCasePictures(casePicture);
 		
 		
 		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去，因為主實體rescueCae在save()時裏頭的關聯屬性的值都只能是永續狀態)
@@ -231,6 +232,7 @@ public class RescueCaseService {
 			if (rescueCase.getCaseState() != null) {
 				old.setCaseState(rescueCase.getCaseState());
 			}
+			//picture表此時被改過成新暫時路徑了，傳新路徑集合進來，重新set圖片實體
 			if (rescueCase.getCasePictures() != null) {
 				old.setCasePictures(rescueCase.getCasePictures());
 			}

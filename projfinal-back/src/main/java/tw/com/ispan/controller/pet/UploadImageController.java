@@ -1,17 +1,13 @@
 package tw.com.ispan.controller.pet;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +30,7 @@ public class UploadImageController {
 	private String tmpUploadDir;
 
 	// 圖片上傳先進到暫存資料夾upload/tmp/pet/images，並返回url給前端，等按下新增案件，將圖片移轉到永存資料夾(新url)，並將案件和圖片數據交給新增案件controller
+	// 前端頁面只會有三個上傳按鈕，藉此限制只能上傳三張
 	@PostMapping("/uploadImage")
 	public ResponseEntity<Map<String, String>> uploadImage(@RequestHeader("Authorization") String token,
 			@RequestPart("file") MultipartFile file) throws IOException {
@@ -47,7 +44,6 @@ public class UploadImageController {
 			response.put("status", "400");
 			response.put("message", "檔案不得為空");
 			return ResponseEntity.badRequest().body(response); // spring內建ResponseEntity類別，可創建http回應
-
 		}
 		String contentType = file.getContentType();
 		if (contentType == null || !contentType.startsWith("image/")) { // image開頭包含image/jpeg、image/png、image/gif
@@ -75,4 +71,25 @@ public class UploadImageController {
 		}
 
 	}
+	
+	
+	//修改案件某張圖片
+	@PostMapping("/modifyImage")
+	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
+			@PathVariable Integer casePictureid, @RequestPart("file") MultipartFile file){
+		
+		//進某案件頁面前端請求後端，後端要提供前端圖片ID+圖片給前端，而前端點選圖片上傳後，那個
+		
+		
+		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
+		Map<String, String> response = new HashMap<>();
+		
+		
+		
+		
+		return null;
+		
+	}
+	
+	
 }
