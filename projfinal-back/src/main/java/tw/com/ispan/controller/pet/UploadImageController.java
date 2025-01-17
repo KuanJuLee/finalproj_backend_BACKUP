@@ -76,7 +76,7 @@ public class UploadImageController {
 	@PostMapping("/modifyImage")
 	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
 			@RequestPart Integer casePictureid, @RequestPart("file") MultipartFile file){
-		
+
 		// 進某案件頁面時前端請求後端抓案件，案件中帶有圖片屬性集合，內含對應圖片id，而前端會將圖片id藏於圖片上傳功能中(有3個)
 		// 點選對應的圖片上傳後，要把新的上傳圖片和對應圖片id傳進來 @RequestPart同時接收參數和檔案
 		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
