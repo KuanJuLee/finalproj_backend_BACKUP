@@ -26,15 +26,15 @@ public class FurColor {
     private String furColor;
 
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-furColor")
     private List<LostCase> lostCases;
 
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-furColor")
     private List<RescueCase> rescueCases;
     
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-furColor")
     private List<AdoptionCase> adoptionCase;
 
     

@@ -222,9 +222,10 @@ public class RescueController {
     public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
                                               @RequestParam(defaultValue = "0") int page,            //前端沒丟參數就用預設值
                                               @RequestParam(defaultValue = "10") int size) {
-        System.out.println(criteria.toString());
+		System.out.println(criteria.toString());
 		Pageable pageable = PageRequest.of(page, size);
-        return rescueCaseService.searchRescueCases(criteria, pageable).getContent();
+		Page<RescueCase> resultPage = rescueCaseService.searchRescueCases(criteria, pageable);
+        return resultPage.getContent();
     }
 	
 	

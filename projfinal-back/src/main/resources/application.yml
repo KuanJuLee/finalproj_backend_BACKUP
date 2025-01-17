@@ -37,7 +37,7 @@ spring:
 
   #圖片下載路徑
 file:
-  upload-dir: /images
+  tmp-upload-dir: /src/main/resources/upload/tmp/pet/images
 
   #conosle顏色
   output:

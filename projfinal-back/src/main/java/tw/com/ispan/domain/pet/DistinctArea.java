@@ -26,17 +26,17 @@ public class DistinctArea {
 
 	// 和RescueCase表雙向一對多
 	@OneToMany(mappedBy = "distinctArea", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-distinctArea")
 	private List<RescueCase> rescueCases;
 	
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "distinctArea", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-distinctArea")
 	private List<LostCase> lostCases;
 	
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "distinctArea", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-distinctArea")
 	private List<AdoptionCase> adoptionCase;
 	
 	

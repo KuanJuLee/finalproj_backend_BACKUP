@@ -3,6 +3,7 @@ package tw.com.ispan.domain.pet;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,21 +29,22 @@ public class City {
 	// 和DistinctArea表單向一對多
 	@OneToMany(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "city_id")
+	@JsonIgnore
 	private List<DistinctArea> distinctAreas;
 
 	// 和RescueCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-city")
 	private List<RescueCase> rescueCases;
 
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-city")
 	private List<LostCase> lostCases;
 
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-	@JsonBackReference
+	@JsonBackReference("rescueCase-city")
 	private List<AdoptionCase> adoptionCases;
 
 	public City() {

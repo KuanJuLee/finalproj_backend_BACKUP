@@ -25,21 +25,22 @@ public class ImageService {
 	@Autowired
 	private CasePictureRepository casePictureRepository;
 
-	// 從application檔案注入固定路徑
-	@Value("${file.upload-dir}")
-	private String uploadDir;
+	// 暫存路徑
+	@Value("${file.tmp-upload-dir}")
+	private String tmpUploadDir;
 
 	// 將圖片存到外部資料夾+存路徑進到資料庫
 	public List<String> saveImage(MultipartFile[] files) throws IOException {
 
 		List<String> savedFileNames = new ArrayList<>();
+		
 		for (MultipartFile file : files) {
 
 			// 生成唯一文件名，防止文件名衝突
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
 			// 將文件路徑組合起來
-			Path filePath = Paths.get(uploadDir, fileName);
+			Path filePath = Paths.get(tmpUploadDir, fileName);
 
 			// 將上傳的文件內容保存到指定路徑
 			Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);

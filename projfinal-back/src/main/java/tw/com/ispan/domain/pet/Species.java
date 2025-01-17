@@ -26,15 +26,15 @@ public class Species {
     private String species;
 
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-species")
     private List<LostCase> lostCases;
 
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-species")
     private List<RescueCase> rescueCases;
     
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonBackReference("rescueCase-species")
     private List<AdoptionCase> adoptionCase;	
 
     

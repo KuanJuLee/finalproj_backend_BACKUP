@@ -42,26 +42,26 @@ public class RescueCase {
 	// 關聯到member表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "memberId", nullable = true, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
-	@JsonManagedReference
+	@JsonManagedReference("rescueCase-member")
 	private Member member;
 
 	//必填
 	// 關聯到species表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Species"))
-	@JsonManagedReference
+	@JsonManagedReference ("rescueCase-species")
 	private Species species;
 
 	// 關聯到breed表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "breedId", foreignKey = @ForeignKey(name = "FK_RescueCase_Breed"))
-	@JsonManagedReference
+	@JsonManagedReference("rescueCase-breed")
 	private Breed breed;
 
 	// 關聯到furColor表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
-	@JsonManagedReference
+	@JsonManagedReference("rescueCase-furColor")
 	private FurColor furColor;
 
 	@Column(columnDefinition = "NVARCHAR(5)", name = "gender")
@@ -84,14 +84,14 @@ public class RescueCase {
 	// 關聯到city表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_City"))
-	@JsonManagedReference
+	@JsonManagedReference("rescueCase-city")
 	private City city;
 
 	//必填
 	// 關聯到distinctArea表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_DistinctArea"))
-	@JsonManagedReference
+	@JsonManagedReference("rescueCase-distinctArea")
 	private DistinctArea distinctArea;
 
 	@Column(columnDefinition = "NVARCHAR(10)", name = "street")
@@ -116,7 +116,7 @@ public class RescueCase {
 	@Column(name = "follow")   //被追蹤數
 	private Integer follow;
 	
-	//必填
+	//必填(非使用者手動填寫)
 	@Column(name = "publicationTime", nullable = false)
 	private LocalDateTime publicationTime;
 	
