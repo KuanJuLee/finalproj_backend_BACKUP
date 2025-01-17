@@ -118,12 +118,10 @@ public class RescueCaseService {
 		// rescueDemands
 		List<RescueDemand> rescueDemands = rescueDemandRepository.findAllById(dto.getRescueDemands());
 		rescueCase.setRescueDemands(rescueDemands);
-//        rescueDemandService.frontRescueDemandConvert(rescueDemands);
 
 		// canAffords
 		List<CanAfford> canAffords = canAffordRepository.findAllById(dto.getCanAffords());
 		rescueCase.setCanAffords(canAffords);
-		// 不完整的，僅含有新增案件頁面中用戶自填資料，所以要給add繼續使用
 
 		// caseState
 		// 新增案件時dto內不會含caseState資料，而是等這個rescueCase被save()會自動觸發初始化程式塞入預設值待救援
@@ -164,14 +162,17 @@ public class RescueCaseService {
 			System.out.println("請求座標API失敗");
 			e.printStackTrace();
 		}
-
+		
+		// 設置圖片關聯(此時圖片資料庫已有資料)
+		
+		
 		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去，因為主實體rescueCae在save()時裏頭的關聯屬性的值都只能是永續狀態)
 		Optional<CaseState> result = caseStateRepository.findById(3);
 		if (result != null && result.isPresent()) {
 			rescueCase.setCaseState(result.get());
 		}
 		
-		//存進資料庫中
+		// 存進資料庫中
 		if (rescueCaseRepository.save(rescueCase) != null) {
 			System.out.println("新增成功");
 			return rescueCase;
@@ -288,9 +289,7 @@ public class RescueCaseService {
 	        return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
 	    }
 	
-	
-	
-	
+
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
 		if (id != null) {

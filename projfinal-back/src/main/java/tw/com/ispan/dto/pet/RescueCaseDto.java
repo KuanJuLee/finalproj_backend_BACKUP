@@ -78,9 +78,9 @@ public class RescueCaseDto {
 	@Length(min = 0, max = 50)               //限制不得超過50字
 	private String tag;             
 	
-	//傳遞照片id集合，到service中再用id的list去找圖片
+	//前端傳遞照片暫存url給後端處理
 	@NotEmpty(message = "照片為必填")
-	private List<Integer> casePictures;
+	private List<String> casePictures;
 	
 	@NotEmpty(message = "救援需求為必填")
 	private  List<Integer> rescueDemands;
@@ -167,10 +167,10 @@ public class RescueCaseDto {
 	public void setRescueReason(String rescueReason) {
 		this.rescueReason = rescueReason;
 	}
-	public List<Integer> getCasePictures() {
+	public List<String> getCasePictures() {
 		return casePictures;
 	}
-	public void setCasePictures(List<Integer> casePictures) {
+	public void setCasePictures(List<String> casePictures) {
 		this.casePictures = casePictures;
 	}
 	public List<Integer> getRescueDemands() {

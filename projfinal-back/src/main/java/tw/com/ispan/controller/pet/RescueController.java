@@ -40,61 +40,27 @@ public class RescueController {
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
 	@PostMapping(path = { "/add" })
 	public RescueCaseResponse add(@RequestHeader("Authorization") String token,
-			@Validated @RequestBody RescueCaseDto rescueCaseDto,
-			@RequestPart(name = "files", required = false) MultipartFile[] files) {
+			@Validated @RequestBody RescueCaseDto rescueCaseDto) {
 
 		System.out.println("近來優");
 
 		// 方法參數: 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊
 		// 2. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳給前端
-		// 3. MultipartFile接收圖片
-		// 4. 由於要同時接收圖檔、也要接收json文字，因此用@RequestPart來接收request中文字資料(rescueCaseDto)
 		RescueCaseResponse response = new RescueCaseResponse();
 
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
 		// 1.驗證token
 
-		// 2.驗證必填資料(沒寫傳進來dto接收會是預設初始值null或0)
-		//加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
+		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
 		
-//		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-//				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
-//				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
-//				| rescueCaseDto.getCasePictures() == null | rescueCaseDto.getRescueDemands() == null
-//				| rescueCaseDto.getCanAffords() == null) {
-//			response.setSuccess(false);	
-//			response.setMessage("請填入必填資料");
-//			return response;
-//		}
-//		
-//		if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
-//				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
-//				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
-//				| rescueCaseDto.getRescueDemands() == null | rescueCaseDto.getCanAffords() == null) {
-//			response.setSuccess(false);
-//			response.setMessage("請填入必填資料");
-//			return response;
-//		}
-
-		// 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
+		// 3.前端傳圖片暫存url，先將暫存資料夾中圖片移轉至永存資料夾，操作正確則回傳圖片新路徑，將新路徑存置資料庫中
+		List<String> finalUrl = imageService.moveImage(rescueCaseDto.getCasePictures());
+		imageService.saveImage(finalUrl);
+		
+		// 4. 新增案件至資料庫 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
 		RescueCase rescueCase = rescueCaseService.add(rescueCaseEntity, token);
-
-		// 圖片存入本地+資料庫中 <<圖片可正常上傳後記得打開>>
-//		try {
-//			if (files != null) {
-//				imageService.saveImage(files);
-//			} else {
-//				response.setSuccess(false);
-//				response.setMessage("請上傳圖片檔");
-//				return response;
-//			}
-//		} catch (IOException e) {
-//			System.out.println("圖片儲存失敗");
-//			e.printStackTrace();
-//			return null;
-//		}
-
+		
 		if (rescueCase != null) {
 			// 新增成功
 			response.setSuccess(true);

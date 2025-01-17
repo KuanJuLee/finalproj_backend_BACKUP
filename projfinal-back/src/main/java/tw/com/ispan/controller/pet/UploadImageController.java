@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import tw.com.ispan.service.pet.ImageService;
+
 //三個案件共用的單個圖片上傳
 @RestController
 @RequestMapping(path = { "/Case" })
 public class UploadImageController {
+
+	@Autowired
+	private ImageService imageService;
 
 	// 暫存路徑
 	@Value("${file.tmp-upload-dir}")
@@ -51,49 +57,22 @@ public class UploadImageController {
 		}
 
 		// 3.存到暫存資料夾(路徑或URL返回到前端，作為一個標識，接著再從前端傳給後端新增案件controller使用)
+		// 將上傳的文件內容保存到指定暫存路徑
+		Map<String, String> fileMessage = imageService.tmpSaveImage(file);
 
-		// 在程式啟動時將相對路徑解析為基於專案運行目錄的絕對路徑，System.getProperty("user.dir")可返回當前應用的執行目錄。
-		Path absolutePath = Paths.get(System.getProperty("user.dir"), tmpUploadDir).toAbsolutePath();
-
-		// 也可使用操作系統的臨時目錄，如果臨時文件只需要短期存儲
-		// String tmpDir = System.getProperty("java.io.tmpdir");
-		// Path tmpUploadPath = Paths.get(tmpDir, "upload/tmp/pet/images");
-
-		// 生成唯一文件名，防止文件名衝突 (圖片名取為memberid_caseid，但須要從token抓會員資料才能抓)
-		String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
-		// 如果不存在則先創建目錄
-		if (!Files.exists(absolutePath)) {
-			Files.createDirectories(absolutePath);
-		}
-
-		// 將文件路徑組合起來
-		Path filePath = absolutePath.resolve(fileName);
-
-		// 將上傳的文件內容保存到指定路徑
-		try {
-			Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.getProperty("user.dir");
-			response.put("status", "400");
-			response.put("message", "此路徑不存在");
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		// 最後檢查文件是否順利存儲
-		if (!Files.exists(filePath)) {
+		if (fileMessage != null) {
+			// 上傳成功(返回tempUrl給前端使用，等送出案件再把圖片永存資料夾url存到資料庫中)
+			response.put("fileName", fileMessage.get("fileName"));
+			response.put("tempUrl", fileMessage.get("tempUrl"));
+			response.put("status", fileMessage.get("status"));
+			response.put("message", fileMessage.get("message"));
+			return ResponseEntity.ok(response);
+		} else {
+			// 上傳失敗回傳
 			response.put("status", "500");
-			response.put("message", "文件存儲失敗");
+			response.put("message", "圖片上傳失敗");
 			return ResponseEntity.badRequest().body(response);
 		}
-		
-		// 成功訊息(返回臨時url給前端使用，等送出案件再把圖片永存資料夾url存到資料庫中)
-		response.put("fileName", fileName);
-		response.put("tempUrl", filePath.toString());
-		response.put("status", "200");
-		response.put("message", "圖片上傳成功，路徑：" + filePath.toString());
-		return ResponseEntity.ok(response);
 
 	}
 }

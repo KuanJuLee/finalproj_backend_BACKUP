@@ -35,9 +35,13 @@ spring:
       enabled: true
       force: true
 
-  #圖片下載路徑
+  #寵物圖片暫存路徑
 file:
-  tmp-upload-dir: /src/main/resources/upload/tmp/pet/images
+  tmp-upload-dir: /src/main/resources/upload/tmp/pet
+
+  #寵物圖片上傳路徑
+  final-upload-dir: /src/main/resources/upload/final/pet/images
+  
 
   #conosle顏色
   output:
