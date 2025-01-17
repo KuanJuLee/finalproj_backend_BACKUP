@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,12 +75,13 @@ public class UploadImageController {
 	//修改案件某張圖片
 	@PostMapping("/modifyImage")
 	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
-			@PathVariable Integer casePictureid, @RequestPart("file") MultipartFile file){
+			@RequestPart Integer casePictureid, @RequestPart("file") MultipartFile file){
 		
-		//進某案件頁面前端請求後端，後端要提供前端圖片ID+圖片給前端，而前端點選圖片上傳後，那個
-		
+		// 進某案件頁面時前端請求後端抓案件，案件中帶有圖片屬性集合，內含對應圖片id，而前端會將圖片id藏於圖片上傳功能中(有3個)
+		// 點選對應的圖片上傳後，要把新的上傳圖片和對應圖片id傳進來 @RequestPart同時接收參數和檔案
 		
 		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
+		
 		Map<String, String> response = new HashMap<>();
 		
 		
