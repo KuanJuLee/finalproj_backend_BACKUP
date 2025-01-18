@@ -42,7 +42,6 @@ public class RescueCase {
 	// 關聯到member表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "memberId", nullable = true, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
-	@JsonManagedReference("rescueCase-member")
 	private Member member;
 
 	//必填
@@ -61,7 +60,6 @@ public class RescueCase {
 	// 關聯到furColor表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST})
 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_RescueCase_FurColor"))
-	@JsonManagedReference("rescueCase-furColor")
 	private FurColor furColor;
 
 	@Column(columnDefinition = "NVARCHAR(5)", name = "gender")
@@ -172,9 +170,9 @@ public class RescueCase {
     @JoinColumn(name = "rescueCaseId")
     private List<RescueProgress> rescueProgresses;
 	
-    //關聯到follow表(follow為會員和案件的追蹤中介表) 單向一對多(follow找來case，因為主要是關注某會員追蹤那些案件)
-//    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST, orphanRemoval = true)
-//    private List<Follow> follows;
+    //關聯到follow表(為會員和案件的追蹤中介表) 雙向一對多 
+    @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST, orphanRemoval = true)
+    private List<Follow> follows;
     
     	
     // 關聯到ReportCase表，單向一對多

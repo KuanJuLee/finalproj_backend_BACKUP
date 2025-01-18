@@ -31,12 +31,12 @@ public class DistinctArea {
 	
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "distinctArea", cascade = CascadeType.PERSIST)
-	@JsonBackReference("rescueCase-distinctArea")
+	@JsonBackReference("lostCases-distinctArea")
 	private List<LostCase> lostCases;
 	
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "distinctArea", cascade = CascadeType.PERSIST)
-	@JsonBackReference("rescueCase-distinctArea")
+	@JsonBackReference("adoptionCase-distinctArea")
 	private List<AdoptionCase> adoptionCase;
 	
 	

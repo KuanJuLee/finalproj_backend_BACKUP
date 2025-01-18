@@ -25,17 +25,18 @@ public class Species {
     @Column(name = "species", nullable = false, length = 10)
     private String species;
 
-    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-species")
-    private List<LostCase> lostCases;
-
-    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-species")
-    private List<RescueCase> rescueCases;
-    
-    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-species")
-    private List<AdoptionCase> adoptionCase;	
+//改為單向
+//    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+//    @JsonBackReference("lostCases-species")
+//    private List<LostCase> lostCases;
+//
+//    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+//    @JsonBackReference("rescueCase-species")
+//    private List<RescueCase> rescueCases;
+//    
+//    @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
+//    @JsonBackReference("adoptionCase-species")
+//    private List<AdoptionCase> adoptionCase;	
 
     
     
@@ -69,20 +70,5 @@ public class Species {
         this.species = species;
     }
 
-    public List<RescueCase> getRescueCases() {
-        return rescueCases;
-    }
-
-    public void setRescueCases(List<RescueCase> rescueCases) {
-        this.rescueCases = rescueCases;
-    }
-
-    public List<LostCase> getLostCases() {
-        return lostCases;
-    }
-
-    public void setLostCases(List<LostCase> lostCases) {
-        this.lostCases = lostCases;
-    }
     
 }

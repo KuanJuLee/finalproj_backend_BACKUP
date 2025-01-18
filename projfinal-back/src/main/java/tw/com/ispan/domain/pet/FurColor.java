@@ -25,17 +25,15 @@ public class FurColor {
     @Column(name = "furColor", nullable = false, length = 20)
     private String furColor;
 
-    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-furColor")
-    private List<LostCase> lostCases;
-
-    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-furColor")
-    private List<RescueCase> rescueCases;
-    
-    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
-    @JsonBackReference("rescueCase-furColor")
-    private List<AdoptionCase> adoptionCase;
+    //改為單向，一個毛色不須知道有哪些案件 
+//    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
+//    private List<LostCase> lostCases;
+//
+//    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
+//    private List<RescueCase> rescueCases;
+//    
+//    @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
+//    private List<AdoptionCase> adoptionCase;
 
     
     
@@ -65,21 +63,5 @@ public class FurColor {
 
     public void setFurColor(String furColor) {
         this.furColor = furColor;
-    }
-
-    public List<RescueCase> getRescueCases() {
-        return rescueCases;
-    }
-
-    public void setRescueCases(List<RescueCase> rescueCases) {
-        this.rescueCases = rescueCases;
-    }
-
-    public List<LostCase> getLostCases() {
-        return lostCases;
-    }
-
-    public void setLostCases(List<LostCase> lostCases) {
-        this.lostCases = lostCases;
     }
 }

@@ -33,7 +33,6 @@ import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
-import tw.com.ispan.service.GeocodingService;
 import tw.com.ispan.specification.RescueCaseSpecification;
 //import tw.com.ispan.service.JwtService;
 import tw.com.ispan.util.LatLng;
