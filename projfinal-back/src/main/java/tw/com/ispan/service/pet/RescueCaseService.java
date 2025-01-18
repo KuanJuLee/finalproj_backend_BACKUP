@@ -21,6 +21,7 @@ import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
+import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
@@ -65,7 +66,7 @@ public class RescueCaseService {
 	@Autowired
 	private GeocodingService geocodingService;
 
-	// 手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
+	// 新增案件:手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
 	public RescueCase convertToEntity(RescueCaseDto dto) {
 
 		RescueCase rescueCase = new RescueCase();
@@ -182,16 +183,91 @@ public class RescueCaseService {
 
 	}
 
-	// 修改案件----------------------------------------------------------------------------------------------
-	public RescueCase modify(RescueCase rescueCase, Integer id) {
+	
+	//修改案件專用的dto轉換(和新增案件不同在於casePicture資料型態)
+	public RescueCase modifyConvertToEntity(ModifyRescueCaseDto dto) {
 
-		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接sqve()這些資訊會空掉，最後存修改後的舊物件
+		RescueCase rescueCase = new RescueCase();
+
+		// 沒有對應資料表的屬性直接塞(不比對了不管有沒有改過都執行，懶的寫條件)
+		rescueCase.setCaseTitle(dto.getCaseTitle());
+		rescueCase.setGender(dto.getGender());
+		rescueCase.setSterilization(dto.getSterilization());
+		rescueCase.setAge(dto.getAge());
+		rescueCase.setMicroChipNumber(dto.getMicroChipNumber());
+		rescueCase.setSuspLost(dto.getSuspLost());
+		rescueCase.setStreet(dto.getStreet());
+		rescueCase.setRescueReason(dto.getRescueReason());
+		rescueCase.setTag(dto.getTag());
+
+		// 以下傳id進來，找到對應資料再塞回enitity物件中
+		// 物種
+		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
+		if (result1 != null && result1.isPresent()) {
+			rescueCase.setSpecies(result1.get()); 
+		}
+
+		// 品種
+		Optional<Breed> result2 = breedRepository.findById(dto.getBreedId());
+		if (result2 != null && result2.isPresent()) {
+			rescueCase.setBreed(result2.get());
+		}
+
+		// 毛色
+		Optional<FurColor> result3 = furColorRepository.findById(dto.getFurColorId());
+		if (result3 != null && result3.isPresent()) {
+			rescueCase.setFurColor(result3.get());
+		}
+
+		// city
+		Optional<City> result4 = cityRepository.findById(dto.getCityId());
+		if (result4 != null && result4.isPresent()) {
+			rescueCase.setCity(result4.get());
+		}
+
+		// distinctArea
+		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
+		if (result5 != null && result5.isPresent()) {
+			rescueCase.setDistinctArea(result5.get());
+		}
+
+		// rescueDemands
+		List<RescueDemand> rescueDemands = rescueDemandRepository.findAllById(dto.getRescueDemands());
+		rescueCase.setRescueDemands(rescueDemands);
+
+		// canAffords
+		List<CanAfford> canAffords = canAffordRepository.findAllById(dto.getCanAffords());
+		rescueCase.setCanAffords(canAffords);
+
+		// caseState
+		// 新增案件時dto內不會含caseState資料，而是等這個rescueCase被save()會自動觸發初始化程式塞入預設值待救援
+		// 修改案件時dto內會有caseState資料，因此要塞到rescueCase物件中
+		if (dto.getCaseStateId() != null) {
+			Optional<CaseState> result6 = caseStateRepository.findById(dto.getCaseStateId());
+			if (result6 != null && result6.isPresent()) {
+				rescueCase.setCaseState(result6.get());
+			}
+		}
+
+		return rescueCase;
+	}
+
+	
+	
+	
+	
+	
+	
+	// 修改案件----------------------------------------------------------------------------------------------
+	public RescueCase modify(RescueCase rescueCase, Integer id, List<CasePicture> casePictures) {
+
+		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接save()這些資訊會空掉，最後存修改後的舊物件
 		Optional<RescueCase> result = rescueCaseRepository.findById(id);
 		if (result != null && result.isPresent()) {
 
 			RescueCase old = result.get();
 
-			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到jpa註解自動改變)
+			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到domain jpa註解自動改變)
 			if (rescueCase.getCaseTitle() != null) {
 				old.setCaseTitle(rescueCase.getCaseTitle());
 			}

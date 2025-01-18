@@ -28,6 +28,7 @@ public class UploadImageController {
 	@Value("${file.tmp-upload-dir}")
 	private String tmpUploadDir;
 
+	// 修改、新增案件的圖檔上傳都用這個
 	// 圖片上傳先進到暫存資料夾upload/tmp/pet/images，並返回url給前端，等按下新增案件，將圖片移轉到永存資料夾(新url)，並將案件和圖片數據交給新增案件controller
 	// 前端頁面只會有三個上傳按鈕，藉此限制只能上傳三張
 	@PostMapping("/uploadImage")
@@ -72,23 +73,23 @@ public class UploadImageController {
 	}
 	
 	
-	//修改案件某張圖片
-	@PostMapping("/modifyImage")
-	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
-			@RequestPart Integer casePictureid, @RequestPart("file") MultipartFile file){
-
-		// 進某案件頁面時前端請求後端抓案件，案件中帶有圖片屬性集合，內含對應圖片id，而前端會將圖片id藏於圖片上傳功能中(有3個)
-		// 點選對應的圖片上傳後，要把新的上傳圖片和對應圖片id傳進來 @RequestPart同時接收參數和檔案
-		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
-		
-		Map<String, String> response = new HashMap<>();
-		
-		
-		
-		
-		return null;
-		
-	}
+//	//修改案件某張圖片
+//	@PostMapping("/modifyImage")
+//	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
+//			@RequestPart Integer casePictureid, @RequestPart("file") MultipartFile file){
+//
+//		// 進某案件頁面時前端請求後端抓案件資訊，案件中帶有圖片屬性集合，內含對應圖片id，而前端會將圖片id藏於圖片上傳功能中(有1~3個)
+//		// 點選對應的圖片上傳後，要把新的上傳圖片和對應圖片id傳進來 @RequestPart同時接收參數和檔案
+//		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
+//		
+//		Map<String, String> response = new HashMap<>();
+//		
+//		
+//		
+//		
+//		return null;
+//		
+//	}
 	
 	
 }

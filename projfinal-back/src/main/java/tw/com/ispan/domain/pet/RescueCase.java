@@ -140,6 +140,7 @@ public class RescueCase {
     
 	//必填
 	//關聯到CasePicture表，單向一對多，註釋在這但rescueCaseId外鍵會在CasePicture表中
+	//當初設計一個case需放多張圖，由於想要減少表格數??? 把不同case的圖都放在同一張表，因此雖然設立3個case外鍵，但都須設為null
 	@OneToMany( cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_RescueCase"))
 	private List<CasePicture> casePictures;

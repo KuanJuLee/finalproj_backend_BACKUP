@@ -123,7 +123,7 @@ public class LostCase {
 
     // 關聯到CasePicture表，單向一對多，rescueCaseId外鍵會在CasePicture表中
     @OneToMany
-    @JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_LostCase"))
+    @JoinColumn(name = "lostCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_LostCase"))
     private List<CasePicture> casePictures;
       
     // Getters and Setters

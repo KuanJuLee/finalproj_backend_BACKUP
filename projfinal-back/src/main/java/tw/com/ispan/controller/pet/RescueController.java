@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
+import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
@@ -55,7 +54,7 @@ public class RescueController {
 		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
 		
 		// 3.前端傳圖片暫存url list，先將暫存資料夾中圖片移轉至永存資料夾，操作正確則回傳圖片新路徑，將新路徑存置資料庫中
-		List<String> finalUrl = imageService.moveImage(rescueCaseDto.getCasePictures());
+		List<String> finalUrl = imageService.moveImages(rescueCaseDto.getCasePictures());
 		System.out.println("圖片移動完畢!");
 		List<CasePicture> casePictures = imageService.saveImage(finalUrl);
 		
@@ -79,14 +78,13 @@ public class RescueController {
 	// 修改救援案件-----------------------------------------------------------------------------------------------------------------------------
 	@PutMapping(path = { "/modify/{id}" })
 	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer id,
-			@RequestHeader("Authorization") String token, @Validated @RequestBody RescueCaseDto rescueCaseDto) {
+			@RequestHeader("Authorization") String token, @Validated @RequestBody ModifyRescueCaseDto dto) {
 
-		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState，因此和新增案件不同點在於這裡dto內的caseState會有資料而非null
+		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState以及會傳imageIdandUrl進來，因此相較新增案件的這兩個屬性不是null
 		// 案件id要從前端點選修改按鈕(按鈕做成超連結)時同時送出，因此id即藏在超連結送出的request line裡
 
 		RescueCaseResponse response = new RescueCaseResponse();
 
-		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
 		// 1.驗證token
 
 		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
@@ -101,10 +99,21 @@ public class RescueController {
 			response.setMessage("id不存在於資料中");
 			return response;
 		}
-
+		
+		
+		//修改圖片
+		//先判斷getImageIdandUrl中有無不對應的部分(表示圖片被修改)，有修改的才需要被移到永存資料夾，同時修改圖片表中對應id的圖片url為新url
+		//返回對應的CasePicture實體，等等用來存進case物件中
+		List<CasePicture> newCasePictures = imageService.saveModify(dto.getImageIdandUrl());
+		if(newCasePictures == null) {
+			response.setSuccess(false);
+			response.setMessage("圖片修改出問題");
+			return response;
+		}
+		
 		// 4. 驗證id存在，就去修改這筆資料 
-		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
-		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, id);
+		RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
+		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, id, newCasePictures);
 		
 		
 		
