@@ -39,12 +39,12 @@ public class City {
 
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-	@JsonBackReference("rescueCase-city")
+	@JsonBackReference("lostCases-city")
 	private List<LostCase> lostCases;
 
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-	@JsonBackReference("rescueCase-city")
+	@JsonBackReference("adoptionCases-city")
 	private List<AdoptionCase> adoptionCases;
 
 	public City() {

@@ -171,80 +171,11 @@ public class PetDataInitializer implements CommandLineRunner {
 		if (!canAffordRepository.existsById(4)) {
 			canAffordRepository.save(new CanAfford("願意負擔救援物資"));
 		}
-		if (!canAffordRepository.existsById(1)) {
+		if (!canAffordRepository.existsById(5)) {
 			canAffordRepository.save(new CanAfford("願意負擔救援費用"));
 		}
 
-		// 存入city資料(舊版!!!!)
-		// 臺北市、新北市、基隆市、新竹市、桃園市、新竹縣及宜蘭縣。 中部區域：包括臺中市、苗栗縣、彰化縣、南投縣及雲林縣。
-		// 南部區域：包括高雄市、臺南市、嘉義市、嘉義縣、屏東縣及澎湖縣。 東部區域：包括花蓮縣及臺東縣
-//		if (!cityRepository.existsById(1)) {
-//			cityRepository.save(new City("臺北市"));
-//		}
-//		if (!cityRepository.existsById(2)) {
-//			cityRepository.save(new City("新北市"));
-//		}
-//		if (!cityRepository.existsById(3)) {
-//			cityRepository.save(new City("基隆市"));
-//		}
-//		if (!cityRepository.existsById(4)) {
-//			cityRepository.save(new City("新竹市"));
-//		}
-//		if (!cityRepository.existsById(5)) {
-//			cityRepository.save(new City("桃園市"));
-//		}
-//		if (!cityRepository.existsById(6)) {
-//			cityRepository.save(new City("新竹縣"));
-//		}
-//		if (!cityRepository.existsById(7)) {
-//			cityRepository.save(new City("宜蘭縣"));
-//		}
-//		if (!cityRepository.existsById(8)) {
-//			cityRepository.save(new City("臺中市"));
-//		}
-//		if (!cityRepository.existsById(9)) {
-//			cityRepository.save(new City("苗栗縣"));
-//		}
-//		if (!cityRepository.existsById(10)) {
-//			cityRepository.save(new City("彰化縣"));
-//		}
-//		if (!cityRepository.existsById(11)) {
-//			cityRepository.save(new City("南投縣"));
-//		}
-//		if (!cityRepository.existsById(12)) {
-//			cityRepository.save(new City("雲林縣"));
-//		}
-//		if (!cityRepository.existsById(13)) {
-//			cityRepository.save(new City("高雄市"));
-//		}
-//		if (!cityRepository.existsById(14)) {
-//			cityRepository.save(new City("臺南市"));
-//		}
-//		if (!cityRepository.existsById(15)) {
-//			cityRepository.save(new City("嘉義市"));
-//		}
-//		if (!cityRepository.existsById(16)) {
-//			cityRepository.save(new City("嘉義縣"));
-//		}
-//		if (!cityRepository.existsById(17)) {
-//			cityRepository.save(new City("屏東縣"));
-//		}
-//		if (!cityRepository.existsById(18)) {
-//			cityRepository.save(new City("澎湖縣"));
-//		}
-//		if (!cityRepository.existsById(19)) {
-//			cityRepository.save(new City("花蓮縣"));
-//		}
-//		if (!cityRepository.existsById(20)) {
-//			cityRepository.save(new City("臺東縣"));
-//		}
-//		if (!cityRepository.existsById(21)) {
-//			cityRepository.save(new City("金門縣"));
-//		}
-//		if (!cityRepository.existsById(22)) {
-//			cityRepository.save(new City("連江縣"));
-//		}
-
+		
 		// 存入distinct資料
 		// Jackson 或 Gson 在將 JSON 轉換為
 		// Java物件時，只會映射與dto類別中字段名稱匹配的JSON屬性(大小寫敏感)，額外的屬性會被自動忽略，而不會影響轉換過程

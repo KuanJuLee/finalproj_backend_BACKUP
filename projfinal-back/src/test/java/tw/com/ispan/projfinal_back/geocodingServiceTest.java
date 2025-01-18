@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import tw.com.ispan.service.GeocodingService;
+import tw.com.ispan.service.pet.GeocodingService;
 import tw.com.ispan.util.LatLng;
 
 @SpringBootTest

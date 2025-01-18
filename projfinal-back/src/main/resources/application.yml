@@ -41,7 +41,6 @@ file:
 
   #寵物圖片上傳路徑
   final-upload-dir: /src/main/resources/upload/final/pet/images
-  
 
   #conosle顏色
   output:

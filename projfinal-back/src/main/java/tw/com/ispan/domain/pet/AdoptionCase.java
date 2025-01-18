@@ -1,7 +1,12 @@
 package tw.com.ispan.domain.pet;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.hibernate.sql.ast.tree.expression.Distinct;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,9 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import tw.com.ispan.domain.admin.Member;
-import tw.com.ispan.domain.pet.forRescue.CanAfford;
-import tw.com.ispan.domain.pet.forRescue.RescueDemand;
-import tw.com.ispan.domain.pet.forRescue.RescueProgress;
+import tw.com.ispan.domain.pet.forAdopt.AdoptionCaseApply;
 
 @Entity
 @Table(name = "AdoptionCase")
@@ -36,136 +39,399 @@ public class AdoptionCase {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Member"))
     private Member member;
-    
-	//必填
-	// 關聯到species表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Species"))
-	private Species species;
-    
-	// 關聯到breed表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "breedId", foreignKey = @ForeignKey(name = "FK_AdoptionCase_Breed"))
-	private Breed breed;
-    
- // 關聯到furColor表，雙向多對一
- 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
- 	@JoinColumn(name = "furColorId", foreignKey = @ForeignKey(name = "FK_AdoptionCase_FurColor"))
- 	private FurColor furColor;
- 	
- 	@Column(columnDefinition = "NVARCHAR(5)", name = "gender")
-	private String gender;
+    // 雙向多對一,外鍵,對應species表
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "speciesId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Species"))
+    private Species species;
+    // 雙向多對一,外鍵,對應breed表
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "breedId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Breed"))
+    private Breed breed;
+    // 雙向多對一,外鍵,對應furColor表
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "furColorId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_FurColor"))
+    private FurColor furColor;
 
-	@Column(columnDefinition = "NVARCHAR(5)", name = "sterilization")
-	private String sterilization;
+    @Column(name = "gender", columnDefinition = "nvarchar(5)")
+    private String gender;
 
-	@Column(name = "age")
-	private Integer age;
+    @Column(name = "sterilization", columnDefinition = "nvarchar(5)")
+    private String sterilization;
 
-	@Column(name = "microChipNumber")
-	private Integer microChipNumber;
-	
-	//必填
-	@Column(name = "suspLost", nullable = false)
-	private Boolean suspLost;
-	
-	//必填
-	// 關聯到city表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_City"))
-	private City city;
+    @Column(name = "age")
+    private Integer age;
 
-	//必填
-	// 關聯到distinctArea表，雙向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_DistinctArea"))
-	private DistinctArea distinctArea;
+    @Column(name = "microChipNumber")
+    private Integer microChipNumber;
 
-	@Column(columnDefinition = "NVARCHAR(10)", name = "street")
-	private String street;
-	
-	//必填
-	// 10位數，8位小數
-	@Column(name = "latitude", precision = 10, nullable = false)
-	private Double latitude;
-	
-	//必填
-	// 11位數，8位小數
-	@Column(name = "longitude", precision = 11,  nullable = false)
-	private Double longitude;
+    @Column(name = "susLost", nullable = false)
+    private Boolean susLost;
 
-	@Column(name = "donationAmount")
-	private Integer donationAmount;
+    // 雙向多對一,外鍵,對應city表
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_City"))
+    private City city;
 
-	@Column(name = "viewCount")
-	private Integer viewCount;   
+    // 雙向多對一,外鍵,對應distinctArea表
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Distinct"))
+    private DistinctArea distinctArea;
 
-	@Column(name = "follow")
-	private Integer follow;
-	
-	//必填
-	@Column(name = "publicationTime", nullable = false)
-	private LocalDateTime publicationTime;
-	
-	//必填
-	@Column(name = "lastUpdateTime", nullable = false)
-	private LocalDateTime lastUpdateTime;
-	
-	@Column(name = "tag", nullable = true, columnDefinition = "nvarchar(100)")
-	private String tag;
-	
-	//必填
-	// 關聯到CaseState表，單向多對一
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	@JoinColumn(name = "CaseStateId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_CaseState"))
-	private CaseState caseState;
-	
-	//必填
-	@Column(name = "rescueReason", columnDefinition = "nvarchar(max)", nullable = false)
-	private String rescueReason;
+    @Column(name = "street", columnDefinition = "NVARCHAR(10)")
+    private String street;
 
-	@Column(name = "caseUrl", length = 255)
-	private String caseUrl;
-    
-	//必填
-	//關聯到CasePicture表，單向一對多，rescueCaseId外鍵會在CasePicture表中
-	@OneToMany
-	@JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_AdoptionCase_RescueCase"))
-	private List<CasePicture> casePictures;
-	
-	//必填
-	//和rescueDemand單向多對多
-    @ManyToMany
-    @JoinTable(
-        name = "AdoptionCase_RescueDemand",
-        joinColumns = @JoinColumn(name = "adoptionCaseId"),
-        inverseJoinColumns = @JoinColumn(name = "rescueDemandId")
-    )
-    private List<RescueDemand> rescueDemands;
-	
-    //必填
-    //和canAfford表為單向多對多(case找去afford)
-    @ManyToMany
-    @JoinTable(
-        name = "CanAfford_AdoptionCase",
-        joinColumns = @JoinColumn(name = "adoptionCaseId"),
-        inverseJoinColumns = @JoinColumn(name = "canAffordId")
-    )
-    private List<CanAfford> canAffords;
-    
-    
-    //和RescueProgress表單向一對多(case找去RescueProgress)
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @JoinColumn(name = "adoptionCaseId")
-    private List<RescueProgress> rescueProgresses;
-	
-    
+    // 10位數，8位小數
+    @Column(name = "latitude", precision = 10, scale = 8, nullable = false)
+    private BigDecimal latitude;
+
+    @Column(name = "longitude", precision = 11, scale = 8, nullable = false)
+    private BigDecimal longitude;
+
+    @Column(name = "viewCount")
+    private Integer viewCount;
+
+    @Column(name = "follow")
+    private Integer follow;
+
+    @Column(name = "publicationTime", nullable = false)
+    private LocalDateTime publicationTime;
+
+    @Column(name = "lastUpdateTime", nullable = false)
+    private LocalDateTime lastUpdateTime;
+
+    @Column(name = "length=20", nullable = false)
+    private String title;
+
+    @Column(name = "story", columnDefinition = "NVARCHAR(max)", nullable = false)
+    private String story;
+
+    @Column(name = "healthCondition", columnDefinition = "NVARCHAR(max)", nullable = false)
+    private String healthCondition;
+
+    @Column(name = "adoptedCondition", columnDefinition = "NVARCHAR(max)", nullable = false)
+    private String adoptedCondition;
+
+    @Column(name = "status", columnDefinition = "NVARCHAR(20)", nullable = false)
+    private Integer status;
+
+    @Column(name = "note", columnDefinition = "NVARCHAR(max)", nullable = false)
+    private Integer note;
+
+    // 關聯到CasePicture表，單向一對多，外鍵在一方
+    @OneToMany
+    @JoinColumn(name = "adoptionCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_AdoptionCase"), nullable = false)
+    private List<CasePicture> casePictures;
+
+    // 雙向一對多，對應follow表
     @OneToMany(mappedBy = "adoptionCase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Follow> follows;
-    
-    
+    private Set<Follow> follows;
+
     // 關聯到ReportCase表，單向一對多
+    // 無外鍵，怕爛掉，測試版
     @OneToMany(mappedBy = "adoptionCase", cascade = CascadeType.ALL)
-    private List<ReportCase> reportCases; 
+    private List<ReportCase> reportCase;
+
+    // 與AdoptionCaseApply 多對多
+    @ManyToMany
+    @JoinTable(name = "Case_CaseApply", joinColumns = @JoinColumn(name = "adoptionCaseId", foreignKey = @ForeignKey(name = "FK_Case")), inverseJoinColumns = @JoinColumn(name = "adoptionCaseApplyId", foreignKey = @ForeignKey(name = "FK_CaseApply")))
+    private Set<AdoptionCaseApply> adoptionCaseApply = new HashSet<>();
+
+    public AdoptionCase() {
+
+    }
+
+    public AdoptionCase(Integer adoptionCaseId, String caseTitle, Member member, Species species, Breed breed,
+            FurColor furColor, String gender, String sterilization, Integer age, Integer microChipNumber,
+            Boolean susLost, City city, DistinctArea distinctArea, String street, BigDecimal latitude,
+            BigDecimal longitude,
+            Integer viewCount, Integer follow, LocalDateTime publicationTime, LocalDateTime lastUpdateTime,
+            String title, String story, String healthCondition, String adoptedCondition, Integer status, Integer note,
+            List<CasePicture> casePictures, Set<Follow> follows, List<ReportCase> reportCase,
+            Set<AdoptionCaseApply> adoptionCaseApply) {
+        this.adoptionCaseId = adoptionCaseId;
+        this.caseTitle = caseTitle;
+        this.member = member;
+        this.species = species;
+        this.breed = breed;
+        this.furColor = furColor;
+        this.gender = gender;
+        this.sterilization = sterilization;
+        this.age = age;
+        this.microChipNumber = microChipNumber;
+        this.susLost = susLost;
+        this.city = city;
+        this.distinctArea = distinctArea;
+        this.street = street;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.viewCount = viewCount;
+        this.follow = follow;
+        this.publicationTime = publicationTime;
+        this.lastUpdateTime = lastUpdateTime;
+        this.title = title;
+        this.story = story;
+        this.healthCondition = healthCondition;
+        this.adoptedCondition = adoptedCondition;
+        this.status = status;
+        this.note = note;
+        this.casePictures = casePictures;
+        this.follows = follows;
+        this.reportCase = reportCase;
+        this.adoptionCaseApply = adoptionCaseApply;
+    }
+
+    public Integer getAdoptionCaseId() {
+        return adoptionCaseId;
+    }
+
+    public List<CasePicture> getCasePictures() {
+        return casePictures;
+    }
+
+    public void setCasePictures(List<CasePicture> casePictures) {
+        this.casePictures = casePictures;
+    }
+
+    public Set<Follow> getFollows() {
+        return follows;
+    }
+
+    public void setFollows(Set<Follow> follows) {
+        this.follows = follows;
+    }
+
+    public List<ReportCase> getReportCase() {
+        return reportCase;
+    }
+
+    public void setReportCases(List<ReportCase> reportCase) {
+        this.reportCase = reportCase;
+    }
+
+    public Set<AdoptionCaseApply> getAdoptionCaseApplys() {
+        return adoptionCaseApply;
+    }
+
+    public void setAdoptionCaseApplys(Set<AdoptionCaseApply> adoptionCaseApply) {
+        this.adoptionCaseApply = adoptionCaseApply;
+    }
+
+    public void setAdoptionCaseId(Integer adoptionCaseId) {
+        this.adoptionCaseId = adoptionCaseId;
+    }
+
+    public String getCaseTitle() {
+        return caseTitle;
+    }
+
+    public void setCaseTitle(String caseTitle) {
+        this.caseTitle = caseTitle;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public Species getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(Species species) {
+        this.species = species;
+    }
+
+    public Breed getBreed() {
+        return breed;
+    }
+
+    public void setBreed(Breed breed) {
+        this.breed = breed;
+    }
+
+    public FurColor getFurColor() {
+        return furColor;
+    }
+
+    public void setFurColor(FurColor furColor) {
+        this.furColor = furColor;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getSterilization() {
+        return sterilization;
+    }
+
+    public void setSterilization(String sterilization) {
+        this.sterilization = sterilization;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getMicroChipNumber() {
+        return microChipNumber;
+    }
+
+    public void setMicroChipNumber(Integer microChipNumber) {
+        this.microChipNumber = microChipNumber;
+    }
+
+    public Boolean getSusLost() {
+        return susLost;
+    }
+
+    public void setSusLost(Boolean susLost) {
+        this.susLost = susLost;
+    }
+
+    public City getCityId() {
+        return city;
+    }
+
+    public void setCityId(City city) {
+        this.city = city;
+    }
+
+    public DistinctArea getDistintId() {
+        return distinctArea;
+    }
+
+    public void setDistintId(DistinctArea distinctArea) {
+        this.distinctArea = distinctArea;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public Integer getFollow() {
+        return follow;
+    }
+
+    public void setFollow(Integer follow) {
+        this.follow = follow;
+    }
+
+    public LocalDateTime getPublicationTime() {
+        return publicationTime;
+    }
+
+    public void setPublicationTime(LocalDateTime publicationTime) {
+        this.publicationTime = publicationTime;
+    }
+
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getStory() {
+        return story;
+    }
+
+    public void setStory(String story) {
+        this.story = story;
+    }
+
+    public String getHealthCondition() {
+        return healthCondition;
+    }
+
+    public void setHealthCondition(String healthCondition) {
+        this.healthCondition = healthCondition;
+    }
+
+    public String getAdoptedCondition() {
+        return adoptedCondition;
+    }
+
+    public void setAdoptedCondition(String adoptedCondition) {
+        this.adoptedCondition = adoptedCondition;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getNote() {
+        return note;
+    }
+
+    public void setNote(Integer note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "AdoptionCase [adoptionCaseId=" + adoptionCaseId + ", caseTitle=" + caseTitle + ", member=" + member
+                + ", species=" + species + ", breed=" + breed + ", furColor=" + furColor + ", gender=" + gender
+                + ", sterilization=" + sterilization + ", age=" + age + ", microChipNumber=" + microChipNumber
+                + ", susLost=" + susLost + ", cityId=" + city + ", distintId=" + distinctArea + ", street=" + street
+                + ", latitude=" + latitude + ", longitude=" + longitude + ", viewCount=" + viewCount + ", follow="
+                + follow + ", publicationTime=" + publicationTime + ", lastUpdateTime=" + lastUpdateTime + ", title="
+                + title + ", story=" + story + ", healthCondition=" + healthCondition + ", adoptedCondition="
+                + adoptedCondition + ", status=" + status + ", note=" + note + ", casePictures=" + casePictures
+                + ", follows=" + follows + ", reportCase=" + reportCase + ", adoptionCaseApplys=" + adoptionCaseApply
+                + "]";
+    }
 
 }

@@ -125,27 +125,7 @@ public class LostCase {
     @OneToMany
     @JoinColumn(name = "rescueCaseId", foreignKey = @ForeignKey(name = "FK_CasePicture_LostCase"))
     private List<CasePicture> casePictures;
-    
-	//必填
-	//和rescueDemand單向多對多
-    @ManyToMany
-    @JoinTable(
-        name = "LostCase_RescueDemand",
-        joinColumns = @JoinColumn(name = "lostCaseId"),
-        inverseJoinColumns = @JoinColumn(name = "rescueDemandId")
-    )
-    private List<RescueDemand> rescueDemands;
-    
-    //必填
-    //和canAfford表為單向多對多(case找去afford)
-    @ManyToMany
-    @JoinTable(
-        name = "CanAfford_LostCase",
-        joinColumns = @JoinColumn(name = "lostCaseId"),
-        inverseJoinColumns = @JoinColumn(name = "canAffordId")
-    )
-    private List<CanAfford> canAffords;
-
+      
     // Getters and Setters
     public Integer getLostCaseId() {
         return lostCaseId;
