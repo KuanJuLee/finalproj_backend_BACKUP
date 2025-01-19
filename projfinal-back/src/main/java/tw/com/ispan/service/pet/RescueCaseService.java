@@ -1,5 +1,7 @@
 package tw.com.ispan.service.pet;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -161,6 +163,12 @@ public class RescueCaseService {
 			}
 		} catch (JsonProcessingException e) {
 			System.out.println("請求座標API失敗");
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			System.out.println("不支援編碼");
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			System.out.println("編碼格式錯誤");
 			e.printStackTrace();
 		}
 		
@@ -325,11 +333,17 @@ public class RescueCaseService {
 			try {
 				LatLng latLng = geocodingService.getCoordinatesFromAddress(adress);
 				if (latLng != null) {
-					rescueCase.setLatitude(latLng.getLat());
-					rescueCase.setLongitude(latLng.getLng());
+					old.setLatitude(latLng.getLat());
+					old.setLongitude(latLng.getLng());
 				}
 			} catch (JsonProcessingException e) {
 				System.out.println("請求座標API失敗");
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				System.out.println("不支持的編碼");
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				System.out.println("URI 格式無效");
 				e.printStackTrace();
 			}
 

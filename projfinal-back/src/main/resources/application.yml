@@ -62,3 +62,14 @@ jwt:
 google:
   api:
     key: AIzaSyATLMpyW2m1qnNAAQf0rZSpcl6TadBobBg
+
+#程式執行 RestTemplate 請求時，日誌會打印 HTTP 請求與回應的詳細資訊
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          client:
+            RestTemplate: DEBUG
+      apache:
+        http: DEBUG

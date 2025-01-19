@@ -105,12 +105,12 @@ public class RescueCase {
 	
 	//必填(請求成功後記得改回來)
 	// 10位數，8位小數
-	@Column(name = "latitude", precision = 10, nullable = true)
+	@Column(name = "latitude", precision = 10, nullable = false)
 	private Double latitude;
 	
 	//必填
 	// 11位數，8位小數
-	@Column(name = "longitude", precision = 11,  nullable = true)
+	@Column(name = "longitude", precision = 11,  nullable = false)
 	private Double longitude;
 
 	@Column(name = "donationAmount")
