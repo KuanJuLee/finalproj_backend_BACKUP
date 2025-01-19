@@ -58,7 +58,7 @@ public class RescueController {
 		System.out.println("圖片移動完畢!");
 		List<CasePicture> casePictures = imageService.saveImage(finalUrl);
 		
-		// 4. 新增案件至資料庫 先convertToEntity()轉為實體類別後，add()把該存的放進去(經緯度等..)再存入資料庫中
+		// 4. 新增案件至資料庫 先convertToEntity()轉為實體類別後，add()把該存的放進去(圖片、經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto);
 		RescueCase rescueCase = rescueCaseService.add(rescueCaseEntity, token, casePictures);
 		

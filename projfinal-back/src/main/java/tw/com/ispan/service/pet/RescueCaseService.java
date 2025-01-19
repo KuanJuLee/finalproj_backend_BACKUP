@@ -152,6 +152,7 @@ public class RescueCaseService {
 		// 設置經緯度
 		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
 				+ rescueCase.getStreet();
+		System.out.println(adress);
 		try {
 			LatLng latLng = geocodingService.getCoordinatesFromAddress(adress);
 			if (latLng != null) {
@@ -252,11 +253,7 @@ public class RescueCaseService {
 		return rescueCase;
 	}
 
-	
-	
-	
-	
-	
+
 	
 	// 修改案件----------------------------------------------------------------------------------------------
 	public RescueCase modify(RescueCase rescueCase, Integer id, List<CasePicture> casePictures) {
