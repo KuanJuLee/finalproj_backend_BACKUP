@@ -3,7 +3,6 @@ package tw.com.ispan.domain.pet;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -13,6 +12,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -27,7 +27,15 @@ import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.domain.pet.forRescue.RescueProgress;
 
 @Entity
-@Table(name = "RescueCase")
+@Table(name = "RescueCase",
+		indexes = {
+        @Index(name = "idx_species", columnList = "speciesId"),
+        @Index(name = "idx_breed", columnList = "breedId"),
+        @Index(name = "idx_furColor", columnList = "furColorId"),
+        @Index(name = "idx_suspLost", columnList = "suspLost"),
+        @Index(name = "idx_city", columnList = "cityId"),
+        @Index(name = "idx_distinctArea", columnList = "distinctAreaId")
+    })
 public class RescueCase {
 
 	@Id
@@ -179,7 +187,12 @@ public class RescueCase {
     // 關聯到ReportCase表，單向一對多
     @OneToMany(mappedBy = "rescueCase", cascade =  CascadeType.PERSIST)
     private List<ReportCase> reportCases; 
-     
+    
+    //關聯到rescueBanner表，雙向一對一
+//    @OneToOne(mappedBy = "rescueCase", cascade =  CascadeType.All, orphanRemoval = true)
+//    private RescueBanner rescueBanner;
+   
+    
     
     // Hibernate 進行實體的初始化需要用到空參建構子
 	public RescueCase() {

@@ -64,6 +64,7 @@ public class RescueCaseDto {
 
 	@Min(value = 1, message = "區域id不得小於1")
 	@Max(value = 374, message = "區域id不得大於374")
+	@Positive(message = "區域ID必須為正數")
 	@NotNull(message = "區域為必填")
 	private Integer distinctAreaId;
 

@@ -168,7 +168,7 @@ public class RescueController {
     public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
                                               @RequestParam(defaultValue = "0") int page,            //前端沒丟參數就用預設值
                                               @RequestParam(defaultValue = "10") int size) {
-		System.out.println(criteria.toString());
+		System.out.println("查詢條件" + criteria.toString());
 		Pageable pageable = PageRequest.of(page, size);
 		Page<RescueCase> resultPage = rescueCaseService.searchRescueCases(criteria, pageable);
         return resultPage.getContent();
