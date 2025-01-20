@@ -153,7 +153,7 @@ public class RescueController {
 
 		// 4. 驗證id存在，就去修改這筆資料
 		RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
-		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, id, newCasePictures);
+		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, caseId, newCasePictures);
 
 		if (rescueCase != null) {
 			// 修改成功
