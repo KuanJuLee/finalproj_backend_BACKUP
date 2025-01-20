@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.CaseState;
@@ -27,6 +28,7 @@ import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
+import tw.com.ispan.repository.admin.MemberRepository;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
@@ -44,6 +46,8 @@ import tw.com.ispan.util.LatLng;
 @Transactional
 public class RescueCaseService {
 
+	@Autowired
+	private MemberRepository  memberRepository;
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
 	@Autowired
@@ -69,7 +73,7 @@ public class RescueCaseService {
 	private GeocodingService geocodingService;
 
 	// 新增案件:手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
-	public RescueCase convertToEntity(RescueCaseDto dto) {
+	public RescueCase convertToEntity(RescueCaseDto dto, Integer memberId) {
 
 		RescueCase rescueCase = new RescueCase();
 
@@ -85,6 +89,13 @@ public class RescueCaseService {
 		rescueCase.setTag(dto.getTag());
 
 		// 以下傳id進來，找到對應資料再塞回enitity物件中
+		//會員
+		Optional<Member> result0 = memberRepository.findById(memberId);
+		if (result0 != null && result0.isPresent()) {
+			rescueCase.setMember(result0.get()); //
+		}
+		
+		
 		// 物種
 		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
 		if (result1 != null && result1.isPresent()) {
@@ -138,18 +149,11 @@ public class RescueCaseService {
 	}
 
 	// 增加非使用者填寫資料並insert新增一筆案件到資料庫
-	public RescueCase add(RescueCase rescueCase, String token , List<CasePicture> casePicture) {
+	public RescueCase add(RescueCase rescueCase, List<CasePicture> casePicture) {
 
-		// id資料庫中自動生成
+		// 案件id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
 
-//		從 JWT 中解析出 memberId
-//	    try {
-//			Integer memberId = jsonWebTokenUtility.getMemberId(token);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		
 		// 設置經緯度
 		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
@@ -264,10 +268,10 @@ public class RescueCaseService {
 
 	
 	// 修改案件----------------------------------------------------------------------------------------------
-	public RescueCase modify(RescueCase rescueCase, Integer id, List<CasePicture> casePictures) {
+	public RescueCase modify(RescueCase rescueCase, Integer caseId, List<CasePicture> casePictures) {
 
 		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接save()這些資訊會空掉，最後存修改後的舊物件
-		Optional<RescueCase> result = rescueCaseRepository.findById(id);
+		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
 		if (result != null && result.isPresent()) {
 
 			RescueCase old = result.get();

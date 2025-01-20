@@ -16,7 +16,8 @@ public class JwtConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jsonWebTokenInterceptor)
-                .addPathPatterns("/RescueCase/**","/Case/**");
+                .addPathPatterns("/RescueCase/**","/Case/**")    //RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
+                .excludePathPatterns("/RescueCase/search");      //查詢功能為非會員也能使用
 
     }
 }
