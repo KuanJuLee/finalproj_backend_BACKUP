@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import tw.com.ispan.service.pet.ImageService;
+import tw.com.ispan.service.pet.LineNotificationService;
 
 //三個案件共用的單個圖片上傳
 @RestController
@@ -23,7 +24,7 @@ public class UploadImageController {
 
 	@Autowired
 	private ImageService imageService;
-
+	
 	// 暫存路徑
 	@Value("${file.tmp-upload-dir}")
 	private String tmpUploadDir;

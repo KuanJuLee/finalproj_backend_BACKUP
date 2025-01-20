@@ -11,30 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.repository.admin.MemberRepository;
-import tw.com.ispan.repository.pet.FollowRepository;
-import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.service.pet.FollowService;
-import tw.com.ispan.service.pet.RescueCaseService;
 
 //此為會員追蹤某案件
 @RestController
 @RequestMapping(path = { "/Case/follow" })
 public class FollowController {
 
-	@Autowired
-	private FollowRepository followRepository;
 
 	@Autowired
 	private MemberRepository memberRepository;
 
 	@Autowired
-	private RescueCaseRepository rescueCaseRepository;
-
-	@Autowired
 	JsonWebTokenUtility jsonWebTokenUtility;
-
-	@Autowired
-	private RescueCaseService rescueCaseService;
 
 	@Autowired
 	private FollowService followService;
