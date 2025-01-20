@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import tw.com.ispan.domain.admin.Member;
 
 //案件和會員的追蹤中介表 (須從會員查詢追蹤那些案件 因此member對follow為雙向 follow對case為單向。但case本身又需要看被多少人追蹤，因此case,follow也設成雙向)
+//索引:由於添加follow表資料前會查詢是否存在某memberid+某caseId的組合，因此添加複合索引
 @Entity
 @Table(name = "Follow")
 public class Follow {
