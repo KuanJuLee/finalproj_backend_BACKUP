@@ -389,6 +389,22 @@ public class RescueCaseService {
 		}
 		return false;
 	}
+	
+	
+	//驗證會員與案件中會員id是否匹配，匹配回傳true表示能修改
+	public boolean iCanModify(Integer memberId, Integer caseId) {
+		Optional<RescueCase> result  = rescueCaseRepository.findById(caseId);
+		if (result != null && result.isPresent()) {
+			RescueCase Case = result.get();
+			
+			if(Case.getMember().getMemberId() == memberId) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
 
 	
 	

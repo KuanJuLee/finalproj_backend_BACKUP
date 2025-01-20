@@ -97,7 +97,7 @@ public class RescueController {
 
 	// 修改救援案件-----------------------------------------------------------------------------------------------------------------------------
 	@PutMapping(path = { "/modify/{id}" })
-	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer id,
+	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer caseId,
 			@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId, @Validated @RequestBody ModifyRescueCaseDto dto) {
 
 		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState以及會傳imageIdandUrl進來，因此相較新增案件的這兩個屬性不是null
@@ -118,18 +118,24 @@ public class RescueController {
 			return response;
 		}
 		
-		// 2. 驗證此案件資料中的memberId真的有對應上此使用者的memberId
 		
+		// 2. 驗證此案件資料中的memberId真的有對應上此使用者的memberId
+		//如果不匹配
+		if(!rescueCaseService.iCanModify(memberId , caseId)) {
+			response.setSuccess(false);
+			response.setMessage("此會員不可修改此案件");
+			return response;
+		}
 
 		// 3.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring
 		// Boot會自動拋出錯誤
 
 		// 4. 驗證此案件id是否存在於資料表中，有存在才繼續往service丟。
-		if (id == null) {
+		if (caseId == null) {
 			response.setSuccess(false);
 			response.setMessage("必須給予案件id");
 			return response;
-		} else if (!rescueCaseService.exists(id)) {
+		} else if (!rescueCaseService.exists(caseId)) {
 			response.setSuccess(false);
 			response.setMessage("id不存在於資料中");
 			return response;
