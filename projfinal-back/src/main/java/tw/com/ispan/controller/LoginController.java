@@ -36,6 +36,7 @@ public class LoginController {
         }
 
         // 呼叫Model
+        //返回對應的member資料
         Member bean = MemberService.login(username, password);
 
         // 根據Model執行結果決定要呼叫的View
@@ -46,11 +47,12 @@ public class LoginController {
             responseJson.put("success", true);
             responseJson.put("message", "登入成功");
 
+            //登入時有將memberid和email放進token中，
             JSONObject user = new JSONObject()
-                    .put("custid", bean.getMemberId())
+                    .put("memberId", bean.getMemberId())    //把小朱原本custid改成memberId
                     .put("email", bean.getEmail());
-            String token = jsonWebTokenUtility.createToken(user.toString());
-            responseJson.put("token", token);
+            String token = jsonWebTokenUtility.createToken(user.toString());   //產生一個帶有memberid和email的token字串
+            responseJson.put("token", token);              //Token 返回給前端，用於後續請求的身份驗證
             responseJson.put("user", bean.getEmail());
 
         }

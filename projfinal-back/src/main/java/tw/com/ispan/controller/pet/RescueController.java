@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class RescueController {
 
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
 	@PostMapping(path = { "/add" })
-	public RescueCaseResponse add(@RequestHeader("Authorization") String token,
+	public RescueCaseResponse add(@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId,
 			@Validated @RequestBody RescueCaseDto rescueCaseDto) {
 
 		System.out.println("近來優");
@@ -49,7 +50,7 @@ public class RescueController {
 		RescueCaseResponse response = new RescueCaseResponse();
 
 		// 傳進來的資料需要驗證(前端即時驗證一次，後端驗證一次)
-		// 1.驗證token
+		// 1.驗證token(透過攔截器即驗證)
 
 		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring Boot會自動拋出錯誤
 		
