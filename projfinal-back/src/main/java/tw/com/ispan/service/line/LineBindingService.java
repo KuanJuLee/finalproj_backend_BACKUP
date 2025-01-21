@@ -9,6 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.linecorp.bot.model.PushMessage;
+import com.linecorp.bot.model.action.PostbackAction;
+import com.linecorp.bot.model.message.FlexMessage;
+import com.linecorp.bot.model.message.flex.component.Box;
+import com.linecorp.bot.model.message.flex.component.Button;
+import com.linecorp.bot.model.message.flex.component.Text;
+import com.linecorp.bot.model.message.flex.container.Bubble;
+import com.linecorp.bot.model.message.flex.unit.FlexLayout;
+
+import jakarta.validation.constraints.AssertFalse.List;
 import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.LineTemporaryBinding;
 import tw.com.ispan.repository.admin.MemberRepository;
@@ -25,6 +35,41 @@ public class LineBindingService {
 	private MemberRepository memberRepository;
 	@Autowired
 	private LineTemporaryBindingRepository lineTemporaryBindingRepository;
+	
+	
+	//創建 Flex Message，包含綁定按鈕 
+	private FlexMessage createBindingFlexMessage(Integer memberId) {
+        Bubble bubble = Bubble.builder()
+            .body(Box.builder()
+                .layout(FlexLayout.VERTICAL)
+                .contents(List.of(
+                    Text.builder().text("請點擊下方按鈕完成綁定").build(),
+                    Button.builder()
+                        .action(PostbackAction.builder()
+                            .label("綁定")
+                            .data("action=bind&memberId=" + memberId)
+                            .build())
+                        .build()
+                ))
+                .build())
+            .build();
+
+        return new FlexMessage("綁定確認", bubble);
+    }
+	
+	
+	//使用 LINE Messaging API 發送綁定確認消息
+	private void sendBindingMessageToUser(String memberId, String lineId) {
+   
+        // 構建按鈕消息
+        FlexMessage flexMessage = createBindingFlexMessage(memberId);
+
+        // 使用 LINE Messaging API 發送消息
+        lineMessagingClient.pushMessage(new PushMessage(lineId, flexMessage));
+        System.out.println("綁定確認消息已發送");
+    
+}
+	
 	
 	//產生用戶lineId的綁定連結
 	public String generateBindingLinkForLineId(String lineId) {
