@@ -67,6 +67,7 @@ google:
 Channel:
   Access:
     Token: "bHAiA50c1WQlH3fIjjz8PynVtkZf50BGYZT4jm/nCKCCnuzlyQloKiyZehAhCy4i/Ul42mUG7BUUNMwVxGQq2BFESxObRGLVKNH10flSwU4fjmbJf/12sr+3CQ866g1QZmMtX4Xsv8hGG9ZryLBtGgdB04t89/1O/w1cDnyilFU="
+  Secrete: ad5f41710e2d45702d5065650ce7d03f
 
 #執行 RestTemplate請求時日誌會打印 HTTP 請求與回應的詳細資訊(用於檢查請求地址正確性)
 logging:
