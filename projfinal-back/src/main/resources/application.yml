@@ -25,6 +25,16 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+  #Redis資料庫連接資訊
+  data:
+    redis:
+      host: 127.0.0.1 # Redis 伺服器地址
+      port: 6379
+      password: # 如果沒有設密碼可以留空
+      timeout: 3000 # 請求超時時間，毫秒
+      repositories:
+        enabled: false #禁止Redis 的自動儲存庫掃描，改手動啟用所需的 Redis 儲存庫
+
   #圖片大小限制
   servlet:
     multipart:
@@ -79,3 +89,4 @@ logging:
             RestTemplate: DEBUG
       apache:
         http: DEBUG
+#

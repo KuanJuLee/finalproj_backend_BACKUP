@@ -1,15 +1,19 @@
 //
 //package tw.com.ispan.init;
 //
+//import java.time.LocalDateTime;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.CommandLineRunner;
 //import org.springframework.stereotype.Component;
-//import java.time.LocalDateTime;
+//
 //import tw.com.ispan.domain.admin.Admin;
 //import tw.com.ispan.repository.admin.AdminRepository;
 //
 //@Component
 //public class LoginDataAdmin implements CommandLineRunner {
-//
+//	
+//	@Autowired
 //	private final AdminRepository adminRepository;
 //
 //	public LoginDataAdmin(AdminRepository adminRepository) {

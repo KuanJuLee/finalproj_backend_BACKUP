@@ -48,7 +48,7 @@ public class LineWebhookController {
 				
 				//在此獲得lineId後，透過產生token插入臨時表中，綁定lineId和token。並產生要發送給用戶line訊息的綁定鏈結
 	            String bindingToken = lineBindingService.generateBindingLinkForLineId(lineId);
-	            String bindingLink = "https://586f-1-160-6-252.ngrok-free.app/line/bindComplete?token=" + bindingToken ;
+	            String bindingLink = "https://ebbe-36-225-218-14.ngrok-free.app/line/bindComplete?token=" + bindingToken ;
 	            
 
 	            // 發送綁定鏈接到用戶的 LINE

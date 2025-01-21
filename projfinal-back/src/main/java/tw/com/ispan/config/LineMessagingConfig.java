@@ -1,4 +1,4 @@
-package tw.com.ispan.init;
+package tw.com.ispan.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
