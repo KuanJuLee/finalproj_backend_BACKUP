@@ -52,6 +52,7 @@ public class RescueController {
 		// 方法參數: 
 		// 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊，且controller必須接收header中token字串
 		// 2. @RequestAttribute("memberId")為接收JsonWebTokenInterceptor類別中攔截近來此controller的request，解析token內攜帶的memberId
+		// @RequestAttribute 的來源： @RequestAttribute 用於提取由攔截器、過濾器或其他中間層處理時設置的屬性，而不是從請求參數中提取的值。
 		// 3. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳訊息給前端
 		RescueCaseResponse response = new RescueCaseResponse();
 

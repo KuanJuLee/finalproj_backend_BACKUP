@@ -1,19 +1,24 @@
 package tw.com.ispan.controller.pet;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import tw.com.ispan.domain.admin.Member;
+import tw.com.ispan.domain.pet.LineTemporaryBinding;
 import tw.com.ispan.repository.admin.MemberRepository;
+import tw.com.ispan.repository.pet.LineTemporaryBindingRepository;
+import tw.com.ispan.service.line.LineBindingService;
+import tw.com.ispan.service.line.LineNotificationService;
 
 @RestController
 @RequestMapping("/line")
@@ -22,34 +27,65 @@ public class LineBindingController {
     @Autowired
     private MemberRepository memberRepository;
     
+    @Autowired
+    private LineBindingService lineBindingService;
     
-    //用戶發起綁定請求(點擊某個綁定按鈕或掃描QR Code)，程式返回綁定鏈結給用戶
+    @Autowired
+    private LineNotificationService lineNotificationService;
     
+    @Autowired
+	private LineTemporaryBindingRepository lineTemporaryBindingRepository;
+	
+    
+    //步驟: 用戶點選加入好友(linebot按鈕)後，在Webhook處理follow 事件controller中，可獲得用戶LineID，藉此產生綁定鏈結後
+    //回傳訊息給用戶。點擊綁定鏈接，發送token url進到/bindComplete中)，在內透過於member表中尋找相同token藉此將lineid插入member表中
+    
+    //把這個controller從在加入好友(linebot按鈕)中
+    @GetMapping("/bindRequest")
+    public ResponseEntity<String> bindRequest(@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId) {
+        
+    	// 1.驗證token(能通過JsonWebTokenInterceptor攔截器即驗證)，表示為會員的操作
+    	System.out.println("此為會員id" + memberId + "執行line綁定請求");
+    	
+    	// 2. 伺服器生成綁定 Token ，此時會員表中此會員ID資料會綁定上綁定 Token
+    	String url = lineBindingService.generateBindingLink(memberId);
+    	//將http://localhost:8080/line/bind?token=<bindingToken>
+    	
+    	
+    	return ResponseEntity.ok("請稍後，完成綁定流程...");
+    }
     
     
     //用戶點擊綁定鏈接後，系統需要處理該請求，完成 LINE ID 與會員的綁定
-    @PostMapping("/bind")
-    public ResponseEntity<String> bindLineAccount(@RequestParam String token, @RequestBody String lineUserId) {
+    @GetMapping("/bindComplete")
+    public ResponseEntity<String> bindComplete(@RequestParam String bindingToken,  @RequestParam String authToken) {
     	 
-    	// 查找對應的會員並驗證token
-        Optional<Member> memberOpt = memberRepository.findByBindingToken(token);
-        if (memberOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("無效的綁定請求！");  //此Token不存在
+    	// 從暫存表中查找 token
+        Optional<LineTemporaryBinding> bindingOpt = lineTemporaryBindingRepository.findByBindingToken(bindingToken);
+        if (bindingOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("綁定token不存在於資料表中，請用戶重新加入好友");
         }
 
-        Member member = memberOpt.get();
+        LineTemporaryBinding binding = bindingOpt.get();
 
-        // 驗證 Token 是否過期（可選）
-        if (member.getBindingTokenExpiry().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body("綁定已過期！請於10分鐘內進行操作");
+        // 驗證 token 是否過期
+        if (binding.getExpiryTime().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("綁定token已過期！");
         }
 
-        // 綁定 LINE User ID
-        member.setUserLineId(lineUserId);
-        member.setBindingToken(null); // 清除 Token，防止重複綁定
-        member.setBindingTokenExpiry(null);
-        memberRepository.save(member);
+        // 綁定 LINE ID 和 memberId
+        String lineId = binding.getLineId();
+        //到底怎麼拿到memberid!!!!! 
+//        memberRepository.bindLineIdandMemberId(memberId, lineId);
+
+        // 刪除暫存的綁定記錄
+        lineTemporaryBindingRepository.delete(binding);
 
         return ResponseEntity.ok("綁定成功！");
-    }
+    }	
+    
+    
+    
+    //https://line.me/R/ti/p/@310pndih 加入linebot好友連結(qrcode放置於專案data資料夾中)
+    
 }
