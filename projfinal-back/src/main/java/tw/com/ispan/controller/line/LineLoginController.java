@@ -84,25 +84,26 @@ public class LineLoginController {
 		if (profile == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch user profile");
 		}
-		
+
 		System.out.println(profile.toString());
 
-		if (memberId != null) {
-			// 已註冊會員情境：綁定 LINE ID 到會員
-			loginService.bindLineInfoToMember(memberId, profile);
+		// 先排除此用戶已經用Line登入過了，所以lineid已存在於member表中，此時就直接跳回原頁面
+		if (loginService.isLineUserExists(profile.getUserId())) {
+			System.out.println("LINE 用戶已存在，跳過新增操作");
 		} else {
-			// 非會員情境：新增用戶記錄
-			loginService.createLineOnlyUser(profile);
+			//第一次line登入~
+			if (memberId != null) {
+				// 已註冊會員情境：綁定 LINE ID 到會員
+				loginService.bindLineInfoToMember(memberId, profile);
+			} else {
+				// 非會員情境：新增用戶記錄
+				loginService.createLineOnlyUser(profile);
+			}
 		}
-		
-		
+
 		// 把獲取到的accessToken拿去前端儲存?，並讓用戶跳轉回原登入頁面
-		String indexUri = "http://localhost:5173?token=" + accessToken; 
+		String indexUri = "http://localhost:5173?token=" + accessToken;
 		response.sendRedirect(indexUri);
-
-
 		return ResponseEntity.ok("登入成功，歡迎 " + profile.getDisplayName());
-
 	}
-
 }

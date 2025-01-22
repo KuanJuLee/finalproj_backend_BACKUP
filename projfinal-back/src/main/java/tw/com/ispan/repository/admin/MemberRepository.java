@@ -24,5 +24,8 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 	@Modifying  
 	@Query("UPDATE Member m SET m.userLineId = :lineId WHERE m.id = :memberId")
 	void bindLineIdandMemberId(@Param("memberId") Integer memberId, @Param("lineId") String lineId);
-
+	
+	
+	// 檢查是否有該 LINE ID
+    boolean existsByLineId(String lineId);
 }

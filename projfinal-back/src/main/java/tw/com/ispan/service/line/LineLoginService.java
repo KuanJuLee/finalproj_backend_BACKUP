@@ -96,7 +96,14 @@ public class LineLoginService {
 
 		return response.getBody();
 	}
+	
+	
+	// 檢查 LINE 用戶是否已存在
+    public boolean isLineUserExists(String lineId) {
+        return memberRepository.existsByLineId(lineId);
+    }
 
+	
 	// line login時進行lineid和memberid的綁定
 	// 已註冊會員：綁定 LINE 信息
 	public void bindLineInfoToMember(Integer memberId, LineUserProfile profile) {
@@ -119,7 +126,7 @@ public class LineLoginService {
 
 	    // 自動填充默認值以滿足非空約束
 	    member.setNickName("LINE_USER_" + profile.getUserId().substring(0, 8)); // 使用 LINE ID 生成默認名稱
-	    member.setPassword("@Ab12345678"); // 默認空密碼
+	    member.setPassword("@Fakepswrd"); // 默認密碼
 	    member.setName(profile.getDisplayName());
 	    member.setEmail("unknown@line.com"); // 假設值
 	    member.setPhone("0000000000"); // 假設值
