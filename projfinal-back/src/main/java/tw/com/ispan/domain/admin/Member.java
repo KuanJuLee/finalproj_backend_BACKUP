@@ -17,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.ToString;
 import tw.com.ispan.domain.pet.Activity;
 import tw.com.ispan.domain.pet.ActivityParticipantList;
 import tw.com.ispan.domain.pet.AdoptionCase;
@@ -74,6 +75,7 @@ public class Member {
 	//以下為關聯產生的屬性
 	// 雙向一對多
 	@OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST })
+	@ToString.Exclude
 	private List<RescueCase> rescueCases;
 
 	// 雙向一對多

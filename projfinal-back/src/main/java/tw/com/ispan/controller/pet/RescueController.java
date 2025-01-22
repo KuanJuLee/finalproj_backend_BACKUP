@@ -25,9 +25,10 @@ import tw.com.ispan.dto.pet.RescueCaseDto;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.repository.admin.MemberRepository;
-import tw.com.ispan.service.MemberService;
 import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 //此為救援案件crud
 @RestController
@@ -200,8 +201,27 @@ public class RescueController {
 			return response;
 		}
 	}
+	
 
-	// 查詢救援案件-----------------------------------------------------------------------------------------------------------------------------
+	//查詢單筆救援案件(用戶點進去某case)-------------------------------------------------------------------------------------------------------------
+	@GetMapping("/search/{id}")
+	public RescueCase searchRescueCase(@PathVariable("id") Integer caseId) {
+		
+		// 1. 非會員功能，不用驗證token
+		
+		RescueCase rescueCase = rescueCaseService.searchRescueCase(caseId);
+		if(rescueCase != null){
+			System.out.println(rescueCase.toString());
+			//返回前端，java物件會被springboot自動序列化為json格式
+			return rescueCase;
+		} else {
+			System.out.println("此案件id不存在");
+			return null;
+		}
+	}
+	
+
+	// 查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
 	public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
 			@RequestParam(defaultValue = "0") int page, // 前端沒丟參數就用預設值

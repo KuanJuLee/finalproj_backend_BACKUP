@@ -375,6 +375,16 @@ public class RescueCaseService {
 		return false;
 	}
 	
+
+	//查詢一筆案件(用於抓單個案件資訊)
+	public RescueCase searchRescueCase(Integer caseId){
+		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
+		if(result.isPresent()){
+			return result.get();
+		}
+		return null;
+	}
+
 	
 	//模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
 	 public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
@@ -390,6 +400,7 @@ public class RescueCaseService {
 		return false;
 	}
 	
+
 	
 	//驗證會員與案件中會員id是否匹配，匹配回傳true表示能修改
 	public boolean iCanModify(Integer memberId, Integer caseId) {

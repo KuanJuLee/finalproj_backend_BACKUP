@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ProjfinalApplication<projfinal-back>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "tw.com.ispan.ProjfinalApplication",
+            "projectName": "projfinal-back",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
