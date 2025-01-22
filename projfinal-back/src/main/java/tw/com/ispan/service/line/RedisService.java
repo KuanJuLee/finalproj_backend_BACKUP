@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,10 @@ public class RedisService {
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
+		
+	
+	
+	//以上為儲存line login state使用---------------------------------------------------------------------------------
 	
 	// 暫存memberId
 	public void saveMemberId(String memberId) {

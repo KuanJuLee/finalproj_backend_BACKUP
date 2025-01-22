@@ -30,7 +30,7 @@ spring:
     redis:
       host: 127.0.0.1 # Redis 伺服器地址
       port: 6379
-      password: # 如果沒有設密碼可以留空
+      password: a123 # 如果沒有設密碼可以留空
       timeout: 3000 # 請求超時時間，毫秒
       repositories:
         enabled: false #禁止Redis 的自動儲存庫掃描，改手動啟用所需的 Redis 儲存庫
@@ -89,4 +89,20 @@ logging:
             RestTemplate: DEBUG
       apache:
         http: DEBUG
-#
+#Domain Name
+DomainName:
+  url: http://localhost:8080
+
+#開發用公開網域url
+ngrok:
+  url: https://586f-1-160-6-252.ngrok-free.app
+
+#linebot跳轉
+lineBot: https://line.me/R/ti/p/@310pndih
+
+#line login相關設定
+line:
+  login:
+    redirect-uri: ${DomainName.url}/line/callback
+    channel-id: Uf3c12ee16ef576effa131ee647edaeec
+    channel-secret: 1f781b9cf730b0c4decdeba7eead6778
