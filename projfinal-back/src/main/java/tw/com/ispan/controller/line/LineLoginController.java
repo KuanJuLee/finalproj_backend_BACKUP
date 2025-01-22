@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
-import tw.com.ispan.service.line.LoginService;
+import tw.com.ispan.dto.pet.LineUserProfile;
+import tw.com.ispan.service.line.LineLoginService;
 import tw.com.ispan.service.line.StateRedisService;
 
-@CrossOrigin(origins = "http://localhost:5173")  //允許前端不同的主機或埠運行下可訪問這個contorller
+@CrossOrigin(origins = "http://localhost:5173") // 允許前端不同的主機或埠運行下可訪問這個contorller
 @RestController
 @RequestMapping("/line")
 public class LineLoginController {
@@ -28,21 +29,29 @@ public class LineLoginController {
 	private String clientSecret;
 
 	@Value("${line.login.redirect-uri}")
-	private String redirectUri;    
-	
+	private String redirectUri;
 
 	@Autowired
 	private StateRedisService stateRedisService;
 	@Autowired
-	private LoginService loginService;
+	private LineLoginService loginService;
 
 	// 用於產生授權連結，回傳給前端
+	// 在此分為兩種情境，如果用戶已註冊過，就連帶把memberId傳進來去和state綁再redis中，如果沒註冊過，就不傳進來
 	@GetMapping("/authorize")
-	public ResponseEntity<String> authorizeUser() {
-		
-		//line登入不用驗證是會員!!!記得要排除於驗證jwt路徑中
-		
-		String state = loginService.generateState(); // 生成並存儲 state
+	public ResponseEntity<String> authorizeUser(@RequestParam(required = false) Integer memberId) {
+
+		// line登入不用驗證是會員!!!記得要排除於驗證jwt路徑中
+
+		String state = loginService.generateState(); // 生成state
+
+		// 如果有 memberId，則與 state 一起保存
+		if (memberId != null) {
+			stateRedisService.saveStateWithMemberId(state, memberId);
+		} else {
+			stateRedisService.saveState(state); // 僅保存 state
+		}
+
 		String authorizeUrl = loginService.generateAuthorizeUrl(state); // 構造授權 URL
 		return ResponseEntity.ok(authorizeUrl); // 返回給前端
 	}
@@ -51,14 +60,18 @@ public class LineLoginController {
 //	 https://yourdomain.com/callback?code=abcd1234&state=xyz789
 //	 state是OAuth 2.0和OpenID Connect授權流程中的一個安全機制，旨在防止跨站請求偽造（CSRF）攻擊，並確保授權請求的完整性
 	@GetMapping("/callback")
-	public ResponseEntity<String> handleCallback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) throws IOException {
+	public ResponseEntity<String> handleCallback(@RequestParam String code, @RequestParam String state,
+			HttpServletResponse response) throws IOException {
+
+		System.out.println("line觸發callback!!");
+
 		// 驗證 state(創造授權連結時主動加進去的亂數，驗證相同確保授權請求從用戶的瀏覽器發送過成未被篡改，也允許伺服器在回調中識別是哪個請求發起的授權流程)
 		if (!stateRedisService.validateState(state)) {
 			return ResponseEntity.badRequest().body("Invalid or expired state");
 		}
-		
-		System.out.println(code + "和" + state);
-		// 驗證成功，刪除 state
+		// 獲取memberId，如果為null則是非會員情境
+		Integer memberId = stateRedisService.getMemberIdByState(state);
+		// 驗證成功且獲取memnerId使用完後，刪除 state
 		stateRedisService.deleteState(state);
 
 		// 處理授權碼邏輯，換取accessToken
@@ -66,23 +79,30 @@ public class LineLoginController {
 		if (accessToken == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to obtain access token");
 		}
-		System.out.println(accessToken);
+		// 使用 Access Token 獲取用戶信息(lineid, displayname, picture)
+		LineUserProfile profile = loginService.getUserProfile(accessToken);
+		if (profile == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch user profile");
+		}
 		
-		String indexUri = "https://www.google.com";
-		response.sendRedirect(indexUri);
-		
-//		// 使用 Access Token 獲取用戶信息，塞到另一個member表???
-//		LineProfile profile = loginService.getUserProfile(accessToken);
-//		if (profile == null) {
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch user profile");
-//		}
-//
-//		// 業務邏輯：如創建用戶或綁定
-//		processUser(profile);
+		System.out.println(profile.toString());
 
-//		return ResponseEntity.ok("登入成功，歡迎 " + profile.getDisplayName());
+		if (memberId != null) {
+			// 已註冊會員情境：綁定 LINE ID 到會員
+			loginService.bindLineInfoToMember(memberId, profile);
+		} else {
+			// 非會員情境：新增用戶記錄
+			loginService.createLineOnlyUser(profile);
+		}
 		
-		return null;
+		
+		// 把獲取到的accessToken拿去前端儲存?，並讓用戶跳轉回原登入頁面
+		String indexUri = "http://localhost:5173?token=" + accessToken; 
+		response.sendRedirect(indexUri);
+
+
+		return ResponseEntity.ok("登入成功，歡迎 " + profile.getDisplayName());
+
 	}
 
 }

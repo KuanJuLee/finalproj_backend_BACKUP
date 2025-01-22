@@ -18,6 +18,17 @@ public class StateRedisService {
 	    public void saveState(String state) {
 	        redisTemplate.opsForValue().set(state, "valid", 10, TimeUnit.MINUTES); // 10 分鐘過期
 	    }
+	    
+	    //同時儲存state和memberId
+	    public void saveStateWithMemberId(String state, Integer memberId) {
+	        redisTemplate.opsForHash().put("stateMap", state, memberId);
+	        redisTemplate.expire("stateMap", 10, TimeUnit.MINUTES); // 為整個哈希設置過期時間10分鐘
+	    }
+	    
+	    //透過state找到memberId
+	    public Integer getMemberIdByState(String state) {
+	        return (Integer) redisTemplate.opsForHash().get("stateMap", state);
+	    }
 
 	    // 驗證 state 是否存在且有效
 	    public boolean validateState(String state) {

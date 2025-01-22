@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-//攔截特定的 API 請求並驗證 Token
+//攔截特定的API請求並驗證 Token
 @Component
 public class JsonWebTokenInterceptor implements HandlerInterceptor {
 	@Autowired
@@ -18,14 +18,22 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 
 	// 此方法為HandlerInterceptor介面底下抽象方法，當每個HTTP請求進入Controller前，Spring會調用這個方法來進行邏輯處理
 	// 主要作用：
-	// 1. 驗證請求是否具有合法的 Token
+	// 1. 驗證請求中是否具有合法的 Token
 	// 2. 如果驗證成功，將從 Token 提取的資訊存入 HttpServletRequest 中，以便後續的 Controller 使用
+	// 3. 可在HttpServletRequest request注入數據進到controller中
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		System.out.println(111111);
 		// 驗證成功後將 Token 中的資訊（如 custid）存入 HttpServletRequest 的屬性中，供後續 Controller 使用
 		String method = request.getMethod();
+		
+		 // 判斷是否是重定向
+	    if (response.getStatus() == HttpServletResponse.SC_MOVED_TEMPORARILY) {
+	        return true; // 放行重定向請求
+	    }
+		
+		
 		if (!"OPTIONS".equals(method)) { // OPTIONS 請求通常是瀏覽器的預檢請求，不需要進行驗證
 			// 是否有"已登入"的資訊
 			String auth = request.getHeader("Authorization");

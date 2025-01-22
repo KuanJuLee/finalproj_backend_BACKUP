@@ -61,6 +61,17 @@ public class Member {
 	@Column(nullable = false)
 	private LocalDateTime updateDate;
 
+	// 以下為給line login使用
+	private String lineId;
+
+	private String lineName;
+
+	private String linePicture;
+	
+	@Column(nullable = false)
+	private boolean userType;    // 1表示註冊會員，0表示line登入會員
+	
+	//以下為關聯產生的屬性
 	// 雙向一對多
 	@OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST })
 	private List<RescueCase> rescueCases;
@@ -89,168 +100,196 @@ public class Member {
 	// 雙向一對多，最後meeting加的
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 	private Set<AdoptionCaseApply> adoptionCaseApply = new HashSet<>();
-	
-	//	綁定流程:當需要綁定時，為會員生成和 bindingToken和bindingTokenExpiry，存入Member表。
-	//	用戶掃描 QR Code 或點擊綁定鏈接時，通過 binding_token 查找對應的會員。
-	//	驗證 Token 是否有效（未過期）。
-	//	綁定完成後，將 line_user_id 更新到該會員記錄中，並清空 bindingToken。
-	private String userLineId; 
-	
-	private String  bindingToken;
-	
+
+	// 綁定流程:當需要綁定時，為會員生成和 bindingToken和bindingTokenExpiry，存入Member表。
+	// 用戶掃描 QR Code 或點擊綁定鏈接時，通過 binding_token 查找對應的會員。
+	// 驗證 Token 是否有效（未過期）。
+	// 綁定完成後，將 line_user_id 更新到該會員記錄中，並清空 bindingToken。
+	private String userLineId;
+
+	private String bindingToken;
+
 	private LocalDateTime bindingTokenExpiry;
-	
-	
+
 	// Constructors, getters, setters, toString()
 	public Member() {
 		// 這是默認構造函數，Hibernate 需要
 	}
-		
-		public Member(Integer memberId, String nickName, String password, String name, String email, String phone,
-				String address, LocalDate birthday, LocalDateTime createDate, LocalDateTime updateDate,
-				List<Activity> activity,
-				List<ActivityParticipantList> acitvityParticipantLists,
-				// List<WishListBean> wishList, Set<Cart> cart,List<Order> order,
-				List<RescueCase> rescueCases, List<Follow> follow, List<LostCase> lostCase,
-				List<AdoptionCase> adoptionCase, List<ReportCase> reportCase, Set<AdoptionCaseApply> adoptionCaseApply) {
-			this.memberId = memberId;
-			this.nickName = nickName;
-			this.password = password;
-			this.name = name;
-			this.email = email;
-			this.phone = phone;
-			this.address = address;
-			this.birthday = birthday;
-			this.createDate = createDate;
-			this.updateDate = updateDate;
-			this.activity = activity;
-			this.acitvityParticipantLists = acitvityParticipantLists;
-			// this.wishList = wishList;
-			// this.cart = cart;
-			// this.order = order;
-			this.rescueCases = rescueCases;
-			this.follows = follow;
-			this.lostCase = lostCase;
-			this.adoptionCase = adoptionCase;
-			this.reportCase = reportCase;
-			this.adoptionCaseApply = adoptionCaseApply;
-		}
 
-		public Integer getMemberId() {
-			return memberId;
-		}
+	public Member(Integer memberId, String nickName, String password, String name, String email, String phone,
+			String address, LocalDate birthday, LocalDateTime createDate, LocalDateTime updateDate,
+			List<Activity> activity, List<ActivityParticipantList> acitvityParticipantLists,
+			// List<WishListBean> wishList, Set<Cart> cart,List<Order> order,
+			List<RescueCase> rescueCases, List<Follow> follow, List<LostCase> lostCase, List<AdoptionCase> adoptionCase,
+			List<ReportCase> reportCase, Set<AdoptionCaseApply> adoptionCaseApply) {
+		this.memberId = memberId;
+		this.nickName = nickName;
+		this.password = password;
+		this.name = name;
+		this.email = email;
+		this.phone = phone;
+		this.address = address;
+		this.birthday = birthday;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+		this.activity = activity;
+		this.acitvityParticipantLists = acitvityParticipantLists;
+		// this.wishList = wishList;
+		// this.cart = cart;
+		// this.order = order;
+		this.rescueCases = rescueCases;
+		this.follows = follow;
+		this.lostCase = lostCase;
+		this.adoptionCase = adoptionCase;
+		this.reportCase = reportCase;
+		this.adoptionCaseApply = adoptionCaseApply;
+	}
 
-		public void setMemberId(Integer memberId) {
-			this.memberId = memberId;
-		}
+	public Integer getMemberId() {
+		return memberId;
+	}
 
-		public String getNickName() {
-			return nickName;
-		}
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
 
-		public void setNickName(String nickName) {
-			this.nickName = nickName;
-		}
+	public String getNickName() {
+		return nickName;
+	}
 
-		public String getPassword() {
-			return password;
-		}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
 
-		public void setPassword(String password) {
-			this.password = password;
-		}
+	public String getPassword() {
+		return password;
+	}
 
-		public String getName() {
-			return name;
-		}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-		public void setName(String name) {
-			this.name = name;
-		}
+	public String getName() {
+		return name;
+	}
 
-		public String getEmail() {
-			return email;
-		}
+	public void setName(String name) {
+		this.name = name;
+	}
 
-		public void setEmail(String email) {
-			this.email = email;
-		}
+	public String getEmail() {
+		return email;
+	}
 
-		public String getPhone() {
-			return phone;
-		}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-		public void setPhone(String phone) {
-			this.phone = phone;
-		}
+	public String getPhone() {
+		return phone;
+	}
 
-		public String getAddress() {
-			return address;
-		}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-		public void setAddress(String address) {
-			this.address = address;
-		}
+	public String getAddress() {
+		return address;
+	}
 
-		public LocalDate getBirthday() {
-			return birthday;
-		}
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-		public void setBirthday(LocalDate birthday) {
-			this.birthday = birthday;
-		}
+	public LocalDate getBirthday() {
+		return birthday;
+	}
 
-		public LocalDateTime getCreateDate() {
-			return createDate;
-		}
+	public void setBirthday(LocalDate birthday) {
+		this.birthday = birthday;
+	}
 
-		public void setCreateDate(LocalDateTime createDate) {
-			this.createDate = createDate;
-		}
+	public LocalDateTime getCreateDate() {
+		return createDate;
+	}
 
-		public LocalDateTime getUpdateDate() {
-			return updateDate;
-		}
+	public void setCreateDate(LocalDateTime createDate) {
+		this.createDate = createDate;
+	}
 
-		public void setUpdateDate(LocalDateTime updateDate) {
-			this.updateDate = updateDate;
-		}
+	public LocalDateTime getUpdateDate() {
+		return updateDate;
+	}
 
-		
-		public String getUserLineId() {
-			return userLineId;
-		}
+	public void setUpdateDate(LocalDateTime updateDate) {
+		this.updateDate = updateDate;
+	}
 
-		public void setUserLineId(String userLineId) {
-			this.userLineId = userLineId;
-		}
+	public String getUserLineId() {
+		return userLineId;
+	}
 
-		public String getBindingToken() {
-			return bindingToken;
-		}
+	public void setUserLineId(String userLineId) {
+		this.userLineId = userLineId;
+	}
 
-		public void setBindingToken(String bindingToken) {
-			this.bindingToken = bindingToken;
-		}
+	public String getBindingToken() {
+		return bindingToken;
+	}
 
-		public LocalDateTime getBindingTokenExpiry() {
-			return bindingTokenExpiry;
-		}
+	public void setBindingToken(String bindingToken) {
+		this.bindingToken = bindingToken;
+	}
 
-		public void setBindingTokenExpiry(LocalDateTime bindingTokenExpiry) {
-			this.bindingTokenExpiry = bindingTokenExpiry;
-		}
+	public LocalDateTime getBindingTokenExpiry() {
+		return bindingTokenExpiry;
+	}
 
-		
-		@Override
-		public String toString() {
-			return "Member [memberId=" + memberId + ", nickName=" + nickName + ", password=" + password + ", name="
-					+ name + ", email=" + email + ", phone=" + phone + ", address=" + address + ", birthday=" + birthday
-					+ ", createDate=" + createDate + ", updateDate=" + updateDate + ", rescueCases=" + rescueCases
-					+ ", activity=" + activity + ", acitvityParticipantLists=" + acitvityParticipantLists + ", follows="
-					+ follows + ", lostCase=" + lostCase + ", adoptionCase=" + adoptionCase + ", reportCase="
-					+ reportCase + ", adoptionCaseApply=" + adoptionCaseApply + "]";
-		}
+	public void setBindingTokenExpiry(LocalDateTime bindingTokenExpiry) {
+		this.bindingTokenExpiry = bindingTokenExpiry;
+	}
 
-		
+	public String getLineId() {
+		return lineId;
+	}
+
+	public void setLineId(String lineId) {
+		this.lineId = lineId;
+	}
+
+	public String getLineName() {
+		return lineName;
+	}
+
+	public void setLineName(String lineName) {
+		this.lineName = lineName;
+	}
+
+	public String getLinePicture() {
+		return linePicture;
+	}
+
+	public void setLinePicture(String linePicture) {
+		this.linePicture = linePicture;
+	}
+	
+
+	public boolean isUserType() {
+		return userType;
+	}
+
+	public void setUserType(boolean userType) {
+		this.userType = userType;
+	}
+
+	@Override
+	public String toString() {
+		return "Member [memberId=" + memberId + ", nickName=" + nickName + ", password=" + password + ", name=" + name
+				+ ", email=" + email + ", phone=" + phone + ", address=" + address + ", birthday=" + birthday
+				+ ", createDate=" + createDate + ", updateDate=" + updateDate + ", rescueCases=" + rescueCases
+				+ ", activity=" + activity + ", acitvityParticipantLists=" + acitvityParticipantLists + ", follows="
+				+ follows + ", lostCase=" + lostCase + ", adoptionCase=" + adoptionCase + ", reportCase=" + reportCase
+				+ ", adoptionCaseApply=" + adoptionCaseApply + "]";
+	}
+
 }
