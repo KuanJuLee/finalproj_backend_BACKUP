@@ -32,7 +32,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 			System.out.println(222222);
 			// 如果Heade沒有jwt相關資訊就請求失敗
 			if (auth == null || !auth.startsWith("Bearer ")) {
-				System.out.println(6666666);
+				System.out.println("授權被攔截!!!!");
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				return false;
 			}

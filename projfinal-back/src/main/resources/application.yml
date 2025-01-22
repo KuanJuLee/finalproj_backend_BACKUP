@@ -104,5 +104,5 @@ lineBot: https://line.me/R/ti/p/@310pndih
 line:
   login:
     redirect-uri: ${DomainName.url}/line/callback
-    channel-id: Uf3c12ee16ef576effa131ee647edaeec
+    channel-id: 2006807062
     channel-secret: 1f781b9cf730b0c4decdeba7eead6778
