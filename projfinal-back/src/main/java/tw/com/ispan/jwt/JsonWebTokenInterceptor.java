@@ -24,7 +24,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		System.out.println(111111);
+		System.out.println("攔截器111111");
 		// 驗證成功後將 Token 中的資訊（如 custid）存入 HttpServletRequest 的屬性中，供後續 Controller 使用
 		String method = request.getMethod();
 		
@@ -37,7 +37,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 		if (!"OPTIONS".equals(method)) { // OPTIONS 請求通常是瀏覽器的預檢請求，不需要進行驗證
 			// 是否有"已登入"的資訊
 			String auth = request.getHeader("Authorization");
-			System.out.println(222222);
+			System.out.println("攔截器2222");
 			// 如果Heade沒有jwt相關資訊就請求失敗
 			if (auth == null || !auth.startsWith("Bearer ")) {
 				System.out.println("授權被攔截!!!!");
@@ -59,7 +59,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 				ObjectMapper objectMapper = new ObjectMapper();
 				JsonNode jsonNode = objectMapper.readTree(payload);
 
-				// 從 payload 中提取 memberId
+				// 從 payload 中提取 memberId (會轉換成int)
 				Integer memberId = jsonNode.get("memberId").asInt();
 
 				// 將 memberId 添加到請求屬性

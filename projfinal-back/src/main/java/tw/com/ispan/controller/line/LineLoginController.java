@@ -36,34 +36,35 @@ public class LineLoginController {
 	@Autowired
 	private LineLoginService loginService;
 
-	// 用於產生授權連結，回傳給前端
+	// 用於頁面載時產生用戶授權給line連結，回傳給前端
 	// 在此分為兩種情境，如果用戶已註冊過，就連帶把memberId傳進來去和state綁再redis中，如果沒註冊過，就不傳進來
 	@GetMapping("/authorize")
 	public ResponseEntity<String> authorizeUser(@RequestParam(required = false) Integer memberId) {
 
-		// line登入不用驗證是會員!!!記得要排除於驗證jwt路徑中
-
+		// 準備透過line登入不用驗證是會員!!!記得要排除於驗證jwt路徑中
+		
 		String state = loginService.generateState(); // 生成state
 
 		// 如果有 memberId，則與 state 一起保存
 		if (memberId != null) {
 			stateRedisService.saveStateWithMemberId(state, memberId);
+			System.out.println(456456);
 		} else {
 			stateRedisService.saveState(state); // 僅保存 state
 		}
-
+		System.out.println("state=" + state);
 		String authorizeUrl = loginService.generateAuthorizeUrl(state); // 構造授權 URL
 		return ResponseEntity.ok(authorizeUrl); // 返回給前端
 	}
 
-//	 此為用戶點擊授權連結後，line會發出一個callback request(自定義於平台中)，url中夾帶code和state
+//	 此為用戶點擊授權連結後，line會發出一個callback request(自定義於平台中)，url中夾帶code(line生成的)和state(我生成的)
 //	 https://yourdomain.com/callback?code=abcd1234&state=xyz789
 //	 state是OAuth 2.0和OpenID Connect授權流程中的一個安全機制，旨在防止跨站請求偽造（CSRF）攻擊，並確保授權請求的完整性
 	@GetMapping("/callback")
 	public ResponseEntity<String> handleCallback(@RequestParam String code, @RequestParam String state,
 			HttpServletResponse response) throws IOException {
 
-		System.out.println("line觸發callback!!");
+		System.out.println("用戶跳轉後line觸發callback!!");
 
 		// 驗證 state(創造授權連結時主動加進去的亂數，驗證相同確保授權請求從用戶的瀏覽器發送過成未被篡改，也允許伺服器在回調中識別是哪個請求發起的授權流程)
 		if (!stateRedisService.validateState(state)) {
@@ -71,7 +72,8 @@ public class LineLoginController {
 		}
 		// 獲取memberId，如果為null則是非會員情境
 		Integer memberId = stateRedisService.getMemberIdByState(state);
-		// 驗證成功且獲取memnerId使用完後，刪除 state
+		System.out.println("找到會員id為"+memberId+"，即將綁定lineid");
+		// 驗證成功且獲取memberId使用完後，刪除 state
 		stateRedisService.deleteState(state);
 
 		// 處理授權碼邏輯，換取accessToken
@@ -85,7 +87,7 @@ public class LineLoginController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch user profile");
 		}
 
-		System.out.println(profile.toString());
+		System.out.println("拿到Line用戶資訊" + profile.toString());
 
 		// 先排除此用戶已經用Line登入過了，所以lineid已存在於member表中，此時就直接跳回原頁面
 		if (loginService.isLineUserExists(profile.getUserId())) {
@@ -101,7 +103,7 @@ public class LineLoginController {
 			}
 		}
 
-		// 把獲取到的accessToken拿去前端儲存?，並讓用戶跳轉回原登入頁面
+		// 需要把獲取到的line accessToken拿去前端儲存?(可以此從Line拿用戶資訊))，並讓用戶跳轉回原登入頁面
 		String indexUri = "http://localhost:5173?token=" + accessToken;
 		response.sendRedirect(indexUri);
 		return ResponseEntity.ok("登入成功，歡迎 " + profile.getDisplayName());

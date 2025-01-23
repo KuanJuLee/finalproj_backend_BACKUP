@@ -99,9 +99,7 @@ public class JsonWebTokenUtility {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		System.out.println("驗證失敗"); 
+		System.out.println("token驗證失敗"); 
 		return null;
 	}
 	

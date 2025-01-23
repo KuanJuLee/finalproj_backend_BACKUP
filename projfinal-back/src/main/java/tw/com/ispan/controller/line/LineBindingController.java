@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,6 +25,7 @@ import tw.com.ispan.service.line.LineBindingService;
 import tw.com.ispan.service.line.LineNotificationService;
 import tw.com.ispan.service.line.RedisService;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/line")
 public class LineBindingController {
@@ -44,7 +46,8 @@ public class LineBindingController {
     private RedisService redisService;
     
 
-    // step1步驟: 如果會員想執行line通知功能，點選Linebot按鈕會先判斷是否已使用Line登入過(表示memberid和lineid有綁定)，沒有則先提醒進行Line登入
+    // 如果會員想執行line通知功能，點選Linebot按鈕前會先被判斷是否已使用Line登入過(表示memberid和lineid有綁定)，沒有則先提醒進行Line登入
+    // 此步驟用來判斷memberId有無綁定lineId
     @GetMapping("/checkBinding")
     public RescueCaseResponse checkLineBinding(@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId) {
 
