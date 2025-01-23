@@ -1,43 +1,57 @@
-// package tw.com.ispan.service.line;
+package tw.com.ispan.service.line;
 
-// import java.time.LocalDateTime;
-// import java.util.Optional;
-// import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.stereotype.Service;
-// import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import com.linecorp.bot.model.PushMessage;
-// import com.linecorp.bot.model.action.PostbackAction;
-// import com.linecorp.bot.model.message.FlexMessage;
-// import com.linecorp.bot.model.message.flex.component.Box;
-// import com.linecorp.bot.model.message.flex.component.Button;
-// import com.linecorp.bot.model.message.flex.component.Text;
-// import com.linecorp.bot.model.message.flex.container.Bubble;
-// import com.linecorp.bot.model.message.flex.unit.FlexLayout;
+import com.linecorp.bot.client.LineMessagingClient;
+import com.linecorp.bot.model.PushMessage;
+import com.linecorp.bot.model.action.PostbackAction;
+import com.linecorp.bot.model.message.FlexMessage;
+import com.linecorp.bot.model.message.flex.component.Box;
+import com.linecorp.bot.model.message.flex.component.Button;
+import com.linecorp.bot.model.message.flex.component.Text;
+import com.linecorp.bot.model.message.flex.container.Bubble;
+import com.linecorp.bot.model.message.flex.unit.FlexLayout;
 
-// import jakarta.validation.constraints.AssertFalse.List;
-// import tw.com.ispan.domain.admin.Member;
-// import tw.com.ispan.domain.pet.LineTemporaryBinding;
-// import tw.com.ispan.repository.admin.MemberRepository;
-// import tw.com.ispan.repository.pet.LineTemporaryBindingRepository;
+import jakarta.validation.constraints.AssertFalse.List;
+import tw.com.ispan.domain.admin.Member;
+import tw.com.ispan.domain.pet.LineTemporaryBinding;
+import tw.com.ispan.repository.admin.MemberRepository;
+import tw.com.ispan.repository.pet.LineTemporaryBindingRepository;
 
-// @Service
-// @Transactional
-// public class LineBindingService {
+@Service
+@Transactional
+public class LineBindingService {
 
-// 	//怎麼拿到這個用戶產生的token??
+	//怎麼拿到這個用戶產生的token??
 	
+    @Autowired
+    private StateRedisService stateRedisService; 
+	@Autowired
+	private MemberRepository memberRepository;
+	@Autowired
+	private LineTemporaryBindingRepository lineTemporaryBindingRepository;
+    @Autowired
+    private LineNotificationService lineNotificationService;
+
 	
-// 	@Autowired
-// 	private MemberRepository memberRepository;
-// 	@Autowired
-// 	private LineTemporaryBindingRepository lineTemporaryBindingRepository;
+    //確認此memberid有無綁定一個lineid
+    public boolean isLineBound(Integer memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("會員不存在"));
+        return member.getLineId() != null;
+    }
+
+
+
 	
-	
-// 	//創建 Flex Message，包含綁定按鈕 
+	//創建 Flex Message，包含綁定按鈕 
 // 	private FlexMessage createBindingFlexMessage(Integer memberId) {
 //         Bubble bubble = Bubble.builder()
 //             .body(Box.builder()
@@ -138,4 +152,4 @@
 
 // 		return ResponseEntity.ok("綁定成功！");
 // 	}
-// }
+}

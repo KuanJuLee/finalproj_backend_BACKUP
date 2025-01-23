@@ -2,6 +2,7 @@ package tw.com.ispan.controller;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,7 @@ import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.service.MemberService;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class LoginController {
     @Autowired
@@ -54,7 +56,6 @@ public class LoginController {
             String token = jsonWebTokenUtility.createToken(user.toString());   //產生一個帶有memberid和email的token字串
             responseJson.put("token", token);              //Token 返回給前端，用於後續請求的身份驗證
             responseJson.put("user", bean.getEmail());
-
         }
         return responseJson.toString();
     }
