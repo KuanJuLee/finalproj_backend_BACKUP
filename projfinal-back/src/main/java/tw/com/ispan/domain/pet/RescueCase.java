@@ -56,7 +56,6 @@ public class RescueCase {
 	// 關聯到member表，雙向多對一
 	@ManyToOne(cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "memberId", nullable = false, foreignKey = @ForeignKey(name = "FK_RescueCase_Member"))
-	@ToString.Exclude
 	private Member member;
 
 	// 必填
@@ -446,18 +445,29 @@ public class RescueCase {
 		this.tag = tag;
 	}
 
-	@Override
-	public String toString() {
-		return "RescueCase [rescueCaseId=" + rescueCaseId + ", caseTitle=" + caseTitle + ", species=" + species
-				+ ", breed=" + breed + ", furColor=" + furColor + ", gender=" + gender
-				+ ", sterilization=" + sterilization + ", age=" + age + ", microChipNumber=" + microChipNumber
-				+ ", suspLost=" + suspLost + ", city=" + city + ", districtArea=" + districtArea + ", street=" + street
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", donationAmount=" + donationAmount
-				+ ", viewCount=" + viewCount + ", follow=" + follow + ", publicationTime=" + publicationTime
-				+ ", lastUpdateTime=" + lastUpdateTime + ", tag=" + tag + ", caseState=" + caseState + ", rescueReason="
-				+ rescueReason + ", caseUrl=" + caseUrl + ", casePictures=" + casePictures + ", rescueDemands="
-				+ rescueDemands + ", canAffords=" + canAffords + ", rescueProgresses=" + rescueProgresses
-				+ ", reportCases=" + reportCases + "]";
+	public List<Follow> getFollows() {
+		return follows;
 	}
 
+	public void setFollows(List<Follow> follows) {
+		this.follows = follows;
+	}
+
+	public Banner getBanner() {
+		return banner;
+	}
+
+	public void setBanner(Banner banner) {
+		this.banner = banner;
+	}
+
+	public Boolean getIsHidden() {
+		return isHidden;
+	}
+
+	public void setIsHidden(Boolean isHidden) {
+		this.isHidden = isHidden;
+	}
+
+	
 }

@@ -2,6 +2,7 @@ package tw.com.ispan.init;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,17 +20,24 @@ import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.DistrictArea;
 import tw.com.ispan.domain.pet.FurColor;
+import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
+import tw.com.ispan.init.pet.CityDto;
+import tw.com.ispan.init.pet.fakeRescueCaseDto;
+import tw.com.ispan.repository.admin.MemberRepository;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
+import tw.com.ispan.repository.pet.DistrictAreaRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
+import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
 
+@Transactional
 @Component
 public class PetDataInitializer implements CommandLineRunner {
 
@@ -41,11 +50,17 @@ public class PetDataInitializer implements CommandLineRunner {
 	@Autowired
 	private BreedRepository breedRepository;
 	@Autowired
-	CaseStateRepository caseStateRepository;
+	private CaseStateRepository caseStateRepository;
 	@Autowired
-	RescueDemandRepository rescueDemandRepository;
+	private RescueDemandRepository rescueDemandRepository;
 	@Autowired
-	CanAffordRepository canAffordRepository;
+	private CanAffordRepository canAffordRepository;
+	@Autowired
+	private RescueCaseRepository rescueCaseRepository;
+	@Autowired
+	private DistrictAreaRepository districtAreaRepository;
+	@Autowired
+	private MemberRepository memberRepository;
 
 	// 此方法會在專案啟動同時執行一次，進行資料初始化
 	@Override
@@ -111,10 +126,10 @@ public class PetDataInitializer implements CommandLineRunner {
 			furColorRepository.save(new FurColor("三花貓"));
 		}
 		if (!furColorRepository.existsById(6)) {
-			furColorRepository.save(new FurColor("虎斑"));
+			furColorRepository.save(new FurColor("虎斑貓"));
 		}
 		if (!furColorRepository.existsById(7)) {
-			furColorRepository.save(new FurColor("賓士"));
+			furColorRepository.save(new FurColor("賓士貓"));
 		}
 
 		// 存入casestate (狀態描述 ( 認養: 待認養/已認養; 救援: 待救援/已救援; 協尋: 待協尋/已尋回 三種共用: 變成小天使、案件失敗))
@@ -207,6 +222,82 @@ public class PetDataInitializer implements CommandLineRunner {
 			}
 		}
 
+		// 塞入5筆救援案件假資料
+
+		if (rescueCaseRepository.count() < 5) {
+
+			// 讀取 JSON 假資料
+			ObjectMapper objectMapper = new ObjectMapper();
+			String filePath = "src/main/resources/data/rescueCase.json"; // JSON 檔案的路徑
+			List<fakeRescueCaseDto> rescueCaseDtos = objectMapper.readValue(
+					new File(filePath),
+					new TypeReference<List<fakeRescueCaseDto>>() {
+					});
+
+			// 將 DTO 轉換為實體並存入資料庫
+			for (fakeRescueCaseDto dto : rescueCaseDtos) {
+				RescueCase rescueCase = new RescueCase();
+
+				// 設定 RescueCase 基本屬性
+				rescueCase.setCaseTitle(dto.getCaseTitle());
+				rescueCase.setGender(dto.getGender());
+				rescueCase.setSterilization(dto.getSterilization());
+				rescueCase.setAge(dto.getAge());
+				rescueCase.setMicroChipNumber(dto.getMicroChipNumber());
+				rescueCase.setSuspLost(dto.getSuspLost());
+				rescueCase.setStreet(dto.getStreet());
+				rescueCase.setLatitude(dto.getLatitude());
+				rescueCase.setLongitude(dto.getLongitude());
+				rescueCase.setDonationAmount(dto.getDonationAmount());
+				rescueCase.setViewCount(dto.getViewCount());
+				rescueCase.setFollow(dto.getFollow());
+				rescueCase.setPublicationTime(LocalDateTime.now()); // 自動設置發佈時間
+				rescueCase.setLastUpdateTime(LocalDateTime.now()); // 自動設置更新時間
+				rescueCase.setTag(dto.getTag());
+				rescueCase.setRescueReason(dto.getRescueReason());
+				rescueCase.setCaseUrl(dto.getCaseUrl());
+				rescueCase.setIsHidden(dto.getIsHidden());
+
+				// 手動關聯實體
+				rescueCase.setMember(memberRepository.findById(dto.getMemberId())
+						.orElseThrow(() -> new RuntimeException("member not found")));
+				rescueCase.setSpecies(speciesRepository.findById(dto.getSpecies().getSpeciesId())
+						.orElseThrow(() -> new RuntimeException("Species not found")));
+				System.out.println(rescueCase.getSpecies().toString());
+				rescueCase.setFurColor(furColorRepository.findById(dto.getFurColor().getFurColorId())
+						.orElseThrow(() -> new RuntimeException("FurColor not found")));
+				rescueCase.setBreed(breedRepository.findById(dto.getBreed().getBreedId())
+						.orElseThrow(() -> new RuntimeException("Breed not found")));
+				System.out.println(rescueCase.getBreed().toString());
+				rescueCase.setCity(cityRepository.findById(dto.getCity().getCityId())
+						.orElseThrow(() -> new RuntimeException("City not found")));
+				rescueCase.setDistrictArea(districtAreaRepository.findById(dto.getDistrictArea().getDistrictAreaId())
+						.orElseThrow(() -> new RuntimeException("DistrictArea not found")));
+				rescueCase.setCaseState(caseStateRepository.findById(dto.getCaseState().getCaseStateId())
+						.orElseThrow(() -> new RuntimeException("CaseState not found")));
+
+				// 新增 canAffords 的處理
+				List<CanAfford> canAffordEntities = dto.getCanAffords().stream()
+						.map(canAffordDto -> canAffordRepository.findById(canAffordDto.getCanAffordId())
+								.orElseThrow(() -> new RuntimeException(
+										"CanAfford not found for ID: " + canAffordDto.getCanAffordId())))
+						.toList();
+				rescueCase.setCanAffords(canAffordEntities);
+
+				// 新增 rescueDemands 的處理
+				List<RescueDemand> rescueDemandEntities = dto.getRescueDemands().stream()
+						.map(rescueDemandDto -> rescueDemandRepository.findById(rescueDemandDto.getRescueDemandId())
+								.orElseThrow(() -> new RuntimeException(
+										"RescueDemand not found for ID: " + rescueDemandDto.getRescueDemandId())))
+						.toList();
+				rescueCase.setRescueDemands(rescueDemandEntities);
+
+				// 將圖片保存到圖片表中
+
+				// 保存 RescueCase 到資料庫
+				rescueCaseRepository.save(rescueCase);
+			}
+		}
 	}
 
 }

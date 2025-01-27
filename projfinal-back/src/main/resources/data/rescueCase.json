@@ -1,0 +1,183 @@
+[
+  {
+    "memberId": 1,
+    "caseTitle": "受傷貓咪需要幫助",
+    "species": { "speciesId": 2 },
+    "breed": { "breedId": 5 },
+    "furColor": { "furColorId": 3 },
+    "gender": "母",
+    "sterilization": "未絕育",
+    "age": 2,
+    "microChipNumber": 1876543210,
+    "suspLost": false,
+    "city": { "cityId": 3 },
+    "districtArea": { "districtAreaId": 20 },
+    "street": "仁愛路120巷",
+    "latitude": 25.0418,
+    "longitude": 121.5501,
+    "donationAmount": 3000,
+    "viewCount": 200,
+    "follow": 20,
+    "tag": "受傷,貓咪",
+    "rescueReason": "遭車輛撞擊",
+    "caseState": { "caseStateId": 2 },
+    "caseUrl": "https://example.com/case/124",
+    "casePictures": [
+      { "url": "https://example.com/images/pic3.jpg" },
+      { "url": "https://example.com/images/pic4.jpg" }
+    ],
+    "rescueDemands": [
+      { "rescueDemandId": 3 },
+      { "rescueDemandId": 4 }
+    ],
+    "canAffords": [
+      { "canAffordId": 2 },
+      { "canAffordId": 4 }
+    ],
+    "isHidden": false
+  },
+  {
+    "memberId": 2,
+    "caseTitle": "流浪狗需要救援",
+    "species": { "speciesId": 1 },
+    "breed": { "breedId": 10 },
+    "furColor": { "furColorId": 2 },
+    "gender": "公",
+    "sterilization": "已絕育",
+    "age": 5,
+    "microChipNumber": 1234509876,
+    "suspLost": true,
+    "city": { "cityId": 5 },
+    "districtArea": { "districtAreaId": 25 },
+    "street": "和平東路200號",
+    "latitude": 24.9930,
+    "longitude": 121.3051,
+    "donationAmount": 4500,
+    "viewCount": 80,
+    "follow": 12,
+    "tag": "急救,狗狗",
+    "rescueReason": "受傷且營養不良",
+    "caseState": { "caseStateId": 3 },
+    "caseUrl": "https://example.com/case/125",
+    "casePictures": [
+      { "url": "https://example.com/images/pic5.jpg" },
+      { "url": "https://example.com/images/pic6.jpg" }
+    ],
+    "rescueDemands": [
+      { "rescueDemandId": 1 },
+      { "rescueDemandId": 2 }
+    ],
+    "canAffords": [
+      { "canAffordId": 3 },
+      { "canAffordId": 4 }
+    ],
+    "isHidden": false
+  },
+  {
+    "memberId": 3,
+    "caseTitle": "受傷的貓咪",
+    "species": { "speciesId": 2 },
+    "breed": { "breedId": 15 },
+    "furColor": { "furColorId": 4 },
+    "gender": "母",
+    "sterilization": "無需絕育",
+    "age": 1,
+    "microChipNumber": null,
+    "suspLost": false,
+    "city": { "cityId": 7 },
+    "districtArea": { "districtAreaId": 30 },
+    "street": "大安路三段15巷",
+    "latitude": 25.0185,
+    "longitude": 121.5313,
+    "donationAmount": 2000,
+    "viewCount": 50,
+    "follow": 8,
+    "tag": "鳥,救援",
+    "rescueReason": "翅膀骨折",
+    "caseState": { "caseStateId": 1 },
+    "caseUrl": "https://example.com/case/126",
+    "casePictures": [
+      { "url": "https://example.com/images/pic7.jpg" }
+    ],
+    "rescueDemands": [
+      { "rescueDemandId": 2 },
+      { "rescueDemandId": 3 }
+    ],
+    "canAffords": [
+      { "canAffordId": 1 },
+      { "canAffordId": 2 }
+    ],
+    "isHidden": false
+  },
+  {
+    "memberId": 4,
+    "caseTitle": "狗狗急需醫療幫助",
+    "species": { "speciesId": 1 },
+    "breed": { "breedId": 8 },
+    "furColor": { "furColorId": 6 },
+    "gender": "公",
+    "sterilization": "未絕育",
+    "age": 7,
+    "microChipNumber": 1357913579,
+    "suspLost": true,
+    "city": { "cityId": 8 },
+    "districtArea": { "districtAreaId": 50 },
+    "street": "忠孝東路五段32巷",
+    "latitude": 25.0427,
+    "longitude": 121.5646,
+    "donationAmount": 7000,
+    "viewCount": 180,
+    "follow": 25,
+    "tag": "狗,急救",
+    "rescueReason": "遭野狗襲擊",
+    "caseState": { "caseStateId": 4 },
+    "caseUrl": "https://example.com/case/127",
+    "casePictures": [
+      { "url": "https://example.com/images/pic8.jpg" },
+      { "url": "https://example.com/images/pic9.jpg" }
+    ],
+    "rescueDemands": [
+      { "rescueDemandId": 1 },
+      { "rescueDemandId": 3 }
+    ],
+    "canAffords": [
+      { "canAffordId": 2 },
+      { "canAffordId": 4 }
+    ],
+    "isHidden": true
+  },
+  {
+    "memberId": 5,
+    "caseTitle": "貓咪營養不良",
+    "species": { "speciesId": 2 },
+    "breed": { "breedId": 12 },
+    "furColor": { "furColorId": 5 },
+    "gender": "母",
+    "sterilization": "已絕育",
+    "age": 4,
+    "microChipNumber": 1231231234,
+    "suspLost": true,
+    "city": { "cityId": 9 },
+    "districtArea": { "districtAreaId": 70 },
+    "street": "信義路四段88號",
+    "latitude": 24.9658,
+    "longitude": 121.4321,
+    "donationAmount": 1500,
+    "viewCount": 90,
+    "follow": 15,
+    "tag": "貓,救援",
+    "rescueReason": "健康狀況不佳",
+    "caseState": { "caseStateId": 2 },
+    "caseUrl": "https://example.com/case/128",
+    "casePictures": [
+      { "url": "https://example.com/images/pic10.jpg" }
+    ],
+    "rescueDemands": [
+      { "rescueDemandId": 3 }
+    ],
+    "canAffords": [
+      { "canAffordId": 3 }
+    ],
+    "isHidden": false
+  }
+]

@@ -76,7 +76,6 @@ public class Member {
 	// 以下為關聯產生的屬性
 	// 雙向一對多
 	@OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST })
-	@ToString.Exclude
 	private List<RescueCase> rescueCases;
 
 	// 雙向一對多

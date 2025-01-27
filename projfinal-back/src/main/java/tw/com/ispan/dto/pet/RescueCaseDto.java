@@ -1,7 +1,6 @@
 package tw.com.ispan.dto.pet;
 
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.validator.constraints.Length;
 
