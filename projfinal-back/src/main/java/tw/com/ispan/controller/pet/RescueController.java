@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +30,8 @@ import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 //此為救援案件crud
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping(path = { "/RescueCase" })
 public class RescueController {
@@ -40,7 +41,7 @@ public class RescueController {
 
 	@Autowired
 	private ImageService imageService;
-	
+
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -49,11 +50,13 @@ public class RescueController {
 	public RescueCaseResponse add(@RequestHeader("Authorization") String token,
 			@RequestAttribute("memberId") Integer memberId, @Validated @RequestBody RescueCaseDto rescueCaseDto) {
 
-		
-		// 方法參數: 
-		// 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT 中提取重要資訊，且controller必須接收header中token字串
-		// 2. @RequestAttribute("memberId")為接收JsonWebTokenInterceptor類別中攔截近來此controller的request，解析token內攜帶的memberId
-		// @RequestAttribute 的來源： @RequestAttribute 用於提取由攔截器、過濾器或其他中間層處理時設置的屬性，而不是從請求參數中提取的值。
+		// 方法參數:
+		// 1. 專案使用JWT(JSON Web Token)來管理會員登入，則可以從前端傳入的 JWT
+		// 中提取重要資訊，且controller必須接收header中token字串
+		// 2.
+		// @RequestAttribute("memberId")為接收JsonWebTokenInterceptor類別中攔截近來此controller的request，解析token內攜帶的memberId
+		// @RequestAttribute 的來源： @RequestAttribute
+		// 用於提取由攔截器、過濾器或其他中間層處理時設置的屬性，而不是從請求參數中提取的值。
 		// 3. rescueCaseDto傳進service存資料，而RescueCaseResponse回傳訊息給前端
 		RescueCaseResponse response = new RescueCaseResponse();
 
@@ -70,7 +73,6 @@ public class RescueController {
 			return response;
 		}
 
-		
 		// 2.驗證必填資料、資料格式(沒寫傳進來dto接收會是預設初始值null或0)->加上@Validated於dto中直接進行驗證，如果驗證失敗，Spring
 		// Boot會自動拋出錯誤
 
@@ -78,7 +80,7 @@ public class RescueController {
 		List<String> finalUrl = imageService.moveImages(rescueCaseDto.getCasePictures());
 		System.out.println("圖片移動完畢!");
 		List<CasePicture> casePictures = imageService.saveImage(finalUrl);
-			//需要設置檢查為如果圖片增添失敗==案件增添失敗!!!
+		// 需要設置檢查為如果圖片增添失敗==案件增添失敗!!!
 
 		// 4. 新增案件至資料庫 先convertToEntity()轉為實體類別後，add()把該存的放進去(圖片、經緯度等..)再存入資料庫中
 		RescueCase rescueCaseEntity = rescueCaseService.convertToEntity(rescueCaseDto, memberId);
@@ -100,13 +102,14 @@ public class RescueController {
 	// 修改救援案件-----------------------------------------------------------------------------------------------------------------------------
 	@PutMapping(path = { "/modify/{id}" })
 	public RescueCaseResponse modifiedRescueCase(@PathVariable(name = "id") Integer caseId,
-			@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId, @Validated @RequestBody ModifyRescueCaseDto dto) {
+			@RequestHeader("Authorization") String token, @RequestAttribute("memberId") Integer memberId,
+			@Validated @RequestBody ModifyRescueCaseDto dto) {
 
 		// 除了原本新增案件的內容都可修改外，重點是多一個可修改caseState以及會傳imageIdandUrl進來，因此相較新增案件的這兩個屬性不是null
 		// 案件id要從前端點選修改按鈕(按鈕做成超連結)時同時送出，因此id即藏在超連結送出的request line裡
 
 		RescueCaseResponse response = new RescueCaseResponse();
-		
+
 		// 前端在看到某案件內頁面時，只有當此案件的memberId有對應上自己的，才會在前端看到「編輯此案件」的按鈕，才能進到可以按下此controller修改案就的按鈕
 		// 1.驗證token(能通過JsonWebTokenInterceptor攔截器即驗證)並拿到會員id，需驗證此id有無在會員資料表中存在之餘，驗證此案件真的是這個會員po的，他才能修改
 		System.out.println("此為會員id" + memberId + "執行修改案件");
@@ -119,11 +122,10 @@ public class RescueController {
 			response.setMessage("此會員id不存在於資料中");
 			return response;
 		}
-		
-		
+
 		// 2. 驗證此案件資料中的memberId真的有對應上此使用者的memberId
-		//如果不匹配
-		if(!rescueCaseService.iCanModify(memberId , caseId)) {
+		// 如果不匹配
+		if (!rescueCaseService.iCanModify(memberId, caseId)) {
 			response.setSuccess(false);
 			response.setMessage("此會員不可修改此案件");
 			return response;
@@ -201,25 +203,23 @@ public class RescueController {
 			return response;
 		}
 	}
-	
 
-	//查詢單筆救援案件(用戶點進去某case)-------------------------------------------------------------------------------------------------------------
+	// 查詢單筆救援案件(用戶點進去某case)-------------------------------------------------------------------------------------------------------------
 	@GetMapping("/search/{id}")
 	public RescueCase searchRescueCase(@PathVariable("id") Integer caseId) {
-		
+
 		// 1. 非會員功能，不用驗證token
-		
+
 		RescueCase rescueCase = rescueCaseService.searchRescueCase(caseId);
-		if(rescueCase != null){
+		if (rescueCase != null) {
 			System.out.println(rescueCase.toString());
-			//返回前端，java物件會被springboot自動序列化為json格式
+			// 返回前端，java物件會被springboot自動序列化為json格式
 			return rescueCase;
 		} else {
 			System.out.println("此案件id不存在");
 			return null;
 		}
 	}
-	
 
 	// 查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")

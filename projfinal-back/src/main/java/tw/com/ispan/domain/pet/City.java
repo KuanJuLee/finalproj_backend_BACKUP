@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -29,15 +28,13 @@ public class City {
 	@Column(name = "city", columnDefinition = "NVARCHAR(5)", nullable = false)
 	private String city;
 
-	// 和DistinctArea表單向一對多
-	@OneToMany(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "city_id")
+	// 和DistrictArea表雙向一對多
+	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
 	@JsonIgnore
-	private List<DistinctArea> distinctAreas;
+	private List<DistrictArea> districtAreas;
 
 	// 和RescueCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
-//	 @JsonManagedReference("rescueCase-city")
 	private List<RescueCase> rescueCases;
 
 	// 和LostCase表雙向一對多
@@ -81,12 +78,12 @@ public class City {
 		this.rescueCases = rescueCases;
 	}
 
-	public List<DistinctArea> getDistinctAreas() {
-		return distinctAreas;
+	public List<DistrictArea> getDistrictAreas() {
+		return districtAreas;
 	}
 
-	public void setDistinctAreas(List<DistinctArea> distinctAreas) {
-		this.distinctAreas = distinctAreas;
+	public void setDistrictAreas(List<DistrictArea> districtAreas) {
+		this.districtAreas = districtAreas;
 	}
 
 	public List<LostCase> getLostCases() {
@@ -104,7 +101,5 @@ public class City {
 	public void setAdoptionCases(List<AdoptionCase> adoptionCases) {
 		this.adoptionCases = adoptionCases;
 	}
-	
-	
 
 }

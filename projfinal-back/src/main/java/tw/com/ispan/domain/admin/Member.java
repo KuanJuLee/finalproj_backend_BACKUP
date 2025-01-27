@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,11 +66,14 @@ public class Member {
 	private String lineName;
 
 	private String linePicture;
-	
+
+	// 以下為給追蹤line商家帳號使用
+	private boolean followed = false;
+
 	@Column(nullable = false)
-	private boolean userType;    // 1表示註冊會員，0表示line登入會員
-	
-	//以下為關聯產生的屬性
+	private boolean userType; // 1表示註冊會員，0表示line登入會員
+
+	// 以下為關聯產生的屬性
 	// 雙向一對多
 	@OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST })
 	@ToString.Exclude
@@ -102,16 +103,6 @@ public class Member {
 	// 雙向一對多，最後meeting加的
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 	private Set<AdoptionCaseApply> adoptionCaseApply = new HashSet<>();
-
-	// 綁定流程:當需要綁定時，為會員生成和 bindingToken和bindingTokenExpiry，存入Member表。
-	// 用戶掃描 QR Code 或點擊綁定鏈接時，通過 binding_token 查找對應的會員。
-	// 驗證 Token 是否有效（未過期）。
-	// 綁定完成後，將 line_user_id 更新到該會員記錄中，並清空 bindingToken。
-	private String userLineId;
-
-	private String bindingToken;
-
-	private LocalDateTime bindingTokenExpiry;
 
 	// Constructors, getters, setters, toString()
 	public Member() {
@@ -227,30 +218,6 @@ public class Member {
 		this.updateDate = updateDate;
 	}
 
-	public String getUserLineId() {
-		return userLineId;
-	}
-
-	public void setUserLineId(String userLineId) {
-		this.userLineId = userLineId;
-	}
-
-	public String getBindingToken() {
-		return bindingToken;
-	}
-
-	public void setBindingToken(String bindingToken) {
-		this.bindingToken = bindingToken;
-	}
-
-	public LocalDateTime getBindingTokenExpiry() {
-		return bindingTokenExpiry;
-	}
-
-	public void setBindingTokenExpiry(LocalDateTime bindingTokenExpiry) {
-		this.bindingTokenExpiry = bindingTokenExpiry;
-	}
-
 	public String getLineId() {
 		return lineId;
 	}
@@ -274,7 +241,14 @@ public class Member {
 	public void setLinePicture(String linePicture) {
 		this.linePicture = linePicture;
 	}
-	
+
+	public boolean isFollowed() {
+		return followed;
+	}
+
+	public void setFollowed(boolean followed) {
+		this.followed = followed;
+	}
 
 	public boolean isUserType() {
 		return userType;

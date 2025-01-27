@@ -20,7 +20,7 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -66,7 +66,7 @@ file:
 
 jwt:
   token:
-    expire: 10
+    expire: 60
 
 #google座標api(冠)
 google:
@@ -90,12 +90,17 @@ logging:
       apache:
         http: DEBUG
 #Domain Name(冠)
-DomainName:
-  url: http://localhost:8080
+front:
+  domainName:
+    url: http://localhost:5173
 
-#開發用公開網域url(冠)
+back:
+  domainName:
+    url: http://localhost:8080
+
+#開發用公開網域url(冠)   //記得到時候也要去改LINE平台上webhook的url
 ngrok:
-  url: https://586f-1-160-6-252.ngrok-free.app
+  url: https://f632-36-225-194-22.ngrok-free.app
 
 #linebot跳轉(冠)
 lineBot: https://line.me/R/ti/p/@310pndih
@@ -103,6 +108,6 @@ lineBot: https://line.me/R/ti/p/@310pndih
 #line login相關設定(冠)
 line:
   login:
-    redirect-uri: ${DomainName.url}/line/callback
+    redirect-uri: ${back.domainName.url}/line/callback
     channel-id: 2006807062
     channel-secret: 1f781b9cf730b0c4decdeba7eead6778

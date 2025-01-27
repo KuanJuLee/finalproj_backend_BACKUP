@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.sql.ast.tree.expression.Distinct;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,10 +70,10 @@ public class AdoptionCase {
     @JoinColumn(name = "cityId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_City"))
     private City city;
 
-    // 雙向多對一,外鍵,對應distinctArea表
+    // 雙向多對一,外鍵,對應districtArea表
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    @JoinColumn(name = "distinctAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_Distinct"))
-    private DistinctArea distinctArea;
+    @JoinColumn(name = "districtAreaId", nullable = false, foreignKey = @ForeignKey(name = "FK_AdoptionCase_District"))
+    private DistrictArea districtArea;
 
     @Column(name = "street", columnDefinition = "NVARCHAR(10)")
     private String street;
@@ -142,7 +140,7 @@ public class AdoptionCase {
 
     public AdoptionCase(Integer adoptionCaseId, String caseTitle, Member member, Species species, Breed breed,
             FurColor furColor, String gender, String sterilization, Integer age, Integer microChipNumber,
-            Boolean susLost, City city, DistinctArea distinctArea, String street, BigDecimal latitude,
+            Boolean susLost, City city, DistrictArea districtArea, String street, BigDecimal latitude,
             BigDecimal longitude,
             Integer viewCount, Integer follow, LocalDateTime publicationTime, LocalDateTime lastUpdateTime,
             String title, String story, String healthCondition, String adoptedCondition, Integer status, Integer note,
@@ -160,7 +158,7 @@ public class AdoptionCase {
         this.microChipNumber = microChipNumber;
         this.susLost = susLost;
         this.city = city;
-        this.distinctArea = distinctArea;
+        this.districtArea = districtArea;
         this.street = street;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -308,12 +306,12 @@ public class AdoptionCase {
         this.city = city;
     }
 
-    public DistinctArea getDistintId() {
-        return distinctArea;
+    public DistrictArea getDistintId() {
+        return districtArea;
     }
 
-    public void setDistintId(DistinctArea distinctArea) {
-        this.distinctArea = distinctArea;
+    public void setDistintId(DistrictArea districtArea) {
+        this.districtArea = districtArea;
     }
 
     public String getStreet() {
@@ -425,7 +423,7 @@ public class AdoptionCase {
         return "AdoptionCase [adoptionCaseId=" + adoptionCaseId + ", caseTitle=" + caseTitle + ", member=" + member
                 + ", species=" + species + ", breed=" + breed + ", furColor=" + furColor + ", gender=" + gender
                 + ", sterilization=" + sterilization + ", age=" + age + ", microChipNumber=" + microChipNumber
-                + ", susLost=" + susLost + ", cityId=" + city + ", distintId=" + distinctArea + ", street=" + street
+                + ", susLost=" + susLost + ", cityId=" + city + ", distintId=" + districtArea + ", street=" + street
                 + ", latitude=" + latitude + ", longitude=" + longitude + ", viewCount=" + viewCount + ", follow="
                 + follow + ", publicationTime=" + publicationTime + ", lastUpdateTime=" + lastUpdateTime + ", title="
                 + title + ", story=" + story + ", healthCondition=" + healthCondition + ", adoptedCondition="

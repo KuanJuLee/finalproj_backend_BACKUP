@@ -6,12 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.PushMessage;
-import com.linecorp.bot.model.message.FlexMessage;
 import com.linecorp.bot.model.message.TextMessage;
-import com.linecorp.bot.model.message.flex.container.FlexContainer;
 
 import tw.com.ispan.repository.admin.MemberRepository;
 
@@ -31,8 +28,7 @@ public class LineNotificationService {
 		this.lineMessagingClient = lineMessagingClient;
 	}
 
-	
-	// 此方法用來傳送協尋通知
+	// 此方法用來傳送通知
 	public void sendNotification(String userLineId, String message) {
 		TextMessage textMessage = new TextMessage(message);
 		PushMessage pushMessage = new PushMessage(userLineId, textMessage);
@@ -46,23 +42,21 @@ public class LineNotificationService {
 		// 等待消息發送完成（選擇性）
 		future.join();
 	}
-	
-	
-	// 傳送用戶綁定鏈結的方法
-	public void sendBindingMessage(String LineId, String bindingLink) {
 
-		// 創建消息內容
-		TextMessage textMessage = new TextMessage("點擊此連結以完成綁定: " + bindingLink);
+	// // 傳送用戶綁定鏈結的方法
+	// public void sendBindingMessage(String LineId, String bindingLink) {
 
-		// 發送消息
-		PushMessage pushMessage = new PushMessage(LineId, textMessage);
-		lineMessagingClient.pushMessage(pushMessage).thenAccept(response -> System.out.println("綁定消息已成功發送"))
-				.exceptionally(throwable -> {
-					System.err.println("綁定消息發送失敗: " + throwable.getMessage());
-					return null;
-				});
-	}
+	// // 創建消息內容
+	// TextMessage textMessage = new TextMessage("點擊此連結以完成綁定: " + bindingLink);
 
-	
+	// // 發送消息
+	// PushMessage pushMessage = new PushMessage(LineId, textMessage);
+	// lineMessagingClient.pushMessage(pushMessage).thenAccept(response ->
+	// System.out.println("綁定消息已成功發送"))
+	// .exceptionally(throwable -> {
+	// System.err.println("綁定消息發送失敗: " + throwable.getMessage());
+	// return null;
+	// });
+	// }
+
 }
-

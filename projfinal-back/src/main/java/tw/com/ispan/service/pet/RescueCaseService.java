@@ -18,7 +18,7 @@ import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
-import tw.com.ispan.domain.pet.DistinctArea;
+import tw.com.ispan.domain.pet.DistrictArea;
 import tw.com.ispan.domain.pet.FurColor;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
@@ -32,7 +32,7 @@ import tw.com.ispan.repository.admin.MemberRepository;
 import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
-import tw.com.ispan.repository.pet.DistinctAreaRepository;
+import tw.com.ispan.repository.pet.DistrictAreaRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
@@ -47,7 +47,7 @@ import tw.com.ispan.util.LatLng;
 public class RescueCaseService {
 
 	@Autowired
-	private MemberRepository  memberRepository;
+	private MemberRepository memberRepository;
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
 	@Autowired
@@ -59,7 +59,7 @@ public class RescueCaseService {
 	@Autowired
 	private CityRepository cityRepository;
 	@Autowired
-	private DistinctAreaRepository distinctAreaRepository;
+	private DistrictAreaRepository districtAreaRepository;
 	@Autowired
 	private RescueDemandRepository rescueDemandRepository;
 	@Autowired
@@ -89,13 +89,12 @@ public class RescueCaseService {
 		rescueCase.setTag(dto.getTag());
 
 		// 以下傳id進來，找到對應資料再塞回enitity物件中
-		//會員
+		// 會員
 		Optional<Member> result0 = memberRepository.findById(memberId);
 		if (result0 != null && result0.isPresent()) {
 			rescueCase.setMember(result0.get()); //
 		}
-		
-		
+
 		// 物種
 		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
 		if (result1 != null && result1.isPresent()) {
@@ -121,10 +120,10 @@ public class RescueCaseService {
 			rescueCase.setCity(result4.get());
 		}
 
-		// distinctArea
-		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
+		// districtArea
+		Optional<DistrictArea> result5 = districtAreaRepository.findById(dto.getDistrictAreaId());
 		if (result5 != null && result5.isPresent()) {
-			rescueCase.setDistinctArea(result5.get());
+			rescueCase.setDistrictArea(result5.get());
 		}
 
 		// rescueDemands
@@ -154,9 +153,8 @@ public class RescueCaseService {
 		// 案件id資料庫中自動生成
 		// 最後把關確保用戶沒有手動填的member、latitude、longitude、publicationTime、lastUpadteTime、caseStateId、等必填資料塞進來，才能存進資料庫中
 
-		
 		// 設置經緯度
-		String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
+		String adress = rescueCase.getCity().getCity() + rescueCase.getDistrictArea().getDistrictAreaName()
 				+ rescueCase.getStreet();
 		System.out.println(adress);
 		try {
@@ -175,17 +173,16 @@ public class RescueCaseService {
 			System.out.println("編碼格式錯誤");
 			e.printStackTrace();
 		}
-		
+
 		// 設置圖片關聯(此時圖片資料庫已有資料)，利用controller傳進來的CasePicture實體設置
 		rescueCase.setCasePictures(casePicture);
-		
-		
+
 		// 設置預設caseState(待救援id為3，用3去把物件查出來再塞進去，因為主實體rescueCae在save()時裏頭的關聯屬性的值都只能是永續狀態)
 		Optional<CaseState> result = caseStateRepository.findById(3);
 		if (result != null && result.isPresent()) {
 			rescueCase.setCaseState(result.get());
 		}
-		
+
 		// 存進資料庫中
 		if (rescueCaseRepository.save(rescueCase) != null) {
 			System.out.println("新增成功");
@@ -196,8 +193,7 @@ public class RescueCaseService {
 
 	}
 
-	
-	//修改案件專用的dto轉換(和新增案件不同在於casePicture資料型態)
+	// 修改案件專用的dto轉換(和新增案件不同在於casePicture資料型態)
 	public RescueCase modifyConvertToEntity(ModifyRescueCaseDto dto) {
 
 		RescueCase rescueCase = new RescueCase();
@@ -217,7 +213,7 @@ public class RescueCaseService {
 		// 物種
 		Optional<Species> result1 = speciesRepository.findById(dto.getSpeciesId());
 		if (result1 != null && result1.isPresent()) {
-			rescueCase.setSpecies(result1.get()); 
+			rescueCase.setSpecies(result1.get());
 		}
 
 		// 品種
@@ -238,10 +234,10 @@ public class RescueCaseService {
 			rescueCase.setCity(result4.get());
 		}
 
-		// distinctArea
-		Optional<DistinctArea> result5 = distinctAreaRepository.findById(dto.getDistinctAreaId());
+		// districtArea
+		Optional<DistrictArea> result5 = districtAreaRepository.findById(dto.getDistrictAreaId());
 		if (result5 != null && result5.isPresent()) {
-			rescueCase.setDistinctArea(result5.get());
+			rescueCase.setDistrictArea(result5.get());
 		}
 
 		// rescueDemands
@@ -265,8 +261,6 @@ public class RescueCaseService {
 		return rescueCase;
 	}
 
-
-	
 	// 修改案件----------------------------------------------------------------------------------------------
 	public RescueCase modify(RescueCase rescueCase, Integer caseId, List<CasePicture> casePictures) {
 
@@ -276,7 +270,8 @@ public class RescueCaseService {
 
 			RescueCase old = result.get();
 
-			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到domain jpa註解自動改變)
+			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到domain
+			// jpa註解自動改變)
 			if (rescueCase.getCaseTitle() != null) {
 				old.setCaseTitle(rescueCase.getCaseTitle());
 			}
@@ -304,8 +299,8 @@ public class RescueCaseService {
 			if (rescueCase.getSuspLost() != null) {
 				old.setSuspLost(rescueCase.getSuspLost());
 			}
-			if (rescueCase.getDistinctArea() != null) {
-				old.setDistinctArea(rescueCase.getDistinctArea());
+			if (rescueCase.getDistrictArea() != null) {
+				old.setDistrictArea(rescueCase.getDistrictArea());
 			}
 			if (rescueCase.getStreet() != null) {
 				old.setStreet(rescueCase.getStreet());
@@ -316,7 +311,7 @@ public class RescueCaseService {
 			if (rescueCase.getCaseState() != null) {
 				old.setCaseState(rescueCase.getCaseState());
 			}
-			//picture表此時被改過成新暫時路徑了，傳新路徑集合進來，重新set圖片實體
+			// picture表此時被改過成新暫時路徑了，傳新路徑集合進來，重新set圖片實體
 			if (rescueCase.getCasePictures() != null) {
 				old.setCasePictures(rescueCase.getCasePictures());
 			}
@@ -332,7 +327,7 @@ public class RescueCaseService {
 
 			// 如果地址有更新到則經緯度要重新抓
 			// 設置經緯度
-			String adress = rescueCase.getCity().getCity() + rescueCase.getDistinctArea().getDistinctAreaName()
+			String adress = rescueCase.getCity().getCity() + rescueCase.getDistrictArea().getDistrictAreaName()
 					+ rescueCase.getStreet();
 			try {
 				LatLng latLng = geocodingService.getCoordinatesFromAddress(adress);
@@ -352,7 +347,7 @@ public class RescueCaseService {
 			}
 
 			// 修改完後，將含有新資料的舊物件存回去
-			RescueCase savedcase = rescueCaseRepository.save(old);   
+			RescueCase savedcase = rescueCaseRepository.save(old);
 			if (savedcase != null) {
 				System.out.println("新增成功");
 				return savedcase;
@@ -369,28 +364,25 @@ public class RescueCaseService {
 	// 刪除案件------------------------------------------------------------------------------------------
 	public boolean delete(Integer id) {
 		if (id != null && rescueCaseRepository.existsById(id)) {
-			rescueCaseRepository.deleteById(id);   //沒有返回值
+			rescueCaseRepository.deleteById(id); // 沒有返回值
 			return true;
 		}
 		return false;
 	}
-	
 
-	//查詢一筆案件(用於抓單個案件資訊)
-	public RescueCase searchRescueCase(Integer caseId){
+	// 查詢一筆案件(用於抓單個案件資訊)
+	public RescueCase searchRescueCase(Integer caseId) {
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
-		if(result.isPresent()){
+		if (result.isPresent()) {
 			return result.get();
 		}
 		return null;
 	}
 
-	
-	//模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
-	 public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
-	        return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
-	    }
-	
+	// 模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
+	public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
+		return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
+	}
 
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
@@ -399,16 +391,14 @@ public class RescueCaseService {
 		}
 		return false;
 	}
-	
 
-	
-	//驗證會員與案件中會員id是否匹配，匹配回傳true表示能修改
+	// 驗證會員與案件中會員id是否匹配，匹配回傳true表示能修改
 	public boolean iCanModify(Integer memberId, Integer caseId) {
-		Optional<RescueCase> result  = rescueCaseRepository.findById(caseId);
+		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
 		if (result != null && result.isPresent()) {
 			RescueCase Case = result.get();
-			
-			if(Case.getMember().getMemberId() == memberId) {
+
+			if (Case.getMember().getMemberId() == memberId) {
 				return true;
 			} else {
 				return false;
@@ -417,6 +407,4 @@ public class RescueCaseService {
 		return false;
 	}
 
-	
-	
 }
