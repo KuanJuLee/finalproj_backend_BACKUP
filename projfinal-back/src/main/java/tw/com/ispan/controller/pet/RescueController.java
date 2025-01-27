@@ -1,6 +1,8 @@
 package tw.com.ispan.controller.pet;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,7 +31,6 @@ import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.repository.admin.MemberRepository;
 import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
-import org.springframework.web.bind.annotation.GetMapping;
 
 //此為救援案件crud
 @CrossOrigin(origins = "http://localhost:5173")
@@ -232,4 +234,20 @@ public class RescueController {
 		return resultPage.getContent();
 	}
 
+	// 查詢所有救援案件--------------------------------------------------------------------------------------------------------------
+	@GetMapping("/search/allCases")
+    public Map<String, Object> getAllCases(
+            @RequestParam(defaultValue = "0") int offset,         // 起始位置
+            @RequestParam(defaultValue = "10") int limit,         // 每次加載數量
+            @RequestParam(defaultValue = "desc") String sortOrder  // 排序條件：asc(舊到新) 或 desc(新到舊)
+    ) {
+        List<RescueCase> cases = rescueCaseService.getAllCases(offset, limit, sortOrder);
+
+        // 返回數據和是否還有更多數據的標記
+        Map<String, Object> response = new HashMap<>();
+        response.put("cases", cases);
+        response.put("hasMore", cases.size() == limit); //如果等於，說明後端可能還有更多數據尚未返回
+
+        return response;
+	}
 }

@@ -7,12 +7,15 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import jakarta.persistence.criteria.CriteriaBuilder.Case;
 import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.CasePicture;
@@ -383,6 +386,15 @@ public class RescueCaseService {
 	public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
 		return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
 	}
+
+	// 查詢所有案件------------------------------------------------------------------------------------------
+	public List<RescueCase> getAllCases(int offset, int limit, String sortOrder) {
+        // 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
+        Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending() : Sort.by("lastUpdateTime").ascending();
+        Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+        return rescueCaseRepository.findAllCases(pageable);
+	}
+        
 
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {
