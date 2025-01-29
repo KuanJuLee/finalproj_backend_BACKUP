@@ -98,6 +98,9 @@ back:
   domainName:
     url: http://localhost:8080
 
+#用在後端圖片路徑轉前端路徑的rescueService檔案中
+serverAddress-serverPort: localhost:8080
+
 #開發用公開網域url(冠)   //記得到時候也要去改LINE平台上webhook的url
 ngrok:
   url: https://f632-36-225-194-22.ngrok-free.app

@@ -22,6 +22,7 @@ public class OutputRescueCaseDTO {
 	private String rescueReason;
 	private boolean suspLost;
 	private boolean isHidden;
+	private List<String> casePictures;
 
 //	private Integer cityId;
 	private String cityName;
@@ -336,6 +337,14 @@ public class OutputRescueCaseDTO {
 
 	public void setCanAffords(List<String> canAffords) {
 		this.canAffords = canAffords;
+	}
+
+	public List<String> getCasePictures() {
+		return casePictures;
+	}
+
+	public void setCasePictures(List<String> casePictures) {
+		this.casePictures = casePictures;
 	}
     
     
