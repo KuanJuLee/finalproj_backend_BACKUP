@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public class RescueCaseDto {
+public class InputRescueCaseDto {
 
 	// 接收使用者填的新增案件資料
 

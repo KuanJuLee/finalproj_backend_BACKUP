@@ -261,19 +261,19 @@ public class PetDataInitializer implements CommandLineRunner {
 				// 手動關聯實體
 				rescueCase.setMember(memberRepository.findById(dto.getMemberId())
 						.orElseThrow(() -> new RuntimeException("member not found")));
-				rescueCase.setSpecies(speciesRepository.findById(dto.getSpecies().getSpeciesId())
+				rescueCase.setSpecies(speciesRepository.findById(dto.getSpeciesId())
 						.orElseThrow(() -> new RuntimeException("Species not found")));
+				System.out.println(dto.getSpeciesId()+"物種是"+speciesRepository.findById(dto.getSpeciesId()).toString());
 				System.out.println(rescueCase.getSpecies().toString());
-				rescueCase.setFurColor(furColorRepository.findById(dto.getFurColor().getFurColorId())
+				rescueCase.setFurColor(furColorRepository.findById(dto.getFurColorId())
 						.orElseThrow(() -> new RuntimeException("FurColor not found")));
-				rescueCase.setBreed(breedRepository.findById(dto.getBreed().getBreedId())
+				rescueCase.setBreed(breedRepository.findById(dto.getBreedId())
 						.orElseThrow(() -> new RuntimeException("Breed not found")));
-				System.out.println(rescueCase.getBreed().toString());
-				rescueCase.setCity(cityRepository.findById(dto.getCity().getCityId())
+				rescueCase.setCity(cityRepository.findById(dto.getCityId())
 						.orElseThrow(() -> new RuntimeException("City not found")));
-				rescueCase.setDistrictArea(districtAreaRepository.findById(dto.getDistrictArea().getDistrictAreaId())
+				rescueCase.setDistrictArea(districtAreaRepository.findById(dto.getDistrictAreaId())
 						.orElseThrow(() -> new RuntimeException("DistrictArea not found")));
-				rescueCase.setCaseState(caseStateRepository.findById(dto.getCaseState().getCaseStateId())
+				rescueCase.setCaseState(caseStateRepository.findById(dto.getCaseStateId())
 						.orElseThrow(() -> new RuntimeException("CaseState not found")));
 
 				// 新增 canAffords 的處理

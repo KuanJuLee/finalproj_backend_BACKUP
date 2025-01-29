@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import jakarta.persistence.criteria.CriteriaBuilder.Case;
 import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.Breed;
 import tw.com.ispan.domain.pet.CasePicture;
@@ -27,8 +27,9 @@ import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
+import tw.com.ispan.dto.pet.InputRescueCaseDto;
 import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
-import tw.com.ispan.dto.pet.RescueCaseDto;
+import tw.com.ispan.dto.pet.OutputRescueCaseDTO;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.repository.admin.MemberRepository;
@@ -76,7 +77,7 @@ public class RescueCaseService {
 	private GeocodingService geocodingService;
 
 	// 新增案件:手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
-	public RescueCase convertToEntity(RescueCaseDto dto, Integer memberId) {
+	public RescueCase convertToEntity(InputRescueCaseDto dto, Integer memberId) {
 
 		RescueCase rescueCase = new RescueCase();
 
@@ -388,11 +389,13 @@ public class RescueCaseService {
 	}
 
 	// 查詢所有案件------------------------------------------------------------------------------------------
-	public List<RescueCase> getAllCases(int offset, int limit, String sortOrder) {
+	public List<OutputRescueCaseDTO> getAllCases(int offset, int limit, String sortOrder) {
         // 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
         Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending() : Sort.by("lastUpdateTime").ascending();
         Pageable pageable = PageRequest.of(offset / limit, limit, sort);
-        return rescueCaseRepository.findAllCases(pageable);
+        List<RescueCase> cases = rescueCaseRepository.findAllCases(pageable);
+     // 轉換成 DTO
+        return cases.stream().map(OutputRescueCaseDTO::new).collect(Collectors.toList());
 	}
         
 

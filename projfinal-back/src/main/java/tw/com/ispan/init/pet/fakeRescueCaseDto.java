@@ -5,12 +5,12 @@ import java.util.List;
 public class fakeRescueCaseDto {
 	private Integer memberId;
 	private String caseTitle;
-    private BreedDto breed;
-    private SpeciesDto species;
-    private FurColorDto furColor;
-    private CityDto city;
-    private AreaDto districtArea;
-    private CaseStateDto caseState;
+    private Integer breedId;
+    private Integer speciesId;
+    private Integer furColorId;
+    private Integer cityId;
+    private Integer districtAreaId;
+    private Integer caseStateId;
     private String gender;
     private String sterilization;
     private List<CasePictureDto> casePictures;
@@ -46,39 +46,59 @@ public class fakeRescueCaseDto {
         this.caseTitle = caseTitle;
     }
 
-    public SpeciesDto getSpecies() {
-        return species;
-    }
 
-    public void setSpecies(SpeciesDto species) {
-        this.species = species;
-    }
+    public Integer getBreedId() {
+		return breedId;
+	}
 
-    public CityDto getCity() {
-        return city;
-    }
+	public void setBreedId(Integer breedId) {
+		this.breedId = breedId;
+	}
 
-    public void setCity(CityDto city) {
-        this.city = city;
-    }
+	public Integer getSpeciesId() {
+		return speciesId;
+	}
 
-    public AreaDto getDistrictArea() {
-        return districtArea;
-    }
+	public void setSpeciesId(Integer speciesId) {
+		this.speciesId = speciesId;
+	}
+	
 
-    public void setDistrictArea(AreaDto districtArea) {
-        this.districtArea = districtArea;
-    }
+	public Integer getFurColorId() {
+		return furColorId;
+	}
 
-    public CaseStateDto getCaseState() {
-        return caseState;
-    }
+	public void setFurColorId(Integer furColorId) {
+		this.furColorId = furColorId;
+	}
 
-    public void setCaseState(CaseStateDto caseState) {
-        this.caseState = caseState;
-    }
+	
+	
+    public Integer getCityId() {
+		return cityId;
+	}
 
-    public String getGender() {
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getDistrictAreaId() {
+		return districtAreaId;
+	}
+
+	public void setDistrictAreaId(Integer districtAreaId) {
+		this.districtAreaId = districtAreaId;
+	}
+
+	public Integer getCaseStateId() {
+		return caseStateId;
+	}
+
+	public void setCaseStateId(Integer caseStateId) {
+		this.caseStateId = caseStateId;
+	}
+
+	public String getGender() {
         return gender;
     }
 
@@ -198,21 +218,6 @@ public class fakeRescueCaseDto {
         this.isHidden = isHidden;
     }
 
-    public BreedDto getBreed() {
-        return breed;
-    }
-
-    public void setBreed(BreedDto breed) {
-        this.breed = breed;
-    }
-
-    public FurColorDto getFurColor() {
-        return furColor;
-    }
-
-    public void setFurColor(FurColorDto furColor) {
-        this.furColor = furColor;
-    }
 
     public List<CasePictureDto> getCasePictures() {
         return casePictures;

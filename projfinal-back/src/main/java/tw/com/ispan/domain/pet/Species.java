@@ -2,8 +2,9 @@ package tw.com.ispan.domain.pet;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -18,6 +19,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "Species")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "speciesId")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Species {
 
     @Id
@@ -27,13 +29,16 @@ public class Species {
 
     @Column(name = "species", nullable = false, length = 10)
     private String species;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
     private List<LostCase> lostCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
     private List<RescueCase> rescueCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "species", cascade = CascadeType.ALL)
     private List<AdoptionCase> adoptionCase;
 
@@ -89,8 +94,7 @@ public class Species {
 
     @Override
     public String toString() {
-        return "Species [speciesId=" + speciesId + ", species=" + species + ", lostCases=" + lostCases
-                + ", rescueCases=" + rescueCases + ", adoptionCase=" + adoptionCase + "]";
+        return "Species [speciesId=" + speciesId + ", species=" + species +"]";
     }
 
 }

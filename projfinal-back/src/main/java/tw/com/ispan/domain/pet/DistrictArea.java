@@ -3,6 +3,7 @@ package tw.com.ispan.domain.pet;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -36,14 +37,17 @@ public class DistrictArea {
 
 	// 和RescueCase表雙向一對多
 	@OneToMany(mappedBy = "districtArea", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<RescueCase> rescueCases;
 
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "districtArea", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<LostCase> lostCases;
 
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "districtArea", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<AdoptionCase> adoptionCase;
 
 	public DistrictArea() {

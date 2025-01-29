@@ -27,7 +27,7 @@ public class City {
 
 	@Column(name = "city", columnDefinition = "NVARCHAR(5)", nullable = false)
 	private String city;
-
+	
 	// 和DistrictArea表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
 	@JsonIgnore
@@ -35,14 +35,17 @@ public class City {
 
 	// 和RescueCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<RescueCase> rescueCases;
 
 	// 和LostCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<LostCase> lostCases;
 
 	// 和adoptionCase表雙向一對多
 	@OneToMany(mappedBy = "city", cascade = CascadeType.PERSIST)
+	@JsonIgnore
 	private List<AdoptionCase> adoptionCases;
 
 	public City() {

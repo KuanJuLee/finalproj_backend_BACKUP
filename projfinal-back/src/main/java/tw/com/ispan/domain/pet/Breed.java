@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -27,14 +28,16 @@ public class Breed {
 
     @Column(name = "breed", nullable = false, columnDefinition = "NVARCHAR(50)")
     private String breed;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "breed", cascade = CascadeType.ALL)
     private List<LostCase> lostCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "breed", cascade = CascadeType.ALL)
-//    @JsonBackReference("rescueCase-breed")
     private List<RescueCase> rescueCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "breed", cascade = CascadeType.ALL)
     private List<AdoptionCase> adoptionCases;
 

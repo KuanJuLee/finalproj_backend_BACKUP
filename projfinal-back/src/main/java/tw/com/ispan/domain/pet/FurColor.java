@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -28,13 +29,16 @@ public class FurColor {
 
     @Column(name = "furColor", nullable = false, length = 20)
     private String furColor;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
     private List<LostCase> lostCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
     private List<RescueCase> rescueCases;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "furColor", cascade = CascadeType.ALL)
     private List<AdoptionCase> adoptionCase;
 
