@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     // 映射靜態資源，讓前端可透過url訪問後端專案中資源(如圖片)
-    // 等同將http://localhost:8080/uploads映射C:/upload/這個路徑，後面再加自己設的其他路徑如/final/pet/images/圖檔名
+    // 等同將http://localhost:8080/upload映射C:/upload/這個路徑，後面再加自己設的其他路徑如/final/pet/images/圖檔名
     // dto中要返回前端可存取的 URL，而不是後端的內部文件路徑，所以獲取後端儲存的路徑後要修改
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

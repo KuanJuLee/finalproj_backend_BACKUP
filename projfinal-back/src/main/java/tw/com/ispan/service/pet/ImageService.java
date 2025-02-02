@@ -31,11 +31,11 @@ public class ImageService {
 	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
 
-	// 暫存路徑
+	// 後端暫存路徑
 	@Value("${file.tmp-upload-dir}")
 	private String tmpUploadDir;
 
-	// 永存路徑
+	// 後端永存路徑
 	@Value("${file.final-upload-dir}")
 	private String finalUploadDir;
 

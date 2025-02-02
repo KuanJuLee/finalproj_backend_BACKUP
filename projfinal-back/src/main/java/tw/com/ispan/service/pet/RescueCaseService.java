@@ -54,6 +54,9 @@ public class RescueCaseService {
 	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
 
+	@Value("${file.final-upload-dir}") //圖片儲存於後端的路徑
+	private String finalUploadDir;
+	
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
@@ -407,13 +410,13 @@ public class RescueCaseService {
 	private OutputRescueCaseDTO convertToDTO(RescueCase rescueCase) {
 		OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
 
-		// 提取圖片 URL，將本地路徑轉換成可訪問的 HTTP URL
+		// 提取圖片 URL，將本地路徑轉換成前端可訪問的 HTTP URL
 		if (rescueCase.getCasePictures() != null) {
 			List<String> pictureUrls = rescueCase.getCasePictures()
 					.stream()
-					.map(pic -> domainName + "/uploads/" +
+					.map(pic -> domainName + "/upload/final/pet/images" +
 							pic.getPictureUrl().replace(
-									"C:\\111finalproj\\期末後端--備份\\projfinal-back\\src\\main\\resources\\upload\\", ""))
+									finalUploadDir, ""))
 					.collect(Collectors.toList());
 			dto.setCasePictures(pictureUrls);
 		}

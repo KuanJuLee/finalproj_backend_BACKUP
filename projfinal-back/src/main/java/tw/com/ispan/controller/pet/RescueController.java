@@ -225,7 +225,7 @@ public class RescueController {
 		}
 	}
 
-	// 查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
+	// 根據條件查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
 	public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
 			@RequestParam(defaultValue = "0") int page, // 前端沒丟參數就用預設值
@@ -236,7 +236,7 @@ public class RescueController {
 		return resultPage.getContent();
 	}
 
-	// 查詢所有救援案件--------------------------------------------------------------------------------------------------------------
+	// 分批查詢所有救援案件--------------------------------------------------------------------------------------------------------------
 	@GetMapping("/search/allCases")
 	public Map<String, Object> getAllCases(@RequestParam(defaultValue = "0") int offset, // 起始位置
 			@RequestParam(defaultValue = "10") int limit, // 每次加載數量
@@ -251,8 +251,12 @@ public class RescueController {
 
 		return response;
 	}
+	
+	
+	// 根據條件返回案件給端google地圖使用
+	
 
-	// 返回案件座標給前端goggle地圖使用
+	// 返回某類型全部案件座標給前端google地圖使用(要幫另外兩種案件也加上這個)
 	@GetMapping("/getLocations")
 	public List<Map<String, Object>> getRescueCasesLocations() {
 		List<RescueCase> cases = rescueCaseService.getAllCases();

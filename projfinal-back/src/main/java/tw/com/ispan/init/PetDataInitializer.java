@@ -2,10 +2,12 @@ package tw.com.ispan.init;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tw.com.ispan.domain.pet.Breed;
+import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.DistrictArea;
@@ -36,6 +39,7 @@ import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
+import tw.com.ispan.service.pet.ImageService;
 
 @Transactional
 @Component
@@ -61,6 +65,11 @@ public class PetDataInitializer implements CommandLineRunner {
 	private DistrictAreaRepository districtAreaRepository;
 	@Autowired
 	private MemberRepository memberRepository;
+	@Autowired
+	private ImageService imageService;
+
+	@Value("${file.final-upload-dir}") // 後端圖片最終路徑
+	private String imageBaseUrl;
 
 	// 此方法會在專案啟動同時執行一次，進行資料初始化
 	@Override
@@ -110,7 +119,9 @@ public class PetDataInitializer implements CommandLineRunner {
 		}
 
 		// 存入毛色資料(主要給米克斯用)
-		if (!furColorRepository.existsById(1)) {
+		if (!furColorRepository.existsById(1))
+
+		{
 			furColorRepository.save(new FurColor("土黃"));
 		}
 		if (!furColorRepository.existsById(2)) {
@@ -222,21 +233,29 @@ public class PetDataInitializer implements CommandLineRunner {
 			}
 		}
 
-		// 塞入5筆救援案件假資料
+		// 塞入5筆救援案件假資料以及更新圖片表
 
 		if (rescueCaseRepository.count() < 5) {
 
 			// 讀取 JSON 假資料
 			ObjectMapper objectMapper = new ObjectMapper();
-			String filePath = "src/main/resources/data/rescueCase.json"; // JSON 檔案的路徑
+			String filePath = "data/rescueCase.json"; // JSON 檔案的路徑
+			String jsonContent = new String(Files.readAllBytes(new ClassPathResource(filePath).getFile().toPath()));
+
+			// 替換 ${final-upload-dir} 為環境變數的值，為圖片儲存於後端的外部資料夾路徑
+			jsonContent = jsonContent.replace("${final-upload-dir}", imageBaseUrl);
+
 			List<fakeRescueCaseDto> rescueCaseDtos = objectMapper.readValue(
-					new File(filePath),
+					jsonContent,
 					new TypeReference<List<fakeRescueCaseDto>>() {
 					});
 
 			// 將 DTO 轉換為實體並存入資料庫
 			for (fakeRescueCaseDto dto : rescueCaseDtos) {
 				RescueCase rescueCase = new RescueCase();
+
+				// 儲存圖片路徑於圖片表中
+				List<CasePicture> casePictures = imageService.saveImage(dto.getCasePictureUrls());
 
 				// 設定 RescueCase 基本屬性
 				rescueCase.setCaseTitle(dto.getCaseTitle());
@@ -263,8 +282,6 @@ public class PetDataInitializer implements CommandLineRunner {
 						.orElseThrow(() -> new RuntimeException("member not found")));
 				rescueCase.setSpecies(speciesRepository.findById(dto.getSpeciesId())
 						.orElseThrow(() -> new RuntimeException("Species not found")));
-				System.out.println(dto.getSpeciesId()+"物種是"+speciesRepository.findById(dto.getSpeciesId()).toString());
-				System.out.println(rescueCase.getSpecies().toString());
 				rescueCase.setFurColor(furColorRepository.findById(dto.getFurColorId())
 						.orElseThrow(() -> new RuntimeException("FurColor not found")));
 				rescueCase.setBreed(breedRepository.findById(dto.getBreedId())
@@ -292,7 +309,8 @@ public class PetDataInitializer implements CommandLineRunner {
 						.toList();
 				rescueCase.setRescueDemands(rescueDemandEntities);
 
-				// 將圖片保存到圖片表中
+				// 設定圖片關聯
+				rescueCase.setCasePictures(casePictures);
 
 				// 保存 RescueCase 到資料庫
 				rescueCaseRepository.save(rescueCase);

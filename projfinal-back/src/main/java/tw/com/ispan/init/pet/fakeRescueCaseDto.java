@@ -1,10 +1,11 @@
 package tw.com.ispan.init.pet;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class fakeRescueCaseDto {
-	private Integer memberId;
-	private String caseTitle;
+    private Integer memberId;
+    private String caseTitle;
     private Integer breedId;
     private Integer speciesId;
     private Integer furColorId;
@@ -31,14 +32,14 @@ public class fakeRescueCaseDto {
     private Boolean isHidden;
 
     public Integer getMemberId() {
-		return memberId;
-	}
+        return memberId;
+    }
 
-	public void setMemberId(Integer memberId) {
-		this.memberId = memberId;
-	}
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
 
-	public String getCaseTitle() {
+    public String getCaseTitle() {
         return caseTitle;
     }
 
@@ -46,59 +47,55 @@ public class fakeRescueCaseDto {
         this.caseTitle = caseTitle;
     }
 
-
     public Integer getBreedId() {
-		return breedId;
-	}
+        return breedId;
+    }
 
-	public void setBreedId(Integer breedId) {
-		this.breedId = breedId;
-	}
+    public void setBreedId(Integer breedId) {
+        this.breedId = breedId;
+    }
 
-	public Integer getSpeciesId() {
-		return speciesId;
-	}
+    public Integer getSpeciesId() {
+        return speciesId;
+    }
 
-	public void setSpeciesId(Integer speciesId) {
-		this.speciesId = speciesId;
-	}
-	
+    public void setSpeciesId(Integer speciesId) {
+        this.speciesId = speciesId;
+    }
 
-	public Integer getFurColorId() {
-		return furColorId;
-	}
+    public Integer getFurColorId() {
+        return furColorId;
+    }
 
-	public void setFurColorId(Integer furColorId) {
-		this.furColorId = furColorId;
-	}
+    public void setFurColorId(Integer furColorId) {
+        this.furColorId = furColorId;
+    }
 
-	
-	
     public Integer getCityId() {
-		return cityId;
-	}
+        return cityId;
+    }
 
-	public void setCityId(Integer cityId) {
-		this.cityId = cityId;
-	}
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
 
-	public Integer getDistrictAreaId() {
-		return districtAreaId;
-	}
+    public Integer getDistrictAreaId() {
+        return districtAreaId;
+    }
 
-	public void setDistrictAreaId(Integer districtAreaId) {
-		this.districtAreaId = districtAreaId;
-	}
+    public void setDistrictAreaId(Integer districtAreaId) {
+        this.districtAreaId = districtAreaId;
+    }
 
-	public Integer getCaseStateId() {
-		return caseStateId;
-	}
+    public Integer getCaseStateId() {
+        return caseStateId;
+    }
 
-	public void setCaseStateId(Integer caseStateId) {
-		this.caseStateId = caseStateId;
-	}
+    public void setCaseStateId(Integer caseStateId) {
+        this.caseStateId = caseStateId;
+    }
 
-	public String getGender() {
+    public String getGender() {
         return gender;
     }
 
@@ -218,15 +215,6 @@ public class fakeRescueCaseDto {
         this.isHidden = isHidden;
     }
 
-
-    public List<CasePictureDto> getCasePictures() {
-        return casePictures;
-    }
-
-    public void setCasePictures(List<CasePictureDto> casePictures) {
-        this.casePictures = casePictures;
-    }
-
     public List<RescueDemandDto> getRescueDemands() {
         return rescueDemands;
     }
@@ -241,6 +229,21 @@ public class fakeRescueCaseDto {
 
     public void setCanAffords(List<CanAffordDto> canAffords) {
         this.canAffords = canAffords;
+    }
+
+    public List<CasePictureDto> getCasePictures() {
+        return casePictures;
+    }
+
+    public void setCasePictures(List<CasePictureDto> casePictures) {
+        this.casePictures = casePictures;
+    }
+
+    // 轉換 casePictures 為 List<String>
+    public List<String> getCasePictureUrls() {
+        return casePictures.stream()
+                .map(CasePictureDto::getUrl)
+                .collect(Collectors.toList());
     }
 
 }
