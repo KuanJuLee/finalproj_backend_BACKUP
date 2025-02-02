@@ -1,10 +1,10 @@
 package tw.com.ispan.controller.pet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -248,6 +248,24 @@ public class RescueController {
 		Map<String, Object> response = new HashMap<>();
 		response.put("cases", cases);
 		response.put("hasMore", cases.size() == limit); // 如果等於，說明後端可能還有更多數據尚未返回
+
+		return response;
+	}
+
+	// 返回案件座標給前端goggle地圖使用
+	@GetMapping("/getLocations")
+	public List<Map<String, Object>> getRescueCasesLocations() {
+		List<RescueCase> cases = rescueCaseService.getAllCases();
+
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (RescueCase rescueCase : cases) {
+			Map<String, Object> caseData = new HashMap<>();
+			caseData.put("caseTitle", rescueCase.getCaseTitle());
+			caseData.put("latitude", rescueCase.getLatitude());
+			caseData.put("longitude", rescueCase.getLongitude());
+			caseData.put("rescueReason", rescueCase.getRescueReason());
+			response.add(caseData);
+		}
 
 		return response;
 	}

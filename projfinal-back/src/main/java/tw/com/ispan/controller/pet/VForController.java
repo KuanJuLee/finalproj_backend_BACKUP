@@ -13,9 +13,13 @@ import tw.com.ispan.domain.pet.CaseState;
 import tw.com.ispan.domain.pet.City;
 import tw.com.ispan.domain.pet.DistrictArea;
 import tw.com.ispan.domain.pet.FurColor;
+import tw.com.ispan.domain.pet.Species;
+import tw.com.ispan.domain.pet.forRescue.CanAfford;
+import tw.com.ispan.domain.pet.forRescue.RescueDemand;
 import tw.com.ispan.service.pet.VForService;
 
 //用於表列對應表中所有資料(物種、縣市、區域等，做下拉選單
+//已將"/pet/**"排除於token驗證"
 @RestController
 @RequestMapping(path = { "/pet" })
 public class VForController {
@@ -23,12 +27,17 @@ public class VForController {
     @Autowired
     private VForService vForService;
 
+    // 查詢所有species
+    @GetMapping("/allSpecies")
+    public List<Species> allSpecies() {
+        List<Species> species = vForService.allSpecies();
+        return species;
+    }
+
     // 查詢所有furColor
     @GetMapping("/allFurColor")
     public List<FurColor> allFurColor() {
-        System.out.println("查詢所有furColor");
         List<FurColor> furColors = vForService.allFurColor();
-        System.out.println(furColors);
         return furColors;
     }
 
@@ -58,5 +67,19 @@ public class VForController {
     public List<CaseState> allCaseState() {
         List<CaseState> caseStatus = vForService.allCaseState();
         return caseStatus;
+    }
+
+    // 查詢所有rescueDemands
+    @GetMapping("/allRescueDemands")
+    public List<RescueDemand> allRescueDemands() {
+        List<RescueDemand> rescueDemands = vForService.allRescueDemands();
+        return rescueDemands;
+    }
+
+    // 查詢所有可負擔事項canAffords
+    @GetMapping("/allCanAffords")
+    public List<CanAfford> allCanAffords() {
+        List<CanAfford> canAffords = vForService.allCanAffords();
+        return canAffords;
     }
 }

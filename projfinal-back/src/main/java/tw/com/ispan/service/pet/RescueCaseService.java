@@ -50,10 +50,10 @@ import tw.com.ispan.util.LatLng;
 @Service
 @Transactional
 public class RescueCaseService {
-	
-	@Value("${back.domainName.url}")  //http://localhost:8080
+
+	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
-	
+
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
@@ -394,29 +394,36 @@ public class RescueCaseService {
 
 	// 分頁查詢所有案件--------------------------------------------------------------------------------------
 	public List<OutputRescueCaseDTO> getAllCases(int offset, int limit, String sortOrder) {
-        // 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
-        Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending() : Sort.by("lastUpdateTime").ascending();
-        Pageable pageable = PageRequest.of(offset / limit, limit, sort);
-        List<RescueCase> cases = rescueCaseRepository.findAllCases(pageable);
-        // 轉換成 DTO(並塞入圖片url)
-        return cases.stream().map(this::convertToDTO).collect(Collectors.toList());
+		// 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
+		Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
+				: Sort.by("lastUpdateTime").ascending();
+		Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+		List<RescueCase> cases = rescueCaseRepository.findAllCases(pageable);
+		// 轉換成 DTO(並塞入圖片url)
+		return cases.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
-        
-	//分頁查詢所有案件-塞入圖片!!-------------------------------------------------------
+
+	// 分頁查詢所有案件-塞入圖片!!-------------------------------------------------------
 	private OutputRescueCaseDTO convertToDTO(RescueCase rescueCase) {
-        OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
-       
-     // 提取圖片 URL，將本地路徑轉換成可訪問的 HTTP URL
-        if (rescueCase.getCasePictures() != null) {
-            List<String> pictureUrls = rescueCase.getCasePictures()
-                    .stream()
-                    .map(pic -> domainName + "/uploads/" +
-                            pic.getPictureUrl().replace("C:\\111finalproj\\期末後端--備份\\projfinal-back\\src\\main\\resources\\upload\\", ""))
-                    .collect(Collectors.toList());
-            dto.setCasePictures(pictureUrls);
-        }
-        return dto;
-    }
+		OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
+
+		// 提取圖片 URL，將本地路徑轉換成可訪問的 HTTP URL
+		if (rescueCase.getCasePictures() != null) {
+			List<String> pictureUrls = rescueCase.getCasePictures()
+					.stream()
+					.map(pic -> domainName + "/uploads/" +
+							pic.getPictureUrl().replace(
+									"C:\\111finalproj\\期末後端--備份\\projfinal-back\\src\\main\\resources\\upload\\", ""))
+					.collect(Collectors.toList());
+			dto.setCasePictures(pictureUrls);
+		}
+		return dto;
+	}
+
+	// 不分頁查詢所有案件(給googlemap使用)
+	public List<RescueCase> getAllCases() {
+		return rescueCaseRepository.findAll();
+	}
 
 	// 確認案件是否存在於資料庫中-------------------------------------------------------------------------------------------
 	public boolean exists(Integer id) {

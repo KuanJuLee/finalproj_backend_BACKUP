@@ -28,6 +28,9 @@ public class ImageService {
 	@Autowired
 	private CasePictureRepository casePictureRepository;
 
+	@Value("${back.domainName.url}") // http://localhost:8080
+	private String domainName;
+
 	// 暫存路徑
 	@Value("${file.tmp-upload-dir}")
 	private String tmpUploadDir;
@@ -42,8 +45,7 @@ public class ImageService {
 		// 組裝返回訊息(檔名、路徑)
 		Map<String, String> fileMessage = new HashMap<>();
 
-		// 在程式啟動時將相對路徑解析為基於專案運行目錄的絕對路徑，System.getProperty("user.dir")可返回當前應用的執行目錄
-		Path absolutePath = Paths.get(System.getProperty("user.dir"), tmpUploadDir).toAbsolutePath();
+		Path tmpPath = Paths.get(tmpUploadDir);
 
 		// 也可使用操作系統的臨時目錄，如果臨時文件只需要短期存儲
 		// String tmpDir = System.getProperty("java.io.tmpdir");
@@ -53,9 +55,9 @@ public class ImageService {
 		String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
 		// 如果暫存目錄不存在則先創建目錄
-		if (!Files.exists(absolutePath)) {
+		if (!Files.exists(tmpPath)) {
 			try {
-				Files.createDirectories(absolutePath);
+				Files.createDirectories(tmpPath);
 			} catch (IOException e) {
 				System.out.println("路徑錯誤");
 				e.printStackTrace();
@@ -63,7 +65,7 @@ public class ImageService {
 		}
 
 		// 將文件路徑組合起來
-		Path filePath = absolutePath.resolve(fileName);
+		Path filePath = tmpPath.resolve(fileName);
 
 		// 將上傳的文件內容保存到指定路徑
 		try {
@@ -79,11 +81,16 @@ public class ImageService {
 			return null;
 		}
 
+		// 3. **回傳給前端可訪問的 URL**
+		String tempUrl = domainName + "/upload/tmp/pet/images/" + fileName;
+		System.out.println("返回給前端的路徑" + tempUrl);
+
 		// 上傳成功則返回檔案相關訊息
 		fileMessage.put("fileName", fileName);
-		fileMessage.put("tempUrl", filePath.toString());
+		fileMessage.put("frontTmpUrl", tempUrl);
+		fileMessage.put("backTmpUrl", filePath.toString());
 		fileMessage.put("status", "200");
-		fileMessage.put("message", "圖片上傳成功，路徑：" + filePath.toString());
+		fileMessage.put("message", "圖片上傳成功，後端專案中路徑：" + filePath.toString());
 		return fileMessage;
 	}
 
@@ -102,7 +109,7 @@ public class ImageService {
 			// 定義目標檔案路徑（包括目標檔案名稱）
 			// 先從路徑中擷取檔案名稱，再將之與轉為專案執行環境絕對路徑的字串拼接，獲得最終目標檔案路徑
 			String fileName = sourcePath.getFileName().toString();
-			Path absolutePath = Paths.get(System.getProperty("user.dir"), finalUploadDir).toAbsolutePath();
+			Path absolutePath = Paths.get(finalUploadDir);
 			Path targetPath = absolutePath.resolve(fileName);
 
 			try {
@@ -133,7 +140,7 @@ public class ImageService {
 		// 定義目標檔案路徑（包括目標檔案名稱）
 		// 先從路徑中擷取檔案名稱，再將之與轉為專案執行環境絕對路徑的字串拼接，獲得最終目標檔案路徑
 		String fileName = sourcePath.getFileName().toString();
-		Path absolutePath = Paths.get(System.getProperty("user.dir"), finalUploadDir).toAbsolutePath();
+		Path absolutePath = Paths.get(finalUploadDir);
 		Path targetPath = absolutePath.resolve(fileName);
 
 		try {
@@ -171,46 +178,46 @@ public class ImageService {
 
 	// 為修改案件圖片時，用於確認傳過來的id+url是否已經存在於圖片資料表中，不存在得都則需轉移到永存資料夾，再修改圖片對應表中資料
 	public List<CasePicture> saveModify(Map<Integer, String> ImageIdandUrl) {
-		
-		//此集合為需要新增的圖片
+
+		// 此集合為需要新增的圖片
 		List<String> tmpUrls = new ArrayList<String>();
-		
-		//此集合為要返回的圖片實體
+
+		// 此集合為要返回的圖片實體
 		List<CasePicture> CasePictures = new ArrayList<CasePicture>();
-		
+
 		// 遍歷比對新傳來的url集合，url是否存在於圖片表對應圖片id中，已存在的要改，不存在的要新增
 		// 使用 keySet() 遍歷所有 key
 		for (Integer imageId : ImageIdandUrl.keySet()) {
-				Optional<CasePicture> result = casePictureRepository.findById(imageId);
-				if(result != null && result.isPresent()) {
-					
-					//比對此圖片id在原圖片資料表中url和新傳進來的圖片url
-					if(result.get().getPictureUrl() != ImageIdandUrl.get(imageId)) {
-						
-						//如果不相等，就先將這個圖片移到永存資料夾後，拿新的url去修改圖片表中對應圖片id的路徑
-						String finalUrl = moveImage(ImageIdandUrl.get(imageId));
-			            result.get().setPictureUrl(finalUrl);
-			            System.out.println("圖片id為：" + imageId + "的url已改為"+ finalUrl);
-			            //將被修改的圖片實體加到要返回的物件中
-			            CasePictures.add(result.get());
-					} else {
-						System.out.println("圖片id：" + imageId + "沒有被修改");
-					}
+			Optional<CasePicture> result = casePictureRepository.findById(imageId);
+			if (result != null && result.isPresent()) {
+
+				// 比對此圖片id在原圖片資料表中url和新傳進來的圖片url
+				if (result.get().getPictureUrl() != ImageIdandUrl.get(imageId)) {
+
+					// 如果不相等，就先將這個圖片移到永存資料夾後，拿新的url去修改圖片表中對應圖片id的路徑
+					String finalUrl = moveImage(ImageIdandUrl.get(imageId));
+					result.get().setPictureUrl(finalUrl);
+					System.out.println("圖片id為：" + imageId + "的url已改為" + finalUrl);
+					// 將被修改的圖片實體加到要返回的物件中
+					CasePictures.add(result.get());
 				} else {
-					//資料庫找不到對應id，表示為新增圖片，加到等等需要一起被移到永存資料夾並保存於圖片表中的圖片
-					tmpUrls.add(ImageIdandUrl.get(imageId));
+					System.out.println("圖片id：" + imageId + "沒有被修改");
 				}
+			} else {
+				// 資料庫找不到對應id，表示為新增圖片，加到等等需要一起被移到永存資料夾並保存於圖片表中的圖片
+				tmpUrls.add(ImageIdandUrl.get(imageId));
 			}
+		}
 
 		// 返回新增圖片實體
-	 	List<CasePicture> newCasePictures = saveImage(moveImages(tmpUrls));	
-			
-	 	//新增圖片實體加入修改圖片實體
-	 	newCasePictures.addAll(CasePictures);
-			
+		List<CasePicture> newCasePictures = saveImage(moveImages(tmpUrls));
+
+		// 新增圖片實體加入修改圖片實體
+		newCasePictures.addAll(CasePictures);
+
 		System.out.println("圖片新增和修改完成");
-		
+
 		return newCasePictures;
-		}
+	}
 
 }

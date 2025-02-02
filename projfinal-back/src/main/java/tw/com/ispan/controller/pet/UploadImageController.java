@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import tw.com.ispan.service.line.LineNotificationService;
 import tw.com.ispan.service.pet.ImageService;
 
 //三個案件共用的單個圖片上傳
@@ -24,9 +22,9 @@ public class UploadImageController {
 
 	@Autowired
 	private ImageService imageService;
-	
+
 	// 暫存路徑
-	@Value("${file.tmp-upload-dir}")
+	@Value("${file.tmp-upload-dir}") // 存到外部資料夾 C:/upload/tmp/pet/images/
 	private String tmpUploadDir;
 
 	// 修改、新增案件的圖檔上傳都用這個
@@ -60,7 +58,8 @@ public class UploadImageController {
 		if (fileMessage != null) {
 			// 上傳成功(返回tempUrl給前端使用，等送出案件再把圖片永存資料夾url存到資料庫中)
 			response.put("fileName", fileMessage.get("fileName"));
-			response.put("tempUrl", fileMessage.get("tempUrl"));
+			response.put("frontTmpUrl", fileMessage.get("frontTmpUrl"));
+			response.put("backTmpUrl", fileMessage.get("backTmpUrl"));
 			response.put("status", fileMessage.get("status"));
 			response.put("message", fileMessage.get("message"));
 			return ResponseEntity.ok(response);
@@ -72,25 +71,5 @@ public class UploadImageController {
 		}
 
 	}
-	
-	
-//	//修改案件某張圖片
-//	@PostMapping("/modifyImage")
-//	public ResponseEntity<Map<String, String>> modifyImage(@RequestHeader("Authorization") String token,
-//			@RequestPart Integer casePictureid, @RequestPart("file") MultipartFile file){
-//
-//		// 進某案件頁面時前端請求後端抓案件資訊，案件中帶有圖片屬性集合，內含對應圖片id，而前端會將圖片id藏於圖片上傳功能中(有1~3個)
-//		// 點選對應的圖片上傳後，要把新的上傳圖片和對應圖片id傳進來 @RequestPart同時接收參數和檔案
-//		//點選上傳後一樣先存到暫存資料夾，等按下修改案件再覆蓋原本圖片表的路徑
-//		
-//		Map<String, String> response = new HashMap<>();
-//		
-//		
-//		
-//		
-//		return null;
-//		
-//	}
-	
-	
+
 }
