@@ -1,5 +1,7 @@
 package tw.com.ispan.controller.pet;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -251,10 +255,8 @@ public class RescueController {
 
 		return response;
 	}
-	
-	
+
 	// 根據條件返回案件給端google地圖使用
-	
 
 	// 返回某類型全部案件座標給前端google地圖使用(要幫另外兩種案件也加上這個)
 	@GetMapping("/getLocations")
@@ -268,9 +270,47 @@ public class RescueController {
 			caseData.put("latitude", rescueCase.getLatitude());
 			caseData.put("longitude", rescueCase.getLongitude());
 			caseData.put("rescueReason", rescueCase.getRescueReason());
+			caseData.put("publicationTime", rescueCase.getPublicationTime());
+			caseData.put("city", rescueCase.getCity().getCity());
+			caseData.put("district", rescueCase.getDistrictArea().getDistrictAreaName());
+			caseData.put("caseState", rescueCase.getCaseState());
+			caseData.put("caseId", rescueCase.getRescueCaseId());
+			caseData.put("caseType", "rescueCase");
+
+			// 修正 casePictures 中的 pictureUrl，確保前端可以訪問
+			List<Map<String, String>> fixedCasePictures = new ArrayList<>();
+			for (CasePicture picture : rescueCase.getCasePictures()) {
+				Map<String, String> pictureData = new HashMap<>();
+				String originalPath = picture.getPictureUrl(); // 取得原始路徑
+				String fixedPath = originalPath.replace("C:/upload", "http://localhost:8080/upload"); // 替換成可訪問 URL
+				pictureData.put("pictureUrl", fixedPath);
+				fixedCasePictures.add(pictureData);
+			}
+
+			caseData.put("casePictures", fixedCasePictures); // 更新處理後的圖片路徑
+
 			response.add(caseData);
 		}
 
 		return response;
+	}
+
+	// 帶條件的返回案件座標資訊給前端google地圖使用(要幫另外兩種案件也加上這個)
+	@GetMapping("/getLocations/filters")
+	public ResponseEntity<List<Map<String, Object>>> getFilteredCases(
+			@RequestParam(required = false) List<Integer> caseState, @RequestParam(required = false) Integer city,
+			@RequestParam(required = false) Integer district, @RequestParam(required = false) List<Integer> species,
+			@RequestParam(required = false) Integer breedId, @RequestParam(required = false) List<Integer> furColors,
+			@RequestParam(required = false) Boolean suspLost,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+		
+		// 調用 Service 層獲取篩選結果
+		List<Map<String, Object>> cases = rescueCaseService.getFilteredCases(caseState, city, district, species,
+				breedId, furColors, suspLost, startDate, endDate);
+		
+		//
+
+		return ResponseEntity.ok(cases);
 	}
 }

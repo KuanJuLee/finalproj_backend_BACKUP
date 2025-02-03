@@ -19,7 +19,7 @@ public class InputRescueCaseDto {
 	// 接收使用者填的新增案件資料
 
 	@NotNull(message = "案件標題必填")
-	@Length(min = 1, max = 15) // 限制小於15字
+	@Length(min = 1, max = 30) // 限制小於15字
 	private String caseTitle;
 
 	@Min(value = 1, message = "物種id不能小於1")

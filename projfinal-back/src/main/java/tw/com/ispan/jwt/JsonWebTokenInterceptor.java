@@ -54,7 +54,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 			System.out.println("payload:" + payload);
 			if (payload != null) {
 				// 此處拿到使用者資訊後，應先判斷使用者對於準備進入的controller是否有。payload:{"email":"alice@lab.com","memberId":3}
-				System.out.println(88888);
+				
 				// 將payload字串(為json格式的字串)轉換為 JSON
 				ObjectMapper objectMapper = new ObjectMapper();
 				JsonNode jsonNode = objectMapper.readTree(payload);
@@ -64,6 +64,7 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 
 				// 將 memberId 添加到請求屬性
 				request.setAttribute("memberId", memberId);
+				System.out.println("準備進到CONTROLLER中");
 				return true;
 			} else {
 				// payload == null

@@ -2,6 +2,7 @@ package tw.com.ispan.dto.pet;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class OutputRescueCaseDTO {
 	private String rescueReason;
 	private boolean suspLost;
 	private boolean isHidden;
-	private List<String> casePictures;
+	private List<Map<String, String>> casePictures;
 
 //	private Integer cityId;
 	private String cityName;
@@ -339,12 +340,12 @@ public class OutputRescueCaseDTO {
 		this.canAffords = canAffords;
 	}
 
-	public List<String> getCasePictures() {
+	public List<Map<String, String>> getCasePictures() {
 		return casePictures;
 	}
 
-	public void setCasePictures(List<String> casePictures) {
-		this.casePictures = casePictures;
+	public void setCasePictures(List<Map<String, String>> pictureUrls) {
+		this.casePictures = pictureUrls;
 	}
     
     

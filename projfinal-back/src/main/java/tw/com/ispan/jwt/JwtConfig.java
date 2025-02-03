@@ -19,7 +19,7 @@ public class JwtConfig implements WebMvcConfigurer {
                 .addPathPatterns("/RescueCase/**", "/Case/**") // RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
                 .addPathPatterns("/line/**") // line綁定相關功能
                 .addPathPatterns("/validateToken") // 進行前端token時效、持有驗證
-                .excludePathPatterns("/RescueCase/search/**", "/pet/**", "/RescueCase/getLocations", "/casePicture/**") // 查詢功能為非會員也能使用
+                .excludePathPatterns("/RescueCase/search/**", "/pet/**", "/RescueCase/getLocations/**", "/casePicture/**") // 查詢功能為非會員也能使用
                 .excludePathPatterns("/line/authorize", "/line/callback") // line登入相關功能
                 .excludePathPatterns("/"); // 排除首頁相關頁面
     }

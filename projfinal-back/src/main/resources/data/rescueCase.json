@@ -23,7 +23,7 @@
     "caseStateId":   3 ,
     "caseUrl": "https://example.com/case/124",
     "casePictures": [
-      { "url": "${final-upload-dir}/examplecase1.png" }
+      { "url": "${final-upload-dir}examplecase1.png" }
     ],
     "rescueDemands": [
       { "rescueDemandId": 1 },
@@ -59,7 +59,7 @@
     "caseStateId":  3 ,
     "caseUrl": "https://example.com/case/125",
     "casePictures": [
-      { "url": "${final-upload-dir}/examplecase2.png" }
+      { "url": "${final-upload-dir}examplecase2.png" }
     ],
     "rescueDemands": [
       { "rescueDemandId": 2 },
@@ -97,7 +97,7 @@
     "caseStateId":3 ,
     "caseUrl": "https://example.com/case/126",
     "casePictures": [
-      { "url": "${final-upload-dir}/examplecase3.png" }
+      { "url": "${final-upload-dir}examplecase3.png" }
     ],
     "rescueDemands": [
       { "rescueDemandId": 2 }
@@ -131,7 +131,7 @@
     "caseStateId": 3 ,
     "caseUrl": "https://example.com/case/127",
     "casePictures": [
-      { "url": "${final-upload-dir}/examplecase4.png" }
+      { "url": "${final-upload-dir}examplecase4.png" }
     ],
     "rescueDemands": [
       { "rescueDemandId": 3 },
@@ -167,7 +167,7 @@
     "caseStateId":  3 ,
     "caseUrl": "https://example.com/case/128",
     "casePictures": [
-      { "url": "${final-upload-dir}/examplecase5.png" }
+      { "url": "${final-upload-dir}examplecase5.png" }
     ],
     "rescueDemands": [
       { "rescueDemandId": 4 }

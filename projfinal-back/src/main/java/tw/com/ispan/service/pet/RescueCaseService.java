@@ -2,7 +2,12 @@ package tw.com.ispan.service.pet;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -410,17 +415,32 @@ public class RescueCaseService {
 	private OutputRescueCaseDTO convertToDTO(RescueCase rescueCase) {
 		OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
 
-		// 提取圖片 URL，將本地路徑轉換成前端可訪問的 HTTP URL
-		if (rescueCase.getCasePictures() != null) {
-			List<String> pictureUrls = rescueCase.getCasePictures()
-					.stream()
-					.map(pic -> domainName + "/upload/final/pet/images" +
-							pic.getPictureUrl().replace(
-									finalUploadDir, ""))
-					.collect(Collectors.toList());
-			dto.setCasePictures(pictureUrls);
-		}
-		return dto;
+	    // 提取圖片 URL，將本地路徑轉換成前端可訪問的 HTTP URL
+	    if (rescueCase.getCasePictures() != null) {
+	        List<Map<String, String>> pictureUrls = rescueCase.getCasePictures()
+	                .stream()
+	                .map(pic -> {
+	                    String filePath = pic.getPictureUrl();
+	                    
+	                    // 確保檔案路徑是相對的（適用於 Windows 和 Linux）
+	                    filePath = filePath.replace("\\", "/");  // 確保所有路徑符號為 "/"
+	                    if (filePath.startsWith(finalUploadDir.replace("\\", "/"))) {
+	                        filePath = filePath.substring(finalUploadDir.length());
+	                    }
+
+	                    // 組合成完整的 HTTP URL
+	                    String imageUrl = domainName + "/upload/final/pet/images/" + filePath;
+	                    
+	                    // 返回物件（符合前端需求格式）
+	                    Map<String, String> imageMap = new HashMap<>();
+	                    imageMap.put("pictureUrl", imageUrl);
+	                    return imageMap;
+	                })
+	                .collect(Collectors.toList());
+
+	        dto.setCasePictures(pictureUrls);
+	    }
+	    return dto;
 	}
 
 	// 不分頁查詢所有案件(給googlemap使用)
@@ -450,5 +470,50 @@ public class RescueCaseService {
 		}
 		return false;
 	}
+	
+	// 返回給google地圖經條件篩選的救援案件
+	public List<Map<String, Object>> getFilteredCases(
+            List<Integer> caseState, Integer city, Integer district,
+            List<Integer> species, Integer breedId, List<Integer> furColors, Boolean suspLost,
+            LocalDate startDate, LocalDate endDate) {
+
+        // 查詢資料庫取得符合條件的案件
+        List<RescueCase> filteredCases = rescueCaseRepository.findCasesWithFilters(
+                caseState, city, district, species, breedId, furColors, suspLost, startDate, endDate);
+
+        System.out.println("查到的案件" + filteredCases);
+        
+        // 轉換成前端需要的格式
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (RescueCase caseItem : filteredCases) {
+            Map<String, Object> caseData = new HashMap<>();
+            caseData.put("caseTitle", caseItem.getCaseTitle());
+            caseData.put("latitude", caseItem.getLatitude());
+            caseData.put("longitude", caseItem.getLongitude());
+            caseData.put("rescueReason", caseItem.getRescueReason());
+            caseData.put("publicationTime", caseItem.getPublicationTime());
+            caseData.put("city", caseItem.getCity().getCity());
+            caseData.put("district", caseItem.getDistrictArea().getDistrictAreaName());
+            caseData.put("caseState", caseItem.getCaseState());
+            caseData.put("caseId", caseItem.getRescueCaseId());
+            caseData.put("caseType", "rescueCase");
+
+         // 轉換圖片 URL（從本地端轉換為可訪問的 URL）
+            List<Map<String, String>> pictureUrls = caseItem.getCasePictures().stream()
+                    .map(picture -> {
+                        // 取得純檔名
+                        String fileName = Paths.get(picture.getPictureUrl()).getFileName().toString();
+                        // 返回一個 Map 物件
+                        return Map.of("pictureUrl", domainName + "/upload/final/pet/images/" + fileName);
+                    })
+                    .collect(Collectors.toList());
+
+            caseData.put("casePictures", pictureUrls);
+
+            response.add(caseData);
+        }
+
+        return response;
+    }
 
 }
