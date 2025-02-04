@@ -156,18 +156,18 @@ public class RescueController {
 		// 修改圖片
 		// 先判斷getImageIdandUrl中有無不對應的部分(表示圖片被修改)，有修改的才需要被移到永存資料夾，同時修改圖片表中對應id的圖片url為新url
 		// 返回對應的CasePicture實體，等等用來存進case物件中
-		List<CasePicture> newCasePictures = imageService.saveModify(dto.getImageIdandUrl());
-		if (newCasePictures == null) {
-			response.setSuccess(false);
-			response.setMessage("圖片修改出問題");
-			return response;
-		}
+//		List<CasePicture> newCasePictures = imageService.saveModify(dto.getImageIdandUrl());
+//		if (newCasePictures == null) {
+//			response.setSuccess(false);
+//			response.setMessage("圖片修改出問題");
+//			return response;
+//		}
 
 		// 4. 驗證id存在，就去修改這筆資料
-		RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
-		RescueCase rescueCase = rescueCaseService.modify(rescueCaseEntity, caseId, newCasePictures);
+		 RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
+		    RescueCase updatedCase = rescueCaseService.modify(rescueCaseEntity, caseId, dto.getCasePictures());
 
-		if (rescueCase != null) {
+		if (updatedCase != null) {
 			// 修改成功
 			response.setSuccess(true);
 			response.setMessage("修改案件成功");

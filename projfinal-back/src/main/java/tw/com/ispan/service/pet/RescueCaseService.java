@@ -89,6 +89,9 @@ public class RescueCaseService {
 
 	@Autowired
 	private GeocodingService geocodingService;
+	
+	@Autowired
+	private ImageService imageService;
 
 	// 新增案件:手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
 	public RescueCase convertToEntity(InputRescueCaseDto dto, Integer memberId) {
@@ -280,7 +283,7 @@ public class RescueCaseService {
 	}
 
 	// 修改案件----------------------------------------------------------------------------------------------
-	public RescueCase modify(RescueCase rescueCase, Integer caseId, List<CasePicture> casePictures) {
+	public RescueCase modify(RescueCase rescueCase, Integer caseId,  List<Map<String, String>>casePictures) {
 
 		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接save()這些資訊會空掉，最後存修改後的舊物件
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
@@ -329,10 +332,11 @@ public class RescueCaseService {
 			if (rescueCase.getCaseState() != null) {
 				old.setCaseState(rescueCase.getCaseState());
 			}
-			// picture表此時被改過成新暫時路徑了，傳新路徑集合進來，重新set圖片實體
-			if (rescueCase.getCasePictures() != null) {
-				old.setCasePictures(rescueCase.getCasePictures());
-			}
+			// 更新圖片
+	        List<CasePicture> updatedCasePictures = imageService.updateCasePictures(old.getCasePictures(), casePictures);
+	        old.getCasePictures().clear(); // 先清除原有的內容，保留 Hibernate 追蹤
+	        old.getCasePictures().addAll(updatedCasePictures); // 再加入新的圖片
+			
 			if (rescueCase.getRescueDemands() != null) {
 				old.setRescueDemands(rescueCase.getRescueDemands());
 			}

@@ -98,7 +98,7 @@ public class ModifyRescueCaseDto {
 	// 後端接收Jackson在反序列化JSON對象時，預設會將其轉換為HashMap
 	@NotEmpty(message = "照片為必填")
 	@Size(min = 1, max = 3) // 至少一張，至多三張
-	private Map<Integer, String> imageIdandUrl;
+	private List<Map<String, String>> casePictures;
 
 	// getter & setter
 	public String getCaseTitle() {
@@ -233,12 +233,17 @@ public class ModifyRescueCaseDto {
 		this.tag = tag;
 	}
 
-	public Map<Integer, String> getImageIdandUrl() {
-		return imageIdandUrl;
+
+	public List<Map<String, String>> getCasePictures() {
+		return casePictures;
 	}
 
-	public void setImageIdandUrl(Map<Integer, String> imageIdandUrl) {
-		this.imageIdandUrl = imageIdandUrl;
+	public void setCasePictures(List<Map<String, String>> casePictures) {
+		this.casePictures = casePictures;
+	}
+
+	public void setCaseStateId(Integer caseStateId) {
+		this.caseStateId = caseStateId;
 	}
 
 	@Override
@@ -248,7 +253,7 @@ public class ModifyRescueCaseDto {
 				+ age + ", microChipNumber=" + microChipNumber + ", suspLost=" + suspLost + ", cityId=" + cityId
 				+ ", districtAreaId=" + districtAreaId + ", street=" + street + ", rescueReason=" + rescueReason
 				+ ", caseStateId=" + caseStateId + ", tag=" + tag + ", rescueDemands=" + rescueDemands + ", canAffords="
-				+ canAffords + ", imageIdandUrl=" + imageIdandUrl
+				+ canAffords + ", casePictures=" + casePictures
 				+ "]";
 	}
 
