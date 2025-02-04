@@ -1,0 +1,27 @@
+package tw.com.ispan.service.pet.forRescue;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import tw.com.ispan.domain.pet.forRescue.RescueProgress;
+import tw.com.ispan.repository.pet.forRescue.RescueProgressRepository;
+
+@Service
+public class RescueProgressService {
+	
+	 @Autowired
+	    private RescueProgressRepository rescueProgressRepository;
+	 
+	 // 根據案件 ID 取得進度列表
+	    public List<RescueProgress> getProgressByCaseId(Integer caseId) {
+	        return rescueProgressRepository.findByRescueCaseId(caseId);
+	    }
+
+	    // 新增進度
+	    public RescueProgress addProgress(RescueProgress rescueProgress) {
+	        return rescueProgressRepository.save(rescueProgress);
+	    }
+
+}

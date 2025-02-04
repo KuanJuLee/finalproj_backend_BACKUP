@@ -46,6 +46,7 @@ public class OutputRescueCaseDTO {
 	private String furColor;
 
 	private String memberNickName;
+	private Integer memberId;      //用於讓用戶想要進入頁面可以編輯時，去對應前端用戶token以及案件回傳的memberId
 	private LocalDateTime publicationTime;
 	private LocalDateTime lastUpdateTime;
 
@@ -347,7 +348,16 @@ public class OutputRescueCaseDTO {
 	public void setCasePictures(List<Map<String, String>> pictureUrls) {
 		this.casePictures = pictureUrls;
 	}
+
+	public Integer getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
     
+	
     
 	
 }

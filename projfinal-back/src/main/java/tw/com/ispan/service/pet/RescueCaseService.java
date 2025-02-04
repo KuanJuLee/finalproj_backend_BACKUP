@@ -33,6 +33,7 @@ import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.Species;
 import tw.com.ispan.domain.pet.forRescue.CanAfford;
 import tw.com.ispan.domain.pet.forRescue.RescueDemand;
+import tw.com.ispan.dto.pet.EditSearchDTO;
 import tw.com.ispan.dto.pet.InputRescueCaseDto;
 import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
 import tw.com.ispan.dto.pet.OutputRescueCaseDTO;
@@ -61,6 +62,7 @@ public class RescueCaseService {
 
 	@Value("${file.final-upload-dir}") //圖片儲存於後端的路徑
 	private String finalUploadDir;
+	
 	
 	@Autowired
 	private MemberRepository memberRepository;
@@ -387,13 +389,71 @@ public class RescueCaseService {
 	}
 
 	// 查詢一筆案件(用於抓單個案件資訊)
-	public RescueCase searchRescueCase(Integer caseId) {
+	public OutputRescueCaseDTO searchRescueCase(Integer caseId) {
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
+		//如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
 		if (result.isPresent()) {
-			return result.get();
+			 RescueCase rescueCase = result.get();
+
+		      // 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
+			 OutputRescueCaseDTO rescueCaseDTO = new OutputRescueCaseDTO(rescueCase);
+			 
+			 //將memberId也存進去
+			 rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
+			 
+			// 轉換圖片路徑並存入 Map
+		        List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream()
+		            .map(picture -> {
+		                Map<String, String> pictureMap = new HashMap<>();
+		                pictureMap.put("pictureUrl", picture.getPictureUrl().replace(
+		                    "C:/upload/final/", domainName+ "/upload/final/"
+		                ));
+		                return pictureMap;
+		            })
+		            .toList();
+
+		        // 設置 DTO 中的 casePictures
+		        rescueCaseDTO.setCasePictures(updatedPictureUrls);
+
+		        return rescueCaseDTO;
 		}
 		return null;
 	}
+	
+	
+	//用戶於編輯案件頁面回填一筆案件資料(用於抓單個案件資訊)
+	public EditSearchDTO editSearchRescueCase(Integer caseId) {
+		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
+		//如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
+		if (result.isPresent()) {
+			 RescueCase rescueCase = result.get();
+
+		      // 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
+			 EditSearchDTO rescueCaseDTO = new EditSearchDTO(rescueCase);
+			 
+			 //將memberId也存進去
+			 rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
+			 
+			// 轉換圖片數據，確保 casePictureId 也包含在內，並返回統一格式
+		        List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream()
+		            .map(picture -> {
+		                Map<String, String> pictureMap = new HashMap<>();
+		                pictureMap.put("casePictureId", String.valueOf(picture.getCasePictureId())); // 轉換成字串
+		                pictureMap.put("pictureUrl", picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
+		                return pictureMap;
+		            })
+		            .collect(Collectors.toList());
+
+		        // 設置 DTO 的 casePictures
+		        rescueCaseDTO.setCasePictures(updatedPictureUrls);
+		        
+		        return rescueCaseDTO;
+		}
+		return null;
+	}
+	
+	
+	
 
 	// 模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
 	public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {

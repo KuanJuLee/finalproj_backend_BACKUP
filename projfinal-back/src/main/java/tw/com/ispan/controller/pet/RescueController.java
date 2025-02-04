@@ -1,7 +1,6 @@
 package tw.com.ispan.controller.pet;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
+import tw.com.ispan.dto.pet.EditSearchDTO;
 import tw.com.ispan.dto.pet.InputRescueCaseDto;
 import tw.com.ispan.dto.pet.ModifyRescueCaseDto;
 import tw.com.ispan.dto.pet.OutputRescueCaseDTO;
@@ -214,11 +214,11 @@ public class RescueController {
 
 	// 查詢單筆救援案件(用戶點進去某case)-------------------------------------------------------------------------------------------------------------
 	@GetMapping("/search/{id}")
-	public RescueCase searchRescueCase(@PathVariable("id") Integer caseId) {
+	public OutputRescueCaseDTO searchRescueCase(@PathVariable("id") Integer caseId) {
 
 		// 1. 非會員功能，不用驗證token
 
-		RescueCase rescueCase = rescueCaseService.searchRescueCase(caseId);
+		OutputRescueCaseDTO rescueCase = rescueCaseService.searchRescueCase(caseId);
 		if (rescueCase != null) {
 			System.out.println(rescueCase.toString());
 			// 返回前端，java物件會被springboot自動序列化為json格式
@@ -228,6 +228,26 @@ public class RescueController {
 			return null;
 		}
 	}
+	
+	
+	// 於編輯頁面中去查詢單筆救援案件(用戶編輯某case) 因為查詢單筆案件會返回字串，但我希望返回id才能正確回填，因此多寫一個方法嗚嗚--------------------------------------
+		@GetMapping("/editSearch/{id}")
+		public EditSearchDTO editRescueCase(@PathVariable("id") Integer caseId) {
+
+			// 1. 會員功能，需要驗證token(JwtConfig中)
+
+			EditSearchDTO rescueCase = rescueCaseService.editSearchRescueCase(caseId);
+			if (rescueCase != null) {
+				System.out.println(rescueCase.toString());
+				// 返回前端，java物件會被springboot自動序列化為json格式
+				return rescueCase;
+			} else {
+				System.out.println("此案件id不存在");
+				return null;
+			}
+		}
+	
+	
 
 	// 根據條件查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
@@ -256,7 +276,6 @@ public class RescueController {
 		return response;
 	}
 
-	// 根據條件返回案件給端google地圖使用
 
 	// 返回某類型全部案件座標給前端google地圖使用(要幫另外兩種案件也加上這個)
 	@GetMapping("/getLocations")
