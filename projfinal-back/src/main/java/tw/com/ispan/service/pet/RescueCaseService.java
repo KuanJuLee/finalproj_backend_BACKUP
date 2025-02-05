@@ -464,18 +464,39 @@ public class RescueCaseService {
 		return rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
 	}
 
-	// 分頁查詢所有案件--------------------------------------------------------------------------------------
+	// 分批查詢所有案件--------------------------------------------------------------------------------------
 	public List<OutputRescueCaseDTO> getAllCases(int offset, int limit, String sortOrder) {
 		// 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
 		Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
 				: Sort.by("lastUpdateTime").ascending();
+		
+		// 設定分頁
 		Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+		
 		List<RescueCase> cases = rescueCaseRepository.findAllCases(pageable);
 		// 轉換成 DTO(並塞入圖片url)
 		return cases.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
-	// 分頁查詢所有案件-塞入圖片!!-------------------------------------------------------
+	
+	//依條件分批查詢所有案件(滾動加載)------------------------------------------------------------------------------------
+	public List<OutputRescueCaseDTO> searchRescueCasesInfinite(RescueSearchCriteria criteria, int offset, int limit, String sortOrder) {
+	    // 設定排序方式
+	    Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
+	            : Sort.by("lastUpdateTime").ascending();
+
+	    // 設定分頁
+	    Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+
+	    // 透過 Specification 查詢符合條件的案件
+	    Page<RescueCase> casesPage = rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
+
+	    // 將查詢結果轉換為 DTO，並返回
+	    return casesPage.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+	
+	
+	// 分頁查詢所有案件-塞入圖片!!----------------------------------------------------------------------------------------
 	private OutputRescueCaseDTO convertToDTO(RescueCase rescueCase) {
 		OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
 

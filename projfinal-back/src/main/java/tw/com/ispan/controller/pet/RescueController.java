@@ -249,7 +249,7 @@ public class RescueController {
 	
 	
 
-	// 根據條件查詢多筆救援案件(用戶進入搜尋頁)--------------------------------------------------------------------------------------------------------------
+	// 根據條件查詢多筆救援案件(用戶使用條件搜尋欄)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
 	public List<RescueCase> searchRescueCases(@RequestBody RescueSearchCriteria criteria,
 			@RequestParam(defaultValue = "0") int page, // 前端沒丟參數就用預設值
@@ -260,11 +260,11 @@ public class RescueController {
 		return resultPage.getContent();
 	}
 
-	// 分批查詢所有救援案件--------------------------------------------------------------------------------------------------------------
+	// 分批(滾動加載)查詢所有救援案件(搜尋頁面展示所有案件)--------------------------------------------------------------------------------------------------------------
 	@GetMapping("/search/allCases")
 	public Map<String, Object> getAllCases(@RequestParam(defaultValue = "0") int offset, // 起始位置
 			@RequestParam(defaultValue = "10") int limit, // 每次加載數量
-			@RequestParam(defaultValue = "asc") String sortOrder // 排序條件：asc(舊到新) 或 desc(新到舊)
+			@RequestParam(defaultValue = "desc") String sortOrder // 排序條件：asc(舊到新) 或 desc(新到舊)
 	) {
 		List<OutputRescueCaseDTO> cases = rescueCaseService.getAllCases(offset, limit, sortOrder);
 
@@ -276,7 +276,28 @@ public class RescueController {
 		return response;
 	}
 
+	
+	// 依搜尋條件分批(滾動加載)查詢救援案件-------------------------------------------------------------------------
+	@PostMapping("/search/infinite")
+	public Map<String, Object> searchRescueCasesInfiniteScroll(
+	        @RequestBody RescueSearchCriteria criteria,
+	        @RequestParam(defaultValue = "0") int offset,  // 起始位置
+	        @RequestParam(defaultValue = "10") int limit,  // 每次加載數量
+	        @RequestParam(defaultValue = "desc") String sortOrder  // 排序條件
+	) {
+	    // 呼叫 service 層的方法來獲取數據
+	    List<OutputRescueCaseDTO> cases = rescueCaseService.searchRescueCasesInfinite(criteria, offset, limit, sortOrder);
 
+	    // 建立回傳格式
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("cases", cases);
+	    response.put("hasMore", cases.size() == limit);  // 是否還有更多數據
+
+	    return response;
+	}
+	
+	
+	
 	// 返回某類型全部案件座標給前端google地圖使用(要幫另外兩種案件也加上這個)
 	@GetMapping("/getLocations")
 	public List<Map<String, Object>> getRescueCasesLocations() {

@@ -2,9 +2,8 @@ package tw.com.ispan.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.domain.pet.forRescue.RescueProgress;
@@ -27,7 +26,10 @@ public class RescueCaseSpecification {
 				// 一對多的關聯，需另外先建立 Join 從 RescueCase 到 RescueProgress (會自動找尋對應id的資料)，改從此為基底出發作查詢
 				// SELECT rc.* FROM RescueCase rc JOIN RescueProgress rp ON rc.id =
 				// rp.rescueCaseId WHERE rp.content LIKE '%keyword%';
-				Join<RescueCase, RescueProgress> rescueProgressJoin = root.join("rescueProgresses");
+				
+				
+				//JoinType.LEFT表LEFT JOIN，即使該RescueCase 沒有對應的 RescueProgress，則這些欄位的值會是 NULL，但該案件仍然會出現在查詢結果中
+				 Join<RescueCase, RescueProgress> rescueProgressJoin = root.join("rescueProgresses", JoinType.LEFT);
 
 				// cb.or()組裝WHERE條件 (caseTitle LIKE '%<keyword>%' OR species LIKE '%<keyword>%'
 				// OR...)
@@ -83,9 +85,9 @@ public class RescueCaseSpecification {
 						cb.equal(root.get("districtArea").get("districtAreaId"), criteria.getDistrictAreaId()));
 			}
 
-			// 物種
-			if (criteria.getSpeciesId() != null) {
-				predicate = cb.and(predicate, cb.equal(root.get("species").get("speciesId"), criteria.getSpeciesId()));
+			// 物種 (支援多選) 使用in
+			if (criteria.getSpeciesId() != null && !criteria.getSpeciesId().isEmpty()) {
+			    predicate = cb.and(predicate, root.get("species").get("speciesId").in(criteria.getSpeciesId()));
 			}
 
 			// 品種
@@ -100,8 +102,8 @@ public class RescueCaseSpecification {
 			}
 
 			// 走失標記
-			if (criteria.getSuspectLost() != null) {
-				predicate = cb.and(predicate, cb.equal(root.get("suspLost"), criteria.getSuspectLost()));
+			if (criteria.getSuspLost() != null) {
+				predicate = cb.and(predicate, cb.equal(root.get("suspLost"), criteria.getSuspLost()));
 			}
 
 			return predicate;
