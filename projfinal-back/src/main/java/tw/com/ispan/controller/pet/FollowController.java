@@ -1,6 +1,11 @@
 package tw.com.ispan.controller.pet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,8 +27,8 @@ public class FollowController {
 	@Autowired
 	private MemberRepository memberRepository;
 
-	@Autowired
-	JsonWebTokenUtility jsonWebTokenUtility;
+	@Autowired 
+	JsonWebTokenUtility jsonWebTokenUtility;   //用來解析不用驗證token的方法，裡面的memberId
 
 	@Autowired
 	private FollowService followService;
@@ -77,4 +82,34 @@ public class FollowController {
 		return response;
 
 	}
+	
+	
+	//前端用於判斷該用戶有無追蹤此案件，決定顯示已追蹤或追蹤
+	@GetMapping("/status")
+	public ResponseEntity<Map<String, Boolean>> checkFollowStatus(
+	        @RequestHeader("Authorization") String token,
+	        @RequestAttribute("memberId") Integer memberId,
+	        @RequestParam Integer caseId,
+	        @RequestParam String caseType) {
+		
+		//這個請求只需要用在已登入的會員(才需要判斷有沒有追蹤過)
+		//沒登入的會員不管怎麼樣都顯示追蹤，但如果想按會先跳到登入
+
+	    System.out.println("會員 ID：" + memberId);		
+	    Map<String, Boolean> response = new HashMap<>();
+	    boolean isFollowing = followService.checkIfFollowExists(memberId, caseId, caseType);
+	    response.put("isFollowing", isFollowing);
+
+	    return ResponseEntity.ok(response);
+	}
+	
+	//計算某案件被多少人追蹤
+//	@GetMapping("/count")
+//	public ResponseEntity<Long> getFollowCount(
+//	        @RequestParam Integer caseId,
+//	        @RequestParam String caseType) {
+//	    long count = followService.getFollowCountByCaseId(caseId, caseType);
+//	    return ResponseEntity.ok(count);
+//	}
+	
 }

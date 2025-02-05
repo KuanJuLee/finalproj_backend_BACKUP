@@ -114,13 +114,13 @@ public class RescueCase {
 	private Double longitude;
 
 	@Column(name = "donationAmount")
-	private Integer donationAmount;
+	private Integer donationAmount= 0;
 
 	@Column(name = "viewCount")
-	private Integer viewCount;
+	private Integer viewCount = 0;
 
 	@Column(name = "follow") // 被追蹤數
-	private Integer follow;
+	private Integer follow = 0;
 
 	// 必填(非使用者手動填寫)
 	@Column(name = "publicationTime", nullable = false)

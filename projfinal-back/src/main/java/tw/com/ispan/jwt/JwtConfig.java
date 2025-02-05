@@ -16,7 +16,7 @@ public class JwtConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jsonWebTokenInterceptor)
-                .addPathPatterns("/RescueCase/**", "/Case/**") // RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
+                .addPathPatterns("/RescueCase/**", "/Case/**","/Case/follow/add") // RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
                 .addPathPatterns("/line/**") // line綁定相關功能
                 .addPathPatterns("/validateToken") // 進行前端token時效、持有驗證
                 .excludePathPatterns("/RescueCase/search/**", "/pet/**", "/RescueCase/getLocations/**", "/casePicture/**","/RescueCase/rescueProgress/{caseId}") // 查詢功能為非會員也能使用
