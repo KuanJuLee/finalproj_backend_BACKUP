@@ -165,7 +165,7 @@ public class RescueCase {
 	@JoinTable(name = "CanAfford_RescueCase", joinColumns = @JoinColumn(name = "rescueCaseId"), inverseJoinColumns = @JoinColumn(name = "canAffordId"))
 	private List<CanAfford> canAffords;
 
-	// 和RescueProgress表單向一對多(case找去RescueProgress)
+	// 和RescueProgress表雙向一對多
 	@OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
 	@JoinColumn(name = "rescueCaseId")
 	private List<RescueProgress> rescueProgresses;

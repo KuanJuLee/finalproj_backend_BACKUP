@@ -68,7 +68,7 @@ public class RescueCaseSpecification {
 			}
 
 			// 以下為精準查詢
-			// 救援狀態
+			// 救援狀態  通常後端會將前端傳來空字符串解析為 null
 			if (criteria.getCaseStateId() != null) {
 				predicate = cb.and(predicate,
 						cb.equal(root.get("caseState").get("caseStateId"), criteria.getCaseStateId()));

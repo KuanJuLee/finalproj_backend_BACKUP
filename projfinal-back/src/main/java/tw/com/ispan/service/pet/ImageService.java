@@ -54,7 +54,7 @@ public class ImageService {
 		// String tmpDir = System.getProperty("java.io.tmpdir");
 		// Path tmpUploadPath = Paths.get(tmpDir, "upload/tmp/pet/images");
 
-		// 生成唯一文件名，防止文件名衝突 (圖片名預計取為memberid_caseid，但須要從token抓會員資料才能抓)
+		// 生成唯一文件名，防止文件名衝突 (圖片名預計取為memberid_caseid，但須要從token抓會員資料才能抓)------------------------------------------
 		String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
 		// 如果暫存目錄不存在則先創建目錄
@@ -67,7 +67,7 @@ public class ImageService {
 			}
 		}
 
-		// 將文件路徑組合起來
+		// 將文件路徑組合起來---------------------------------------------------------------------------------
 		Path filePath = tmpPath.resolve(fileName);
 
 		// 將上傳的文件內容保存到指定路徑
@@ -97,7 +97,7 @@ public class ImageService {
 		return fileMessage;
 	}
 
-	// 將暫存資料夾中圖片移到永存資料夾
+	// 將暫存資料夾中圖片移到永存資料夾------------------------------------------------------------------------------------
 	public List<String> moveImages(List<String> tmpUrls) {
 
 		// 用來保存新圖片路徑
@@ -123,7 +123,7 @@ public class ImageService {
 				// 移動檔案
 				Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("檔案已成功移動到：" + targetPath);
-				finalUrl.add(targetPath.toString());
+				finalUrl.add(targetPath.toString().replace("\\", "/")); // 確保使用 `/`
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -134,7 +134,7 @@ public class ImageService {
 		return finalUrl;
 	}
 
-	// 將單個暫存圖片移至永存資料夾
+	// 將單個暫存圖片移至永存資料夾---------------------------------------------------------------------------------------------------
 	public String moveImage(String tmpUrl) {
 
 		// 定義來源檔案路徑
@@ -175,10 +175,10 @@ public class ImageService {
 			System.out.println("檔案移動失敗：" + e.getMessage());
 		}
 		 // **確保路徑格式為 `/`，避免 Windows 反斜線**
-        return targetPath.toString().replace("\\", "/");
+		return targetPath.toString().replace("\\", "/"); // 確保返回的路徑使用 `/`
 	}
 
-	// 將圖片路徑保存至資料庫中(casePicture表)
+	// 將圖片路徑保存至資料庫中(casePicture表)------------------------------------------------------------------------------------
 	public List<CasePicture> saveImage(List<String> finalUrls) {
 
 		// 用來返回圖片實體List
@@ -196,7 +196,7 @@ public class ImageService {
 	}
 	
 	
-	// 更新圖片資料
+	// 更新圖片資料------------------------------------------------------------------------------------------------------------------------------
 	public List<CasePicture> updateCasePictures(List<CasePicture> oldPictures, List<Map<String, String>> casePictures) {
 	    List<CasePicture> updatedPictures = new ArrayList<>();
 	    List<Integer> receivedPictureIds = new ArrayList<>();
@@ -243,7 +243,7 @@ public class ImageService {
 	
 	
 	
-	// 為修改案件圖片時，用於確認傳過來的id+url是否已經存在於圖片資料表中，不存在得都則需轉移到永存資料夾，再修改圖片對應表中資料
+	// 為修改案件圖片時，用於確認傳過來的id+url是否已經存在於圖片資料表中，不存在得都則需轉移到永存資料夾，再修改圖片對應表中資料------------------------------------------
 	public List<CasePicture> saveModify(Map<Integer, String> ImageIdandUrl) {
 
 		// 此集合為需要新增的圖片

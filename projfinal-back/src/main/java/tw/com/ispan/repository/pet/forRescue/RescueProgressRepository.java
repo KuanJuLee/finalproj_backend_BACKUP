@@ -10,7 +10,6 @@ import tw.com.ispan.domain.pet.forRescue.RescueProgress;
 
 public interface RescueProgressRepository extends JpaRepository<RescueProgress, Integer>{
 	
-	 // 根據 RescueCaseId 查詢該案件救援進度
-	@Query("SELECT rp FROM RescueProgress rp JOIN RescueCase rc ON rc.rescueCaseId = :caseId")
-	List<RescueProgress> findByRescueCaseId(@Param("caseId") Integer caseId);
+	//根據案件id查詢救援進度
+	List<RescueProgress> findByRescueCase_RescueCaseId(Integer rescueCaseId);
 }

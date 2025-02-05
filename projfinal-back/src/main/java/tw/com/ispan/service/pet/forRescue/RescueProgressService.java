@@ -16,7 +16,7 @@ public class RescueProgressService {
 	 
 	 // 根據案件 ID 取得進度列表
 	    public List<RescueProgress> getProgressByCaseId(Integer caseId) {
-	        return rescueProgressRepository.findByRescueCaseId(caseId);
+	        return rescueProgressRepository.findByRescueCase_RescueCaseId(caseId);
 	    }
 
 	    // 新增進度
