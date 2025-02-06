@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,11 +45,13 @@ import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.DistrictAreaRepository;
+import tw.com.ispan.repository.pet.FollowRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
 import tw.com.ispan.repository.pet.forRescue.CanAffordRepository;
 import tw.com.ispan.repository.pet.forRescue.RescueDemandRepository;
+import tw.com.ispan.service.line.LineNotificationService;
 import tw.com.ispan.specification.RescueCaseSpecification;
 //import tw.com.ispan.service.JwtService;
 import tw.com.ispan.util.LatLng;
@@ -60,10 +63,9 @@ public class RescueCaseService {
 	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
 
-	@Value("${file.final-upload-dir}") //圖片儲存於後端的路徑
+	@Value("${file.final-upload-dir}") // 圖片儲存於後端的路徑
 	private String finalUploadDir;
-	
-	
+
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
@@ -86,12 +88,14 @@ public class RescueCaseService {
 	private CaseStateRepository caseStateRepository;
 	@Autowired
 	private JsonWebTokenUtility jsonWebTokenUtility;
-
+	@Autowired
+	private LineNotificationService lineNotificationService; // 引入 LINE 通知服務
 	@Autowired
 	private GeocodingService geocodingService;
-	
 	@Autowired
 	private ImageService imageService;
+	@Autowired
+	private FollowRepository followRepository;
 
 	// 新增案件:手動將傳進來的dto轉回entity，才能丟進jpa增刪修方法
 	public RescueCase convertToEntity(InputRescueCaseDto dto, Integer memberId) {
@@ -283,14 +287,36 @@ public class RescueCaseService {
 	}
 
 	// 修改案件----------------------------------------------------------------------------------------------
-	public RescueCase modify(RescueCase rescueCase, Integer caseId,  List<Map<String, String>>casePictures) {
+	public RescueCase modify(RescueCase rescueCase, Integer caseId, List<Map<String, String>> casePictures) {
 
 		// 必須拿這個新物件有的資料去修改舊物件，這樣才能留存經緯度、創建時間等資訊，而不是用新物件直接save()這些資訊會空掉，最後存修改後的舊物件
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
 		if (result != null && result.isPresent()) {
 
 			RescueCase old = result.get();
-
+			
+			
+			// 決定是否通知會員的新舊變更比對，確保是「重要的變更」才發通知
+			// 包含標題、物種、品種、毛色、性別、絕育狀況、年齡、晶片號碼、是否懷疑遺失、救援原因、地址、
+			// 使用Objects.equals(a, b) 會自動處理 null，避免 NullPointerException
+	        boolean isSignificantUpdate = 
+	                !Objects.equals(old.getCaseTitle(), rescueCase.getCaseTitle()) ||
+	                !Objects.equals(old.getSpecies(), rescueCase.getSpecies()) ||
+	                !Objects.equals(old.getBreed(), rescueCase.getBreed()) ||
+	                !Objects.equals(old.getFurColor(), rescueCase.getFurColor()) ||
+	                !Objects.equals(old.getGender(), rescueCase.getGender()) ||
+	                !Objects.equals(old.getSterilization(), rescueCase.getSterilization()) ||
+	                !Objects.equals(old.getAge(), rescueCase.getAge()) ||
+	                !Objects.equals(old.getMicroChipNumber(), rescueCase.getMicroChipNumber()) ||
+	                !Objects.equals(old.getSuspLost(), rescueCase.getSuspLost()) ||
+	                !Objects.equals(old.getDistrictArea(), rescueCase.getDistrictArea()) ||
+	                !Objects.equals(old.getCity(), rescueCase.getCity()) ||
+	                !Objects.equals(old.getStreet(), rescueCase.getStreet()) ||
+	                !Objects.equals(old.getCaseState(), rescueCase.getCaseState()) ||
+	                !Objects.equals(old.getRescueReason(), rescueCase.getRescueReason());
+			
+			
+			// 更新案件資訊:
 			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到domain
 			// jpa註解自動改變)
 			if (rescueCase.getCaseTitle() != null) {
@@ -323,6 +349,9 @@ public class RescueCaseService {
 			if (rescueCase.getDistrictArea() != null) {
 				old.setDistrictArea(rescueCase.getDistrictArea());
 			}
+			if (rescueCase.getCity() != null) {
+				old.setCity(rescueCase.getCity());
+			}
 			if (rescueCase.getStreet() != null) {
 				old.setStreet(rescueCase.getStreet());
 			}
@@ -333,10 +362,11 @@ public class RescueCaseService {
 				old.setCaseState(rescueCase.getCaseState());
 			}
 			// 更新圖片
-	        List<CasePicture> updatedCasePictures = imageService.updateCasePictures(old.getCasePictures(), casePictures);
-	        old.getCasePictures().clear(); // 先清除原有的內容，保留 Hibernate 追蹤
-	        old.getCasePictures().addAll(updatedCasePictures); // 再加入新的圖片
-			
+			List<CasePicture> updatedCasePictures = imageService.updateCasePictures(old.getCasePictures(),
+					casePictures);
+			old.getCasePictures().clear(); // 先清除原有的內容，保留 Hibernate 追蹤
+			old.getCasePictures().addAll(updatedCasePictures); // 再加入新的圖片
+
 			if (rescueCase.getRescueDemands() != null) {
 				old.setRescueDemands(rescueCase.getRescueDemands());
 			}
@@ -368,13 +398,18 @@ public class RescueCaseService {
 				e.printStackTrace();
 			}
 
+			
 			// 修改完後，將含有新資料的舊物件存回去
 			RescueCase savedcase = rescueCaseRepository.save(old);
 			if (savedcase != null) {
-				System.out.println("新增成功");
+				// **如果是重要變更，則發送 LINE 通知**
+		        if (isSignificantUpdate) {
+		            notifyFollowers(old);
+		        }
+				System.out.println("案件修改成功");
 				return savedcase;
 			} else {
-				System.out.println("新增失敗");
+				System.out.println("案件修改失敗");
 				return null;
 			}
 		} else {
@@ -382,7 +417,33 @@ public class RescueCaseService {
 			return null;
 		}
 	}
+	
+	
+	// **發送 LINE 通知給追蹤者**
+    private void notifyFollowers(RescueCase rescueCase) {
+        
+    	System.out.println(rescueCase + "有發生變更，要傳送通知了!!!");
+    	
+    	//找尋追蹤表中有追蹤此案件的會員
+    	List<Integer> memberIds = followRepository.findMemberIdsByRescueCaseId(rescueCase.getRescueCaseId());
+    	
+    	System.out.println("要發送給會員ID" + memberIds.toString());
 
+        for (Integer memberId : memberIds) {
+            Member member = memberRepository.findById(memberId).orElse(null);
+            //如果此會員id存在+有用line登入+有開啟平台line追蹤
+            if (member != null && member.getLineId() != null && member.isFollowed()) {
+            	lineNotificationService.sendFlexNotification(member.getLineId(),
+            		    "案件變更通知",
+            		    "你追蹤的案件「" + rescueCase.getCaseTitle() + "」已更新，請查看詳情。",
+            		    rescueCase.getCaseUrl());
+            }
+        }
+    }
+	
+	
+	
+	
 	// 刪除案件------------------------------------------------------------------------------------------
 	public boolean delete(Integer id) {
 		if (id != null && rescueCaseRepository.existsById(id)) {
@@ -395,69 +456,61 @@ public class RescueCaseService {
 	// 查詢一筆案件(用於抓單個案件資訊)
 	public OutputRescueCaseDTO searchRescueCase(Integer caseId) {
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
-		//如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
+		// 如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
 		if (result.isPresent()) {
-			 RescueCase rescueCase = result.get();
+			RescueCase rescueCase = result.get();
 
-		      // 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
-			 OutputRescueCaseDTO rescueCaseDTO = new OutputRescueCaseDTO(rescueCase);
-			 
-			 //將memberId也存進去
-			 rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
-			 
+			// 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
+			OutputRescueCaseDTO rescueCaseDTO = new OutputRescueCaseDTO(rescueCase);
+
+			// 將memberId也存進去
+			rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
+
 			// 轉換圖片路徑並存入 Map
-		        List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream()
-		            .map(picture -> {
-		                Map<String, String> pictureMap = new HashMap<>();
-		                pictureMap.put("pictureUrl", picture.getPictureUrl().replace(
-		                    "C:/upload/final/", domainName+ "/upload/final/"
-		                ));
-		                return pictureMap;
-		            })
-		            .toList();
+			List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream().map(picture -> {
+				Map<String, String> pictureMap = new HashMap<>();
+				pictureMap.put("pictureUrl",
+						picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
+				return pictureMap;
+			}).toList();
 
-		        // 設置 DTO 中的 casePictures
-		        rescueCaseDTO.setCasePictures(updatedPictureUrls);
+			// 設置 DTO 中的 casePictures
+			rescueCaseDTO.setCasePictures(updatedPictureUrls);
 
-		        return rescueCaseDTO;
+			return rescueCaseDTO;
 		}
 		return null;
 	}
-	
-	
-	//用戶於編輯案件頁面回填一筆案件資料(用於抓單個案件資訊)
+
+	// 用戶於編輯案件頁面回填一筆案件資料(用於抓單個案件資訊)
 	public EditSearchDTO editSearchRescueCase(Integer caseId) {
 		Optional<RescueCase> result = rescueCaseRepository.findById(caseId);
-		//如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
+		// 如果要修改圖片路徑，就必須額外用DTO來返回資料給前端，避免修改到原始資料庫casePicture表資料
 		if (result.isPresent()) {
-			 RescueCase rescueCase = result.get();
+			RescueCase rescueCase = result.get();
 
-		      // 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
-			 EditSearchDTO rescueCaseDTO = new EditSearchDTO(rescueCase);
-			 
-			 //將memberId也存進去
-			 rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
-			 
+			// 使用定義好的建構子直接創建 DTO 並複製 RescueCase 的數據
+			EditSearchDTO rescueCaseDTO = new EditSearchDTO(rescueCase);
+
+			// 將memberId也存進去
+			rescueCaseDTO.setMemberId(rescueCase.getMember().getMemberId());
+
 			// 轉換圖片數據，確保 casePictureId 也包含在內，並返回統一格式
-		        List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream()
-		            .map(picture -> {
-		                Map<String, String> pictureMap = new HashMap<>();
-		                pictureMap.put("casePictureId", String.valueOf(picture.getCasePictureId())); // 轉換成字串
-		                pictureMap.put("pictureUrl", picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
-		                return pictureMap;
-		            })
-		            .collect(Collectors.toList());
+			List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream().map(picture -> {
+				Map<String, String> pictureMap = new HashMap<>();
+				pictureMap.put("casePictureId", String.valueOf(picture.getCasePictureId())); // 轉換成字串
+				pictureMap.put("pictureUrl",
+						picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
+				return pictureMap;
+			}).collect(Collectors.toList());
 
-		        // 設置 DTO 的 casePictures
-		        rescueCaseDTO.setCasePictures(updatedPictureUrls);
-		        
-		        return rescueCaseDTO;
+			// 設置 DTO 的 casePictures
+			rescueCaseDTO.setCasePictures(updatedPictureUrls);
+
+			return rescueCaseDTO;
 		}
 		return null;
 	}
-	
-	
-	
 
 	// 模糊查詢案件(根據用戶查詢條件和分頁請求返回查詢結果List<RescueCase>)-----------------------------------------------------------------------------------------
 	public Page<RescueCase> searchRescueCases(RescueSearchCriteria criteria, Pageable pageable) {
@@ -469,63 +522,60 @@ public class RescueCaseService {
 		// 動態排序：根據 sortOrder 設置排序方向(新到舊/舊到新)
 		Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
 				: Sort.by("lastUpdateTime").ascending();
-		
+
 		// 設定分頁
 		Pageable pageable = PageRequest.of(offset / limit, limit, sort);
-		
+
 		List<RescueCase> cases = rescueCaseRepository.findAllCases(pageable);
 		// 轉換成 DTO(並塞入圖片url)
 		return cases.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
-	
-	//依條件分批查詢所有案件(滾動加載)------------------------------------------------------------------------------------
-	public List<OutputRescueCaseDTO> searchRescueCasesInfinite(RescueSearchCriteria criteria, int offset, int limit, String sortOrder) {
-	    // 設定排序方式
-	    Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
-	            : Sort.by("lastUpdateTime").ascending();
+	// 依條件分批查詢所有案件(滾動加載)------------------------------------------------------------------------------------
+	public List<OutputRescueCaseDTO> searchRescueCasesInfinite(RescueSearchCriteria criteria, int offset, int limit,
+			String sortOrder) {
+		// 設定排序方式
+		Sort sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by("lastUpdateTime").descending()
+				: Sort.by("lastUpdateTime").ascending();
 
-	    // 設定分頁
-	    Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+		// 設定分頁
+		Pageable pageable = PageRequest.of(offset / limit, limit, sort);
 
-	    // 透過 Specification 查詢符合條件的案件
-	    Page<RescueCase> casesPage = rescueCaseRepository.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
+		// 透過 Specification 查詢符合條件的案件
+		Page<RescueCase> casesPage = rescueCaseRepository
+				.findAll(RescueCaseSpecification.withRescueSearchCriteria(criteria), pageable);
 
-	    // 將查詢結果轉換為 DTO，並返回
-	    return casesPage.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+		// 將查詢結果轉換為 DTO，並返回
+		return casesPage.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
-	
-	
+
 	// 分頁查詢所有案件-塞入圖片!!----------------------------------------------------------------------------------------
 	private OutputRescueCaseDTO convertToDTO(RescueCase rescueCase) {
 		OutputRescueCaseDTO dto = new OutputRescueCaseDTO(rescueCase);
 
-	    // 提取圖片 URL，將本地路徑轉換成前端可訪問的 HTTP URL
-	    if (rescueCase.getCasePictures() != null) {
-	        List<Map<String, String>> pictureUrls = rescueCase.getCasePictures()
-	                .stream()
-	                .map(pic -> {
-	                    String filePath = pic.getPictureUrl();
-	                    
-	                    // 確保檔案路徑是相對的（適用於 Windows 和 Linux）
-	                    filePath = filePath.replace("\\", "/");  // 確保所有路徑符號為 "/"
-	                    if (filePath.startsWith(finalUploadDir.replace("\\", "/"))) {
-	                        filePath = filePath.substring(finalUploadDir.length());
-	                    }
+		// 提取圖片 URL，將本地路徑轉換成前端可訪問的 HTTP URL
+		if (rescueCase.getCasePictures() != null) {
+			List<Map<String, String>> pictureUrls = rescueCase.getCasePictures().stream().map(pic -> {
+				String filePath = pic.getPictureUrl();
 
-	                    // 組合成完整的 HTTP URL
-	                    String imageUrl = domainName + "/upload/final/pet/images/" + filePath;
-	                    
-	                    // 返回物件（符合前端需求格式）
-	                    Map<String, String> imageMap = new HashMap<>();
-	                    imageMap.put("pictureUrl", imageUrl);
-	                    return imageMap;
-	                })
-	                .collect(Collectors.toList());
+				// 確保檔案路徑是相對的（適用於 Windows 和 Linux）
+				filePath = filePath.replace("\\", "/"); // 確保所有路徑符號為 "/"
+				if (filePath.startsWith(finalUploadDir.replace("\\", "/"))) {
+					filePath = filePath.substring(finalUploadDir.length());
+				}
 
-	        dto.setCasePictures(pictureUrls);
-	    }
-	    return dto;
+				// 組合成完整的 HTTP URL
+				String imageUrl = domainName + "/upload/final/pet/images/" + filePath;
+
+				// 返回物件（符合前端需求格式）
+				Map<String, String> imageMap = new HashMap<>();
+				imageMap.put("pictureUrl", imageUrl);
+				return imageMap;
+			}).collect(Collectors.toList());
+
+			dto.setCasePictures(pictureUrls);
+		}
+		return dto;
 	}
 
 	// 不分頁查詢所有案件(給googlemap使用)
@@ -555,50 +605,47 @@ public class RescueCaseService {
 		}
 		return false;
 	}
-	
+
 	// 返回給google地圖經條件篩選的救援案件
-	public List<Map<String, Object>> getFilteredCases(
-            List<Integer> caseState, Integer city, Integer district,
-            List<Integer> species, Integer breedId, List<Integer> furColors, Boolean suspLost,
-            LocalDate startDate, LocalDate endDate) {
+	public List<Map<String, Object>> getFilteredCases(List<Integer> caseState, Integer city, Integer district,
+			List<Integer> species, Integer breedId, List<Integer> furColors, Boolean suspLost, LocalDate startDate,
+			LocalDate endDate) {
 
-        // 查詢資料庫取得符合條件的案件
-        List<RescueCase> filteredCases = rescueCaseRepository.findCasesWithFilters(
-                caseState, city, district, species, breedId, furColors, suspLost, startDate, endDate);
+		// 查詢資料庫取得符合條件的案件
+		List<RescueCase> filteredCases = rescueCaseRepository.findCasesWithFilters(caseState, city, district, species,
+				breedId, furColors, suspLost, startDate, endDate);
 
-        System.out.println("查到的案件" + filteredCases);
-        
-        // 轉換成前端需要的格式
-        List<Map<String, Object>> response = new ArrayList<>();
-        for (RescueCase caseItem : filteredCases) {
-            Map<String, Object> caseData = new HashMap<>();
-            caseData.put("caseTitle", caseItem.getCaseTitle());
-            caseData.put("latitude", caseItem.getLatitude());
-            caseData.put("longitude", caseItem.getLongitude());
-            caseData.put("rescueReason", caseItem.getRescueReason());
-            caseData.put("publicationTime", caseItem.getPublicationTime());
-            caseData.put("city", caseItem.getCity().getCity());
-            caseData.put("district", caseItem.getDistrictArea().getDistrictAreaName());
-            caseData.put("caseState", caseItem.getCaseState());
-            caseData.put("caseId", caseItem.getRescueCaseId());
-            caseData.put("caseType", "rescueCase");
+		System.out.println("查到的案件" + filteredCases);
 
-         // 轉換圖片 URL（從本地端轉換為可訪問的 URL）
-            List<Map<String, String>> pictureUrls = caseItem.getCasePictures().stream()
-                    .map(picture -> {
-                        // 取得純檔名
-                        String fileName = Paths.get(picture.getPictureUrl()).getFileName().toString();
-                        // 返回一個 Map 物件
-                        return Map.of("pictureUrl", domainName + "/upload/final/pet/images/" + fileName);
-                    })
-                    .collect(Collectors.toList());
+		// 轉換成前端需要的格式
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (RescueCase caseItem : filteredCases) {
+			Map<String, Object> caseData = new HashMap<>();
+			caseData.put("caseTitle", caseItem.getCaseTitle());
+			caseData.put("latitude", caseItem.getLatitude());
+			caseData.put("longitude", caseItem.getLongitude());
+			caseData.put("rescueReason", caseItem.getRescueReason());
+			caseData.put("publicationTime", caseItem.getPublicationTime());
+			caseData.put("city", caseItem.getCity().getCity());
+			caseData.put("district", caseItem.getDistrictArea().getDistrictAreaName());
+			caseData.put("caseState", caseItem.getCaseState());
+			caseData.put("caseId", caseItem.getRescueCaseId());
+			caseData.put("caseType", "rescueCase");
 
-            caseData.put("casePictures", pictureUrls);
+			// 轉換圖片 URL（從本地端轉換為可訪問的 URL）
+			List<Map<String, String>> pictureUrls = caseItem.getCasePictures().stream().map(picture -> {
+				// 取得純檔名
+				String fileName = Paths.get(picture.getPictureUrl()).getFileName().toString();
+				// 返回一個 Map 物件
+				return Map.of("pictureUrl", domainName + "/upload/final/pet/images/" + fileName);
+			}).collect(Collectors.toList());
 
-            response.add(caseData);
-        }
+			caseData.put("casePictures", pictureUrls);
 
-        return response;
-    }
+			response.add(caseData);
+		}
+
+		return response;
+	}
 
 }

@@ -77,7 +77,12 @@ public class FollowController {
 
 		// 4. 確認沒追蹤過後，才增添follow表資料
 		followService.addFollow(memberId, caseId, caseType);
+		
+		// 5. 更新對應案件表中的follow欄位(總追蹤數)
+		 int newFollowCount = followService.updateFollowCount(caseId, caseType);
+		
 		response.setSuccess(true);
+		response.setCount(newFollowCount);   //返回被追蹤的案件目前總追蹤數
 		response.setMessage("會員id" + memberId + "的會員成功追蹤" + caseType + caseId + "案件");
 		return response;
 
@@ -103,13 +108,5 @@ public class FollowController {
 	    return ResponseEntity.ok(response);
 	}
 	
-	//計算某案件被多少人追蹤
-//	@GetMapping("/count")
-//	public ResponseEntity<Long> getFollowCount(
-//	        @RequestParam Integer caseId,
-//	        @RequestParam String caseType) {
-//	    long count = followService.getFollowCountByCaseId(caseId, caseType);
-//	    return ResponseEntity.ok(count);
-//	}
 	
 }

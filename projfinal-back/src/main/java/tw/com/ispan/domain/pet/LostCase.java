@@ -99,6 +99,9 @@ public class LostCase {
 
     @Column(name = "donationAmount")
     private Integer donationAmount;
+    
+	@Column(name = "follow") // 被追蹤數
+	private Integer follow = 0;
 
     @Column(name = "viewCount")
     private Integer viewCount;
@@ -152,50 +155,6 @@ public class LostCase {
         super();
     }
 
-    // 全參數建構子
-    public LostCase(
-            Integer lostCaseId, String caseTitle,
-            Member member,
-            List<ReportCase> reportCases,
-            Species species, Breed breed, FurColor furColor,
-            String name, String gender, String sterilization, Integer age, Integer microChipNumber, boolean suspLost,
-            City city, DistrictArea districtArea, String street, BigDecimal latitude, BigDecimal longitude,
-            Integer donationAmount, Integer viewCount, List<Follow> follows, LocalDateTime publicationTime,
-            LocalDateTime lastUpdateTime, String lostExperience, String contactInformation, String featureDescription,
-            List<CasePicture> casePictures, CaseState caseState, String caseUrl, Banner banner,
-            Boolean isHidden) {
-        this.lostCaseId = lostCaseId;
-        this.caseTitle = caseTitle;
-        this.member = member;
-        this.species = species;
-        this.breed = breed;
-        this.furColor = furColor;
-        this.name = name;
-        this.gender = gender;
-        this.sterilization = sterilization;
-        this.age = age;
-        this.microChipNumber = microChipNumber;
-        this.suspLost = suspLost;
-        this.city = city;
-        this.districtArea = districtArea;
-        this.street = street;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.donationAmount = donationAmount;
-        this.viewCount = viewCount;
-        this.follows = follows;
-        this.publicationTime = publicationTime;
-        this.lastUpdateTime = lastUpdateTime;
-        this.lostExperience = lostExperience;
-        this.contactInformation = contactInformation;
-        this.featureDescription = featureDescription;
-        this.casePictures = casePictures;
-        this.reportCases = reportCases;
-        this.caseState = caseState;
-        this.caseUrl = caseUrl;
-        this.banner = banner;
-        this.isHidden = isHidden;
-    }
 
     // Getter & Setter
     public Integer getLostCaseId() {
@@ -341,8 +300,27 @@ public class LostCase {
     public void setDonationAmount(Integer donationAmount) {
         this.donationAmount = donationAmount;
     }
+    
 
-    public Integer getViewCount() {
+    public List<Follow> getFollows() {
+		return follows;
+	}
+
+	public void setFollows(List<Follow> follows) {
+		this.follows = follows;
+	}
+
+	public void setFollow(Integer follow) {
+		this.follow = follow;
+	}
+
+
+	public void setBanner(Banner banner) {
+		this.banner = banner;
+	}
+
+
+	public Integer getViewCount() {
         return viewCount;
     }
 

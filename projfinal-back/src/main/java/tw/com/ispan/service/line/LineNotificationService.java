@@ -1,5 +1,6 @@
 package tw.com.ispan.service.line;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +9,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.PushMessage;
+import com.linecorp.bot.model.action.PostbackAction;
+import com.linecorp.bot.model.message.FlexMessage;   //用來建立 Flex 訊息
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.flex.component.Box;  //Box 容器（用來放入文字、圖片等）
+import com.linecorp.bot.model.message.flex.component.Button; //按鈕元件
+import com.linecorp.bot.model.message.flex.component.Text;  //文字元件
+import com.linecorp.bot.model.message.flex.component.Text.TextWeight;
+import com.linecorp.bot.model.message.flex.container.Bubble;
+import com.linecorp.bot.model.message.flex.container.FlexContainer;
+import com.linecorp.bot.model.message.flex.unit.FlexLayout;  //設定 FlexBox 排列方式
 
 import tw.com.ispan.repository.admin.MemberRepository;
 
-//此為發送消息功能
+//此為操控平台LINE商家發送消息功能
 @Service
 @Transactional
 public class LineNotificationService {
@@ -43,20 +53,55 @@ public class LineNotificationService {
 		future.join();
 	}
 
-	// // 傳送用戶綁定鏈結的方法
-	// public void sendBindingMessage(String LineId, String bindingLink) {
+	public void sendFlexNotification(String userLineId, String title, String content, String caseUrl) {
+	    // 建立標題
+	    Text titleText = Text.builder()
+	            .text(title)
+	            .weight(TextWeight.BOLD)  // 設定粗體字
+	            .size("xl")  // 設定標題大小
+	            .build();
 
-	// // 創建消息內容
-	// TextMessage textMessage = new TextMessage("點擊此連結以完成綁定: " + bindingLink);
+	    // 建立內容
+	    Text contentText = Text.builder()
+	            .text(content)
+	            .wrap(true)  // 允許換行
+	            .margin("md")  // 與標題的間距
+	            .size("md")
+	            .build();
 
-	// // 發送消息
-	// PushMessage pushMessage = new PushMessage(LineId, textMessage);
-	// lineMessagingClient.pushMessage(pushMessage).thenAccept(response ->
-	// System.out.println("綁定消息已成功發送"))
-	// .exceptionally(throwable -> {
-	// System.err.println("綁定消息發送失敗: " + throwable.getMessage());
-	// return null;
-	// });
-	// }
+	    // 建立按鈕
+	    // 這裡的網址需要是正確的
+	    Button caseButton = Button.builder()
+	            .action(new PostbackAction("查看案件", "action=view_case&caseId=123"))  // 改用 Postback
+	            .style(Button.ButtonStyle.PRIMARY)  // 按鈕樣式
+	            .build();
+
+	    // 將標題、內容、按鈕放入 Box (垂直排列)
+	    Box bodyBox = Box.builder()
+	            .layout(FlexLayout.VERTICAL)
+	            .contents(List.of(titleText, contentText, caseButton))  // 依序顯示
+	            .build();
+
+	    // 建立 Flex Bubble 容器
+	    FlexContainer bubble = Bubble.builder()
+	            .body(bodyBox)  // 設定內容
+	            .build();
+
+	    // 建立 Flex Message
+	    FlexMessage flexMessage = new FlexMessage("案件變更通知", bubble);
+
+	    // 發送訊息，並確保等待回應
+	    PushMessage pushMessage = new PushMessage(userLineId, flexMessage);
+	    CompletableFuture<Void> future = lineMessagingClient.pushMessage(pushMessage)
+	            .thenAccept(response -> System.out.println("Flex Message sent successfully"))
+	            .exceptionally(throwable -> {
+	                System.err.println("Failed to send Flex Message: " + throwable.getMessage());
+	                return null;
+	            });
+
+	    // 等待 Flex Message 發送完成（選擇性）
+	    future.join();
+	}
+
 
 }

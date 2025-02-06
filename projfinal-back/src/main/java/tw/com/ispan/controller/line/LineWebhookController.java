@@ -15,7 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tw.com.ispan.service.line.LineBindingService;
 import tw.com.ispan.service.line.LineNotificationService;
 
-//用來接收line平台中因和linebot互動產生的Webhook回調事件，LINE 平台會以 POST 的方式將事件推送到你的 Webhook URL
+//用來接收line平台中因會員和linebot互動產生的Webhook回調事件，LINE 平台會以 POST 的方式將事件推送到你的 Webhook URL (去line developer修改成正確開放網域)
+//記得這個功能因為要用公開網域來讓Line連到我的後端，因此要先用ngrok開放這個專案運行的本地網域
+//有時ngrok開不起來要先檢查是否有其他正在運行 再使用 ngrok http 8080 開放
 @RestController
 @RequestMapping("/webhook")
 public class LineWebhookController {
@@ -51,6 +53,7 @@ public class LineWebhookController {
 
                 // 將member表中followed改為true
                 lineBindingService.updateFollowed(lineId);
+               
 
                 // line中發送跳轉連結給用戶 (網頁用戶則此追蹤line qrcode是新開一個分頁)
                 String returnUrl = frontIndex; // 替換為元網頁的 URL

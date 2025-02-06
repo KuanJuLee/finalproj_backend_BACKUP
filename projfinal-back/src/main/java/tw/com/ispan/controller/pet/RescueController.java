@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.dto.pet.EditSearchDTO;
@@ -35,6 +36,7 @@ import tw.com.ispan.dto.pet.OutputRescueCaseDTO;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.repository.admin.MemberRepository;
+import tw.com.ispan.service.line.LineNotificationService;
 import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
 
@@ -52,6 +54,9 @@ public class RescueController {
 
 	@Autowired
 	private MemberRepository memberRepository;
+	
+	@Autowired
+	private LineNotificationService lineNotificationService; // 引入 LINE 通知服務
 
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
 	@PostMapping(path = { "/add" })
@@ -163,10 +168,10 @@ public class RescueController {
 //			return response;
 //		}
 
-		// 4. 驗證id存在，就去修改這筆資料
+		// 4. 驗證id存在，就去修改這筆資料，並且同時傳line message有追蹤該案件的會員(同時確定有追蹤商家line)
 		 RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
-		    RescueCase updatedCase = rescueCaseService.modify(rescueCaseEntity, caseId, dto.getCasePictures());
-
+		 RescueCase updatedCase = rescueCaseService.modify(rescueCaseEntity, caseId, dto.getCasePictures());
+		 		 
 		if (updatedCase != null) {
 			// 修改成功
 			response.setSuccess(true);

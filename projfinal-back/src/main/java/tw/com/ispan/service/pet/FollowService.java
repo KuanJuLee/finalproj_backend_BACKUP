@@ -1,6 +1,7 @@
 package tw.com.ispan.service.pet;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,8 @@ public class FollowService {
 	public Follow addFollow(Integer memberId, Integer caseId, String caseType) {
 		Follow follow = new Follow();
 
-		// 當按下follow要能區分使用者是對rescue, lost還是adoption case，因為相同caseId在這三表中都有，要查對表-------------------------------
+		// 當按下follow要能區分使用者是對rescue, lost還是adoption
+		// case，因為相同caseId在這三表中都有，要查對表-------------------------------
 
 		switch (caseType.toLowerCase()) {
 		case "rescue":
@@ -69,9 +71,8 @@ public class FollowService {
 
 		Follow saveFollow = followRepository.save(follow); // 返回物件會被加進followId流水號
 		return saveFollow;
-		
-		
-		//這邊應該要同時更新resuceCase裡面的數量??
+
+		// 這邊應該要同時更新resuceCase裡面的數量??
 	}
 
 	// 用於驗證某類型案件表中是否存在此案件id----------------------------------------------------------
@@ -122,7 +123,7 @@ public class FollowService {
 		// 查找會員
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new IllegalArgumentException("Member 不存在: " + memberId));
-		
+
 		// 根據案件類型查詢對應的記錄
 		switch (caseType.toLowerCase()) {
 		case "rescue":
@@ -147,20 +148,47 @@ public class FollowService {
 			throw new IllegalArgumentException("未知的案件類型：" + caseType);
 		}
 	}
-	
-	//統計某案件目前被多少人追蹤
-	// 查詢案件目前被多少人追蹤
-//	public long getFollowCountByCaseId(Integer caseId, String caseType) {
-//	    switch (caseType.toLowerCase()) {
-//	        case "rescue":
-//	            return followRepository.countByRescueCase_RescueCaseId(caseId);
-//	        case "lost":
-//	            return followRepository.countByLostCase_LostCaseId(caseId);
-//	        case "adoption":
-//	            return followRepository.countByAdoptionCase_AdoptionCaseId(caseId);
-//	        default:
-//	            throw new IllegalArgumentException("未知的案件類型：" + caseType);
-//	    }
-//	    
-//	}
+
+	// 當有人追蹤某案件時，更新該案件的的follow總數欄位
+	@Transactional
+	public int updateFollowCount(Integer caseId, String caseType) {
+	    int count = 0;
+
+	    switch (caseType) {
+	        case "rescue":
+	            count = followRepository.countByRescueCaseId(caseId);
+	            Optional<RescueCase> rescueCaseOpt = rescueCaseRepository.findById(caseId);
+	            if (rescueCaseOpt.isPresent()) {
+	                RescueCase rescueCase = rescueCaseOpt.get();
+	                rescueCase.setFollow(count);
+	                rescueCaseRepository.save(rescueCase);
+	            }
+	            break;
+
+	        case "lost":
+	            count = followRepository.countByLostCaseId(caseId);
+	            Optional<LostCase> lostCaseOpt = lostCaseRepository.findById(caseId);
+	            if (lostCaseOpt.isPresent()) {
+	                LostCase lostCase = lostCaseOpt.get();
+	                lostCase.setFollow(count);
+	                lostCaseRepository.save(lostCase);
+	            }
+	            break;
+
+	        case "adoption":
+	            count = followRepository.countByAdoptionCaseId(caseId);
+	            Optional<AdoptionCase> adoptionCaseOpt = adoptionCaseRepository.findById(caseId);
+	            if (adoptionCaseOpt.isPresent()) {
+	                AdoptionCase adoptionCase = adoptionCaseOpt.get();
+	                adoptionCase.setFollow(count);
+	                adoptionCaseRepository.save(adoptionCase);
+	            }
+	            break;
+
+	        default:
+	            throw new IllegalArgumentException("無效的案件類型：" + caseType);
+	    }
+
+	    return count;
+	}
 }
