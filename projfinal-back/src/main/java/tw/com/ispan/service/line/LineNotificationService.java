@@ -1,5 +1,6 @@
 package tw.com.ispan.service.line;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -9,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.model.PushMessage;
-import com.linecorp.bot.model.action.PostbackAction;
+import com.linecorp.bot.model.action.URIAction;
 import com.linecorp.bot.model.message.FlexMessage;   //用來建立 Flex 訊息
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.flex.component.Box;  //Box 容器（用來放入文字、圖片等）
@@ -27,6 +28,9 @@ import tw.com.ispan.repository.admin.MemberRepository;
 @Transactional
 public class LineNotificationService {
 
+	//跳轉回前端案件頁面的網址
+	
+	
 	// lineMessagingClient專門用於通過 LINE Messaging API 與 LINE 平台進行通信，可藉此發訊息給用戶
 	// 通過構造方法@RequiredArgsConstructor注入 失敗!! 改手動寫建構子
 	@Autowired
@@ -70,9 +74,9 @@ public class LineNotificationService {
 	            .build();
 
 	    // 建立按鈕
-	    // 這裡的網址需要是正確的
+	    // 這裡的url需要是有效的網址
 	    Button caseButton = Button.builder()
-	            .action(new PostbackAction("查看案件", "action=view_case&caseId=123"))  // 改用 Postback
+	            .action(new URIAction ("查看案件", URI.create(caseUrl), null))   //參數分別是按鈕顯示文字、開啟網址(類別須為Uri)、可選替代網址(選填)
 	            .style(Button.ButtonStyle.PRIMARY)  // 按鈕樣式
 	            .build();
 

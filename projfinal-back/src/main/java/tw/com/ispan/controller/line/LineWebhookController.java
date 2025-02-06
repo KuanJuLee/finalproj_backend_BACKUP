@@ -68,41 +68,23 @@ public class LineWebhookController {
     }
 }
 
-// 發送綁定訊息回去給用戶，讓用戶點擊後完成綁定
-// redisService.createBindingFlexMessage();
-
-// 從暫存中查詢對應的 memberId
-// String memberId = redisService.getMemberId(lineId);
-
-// 從 Redis 查詢 memberId
-// String memberId = redisTemplate.opsForValue().get("LINE_BIND_" + lineId);
-
-// !!!!!!改成不要在這裡就綁定Lineid，而是讓controller繼續redirect到前端後(要指向一個新頁面使得可以執行onMounted())，把lineid資訊包在裡面，並且在onMonuted裡面
-// 將jwt中的memberId和lineid綁定!!!!
-
-// for (Map<String, Object> event : events) {
-
-// // 從事件的 Map 中提取 type 字段，這個字段表示事件的類型，其中事件follow：用戶加為好友或解除封鎖。
-// // message：用戶發送消息。unfollow：用戶取消好友。join：Bot 被邀請加入群組或聊天室。
-// String type = (String) event.get("type");
-
-// if ("follow".equals(type)) {
-// // 從事件中提取 source 字段，這是關於事件來源的數據，再提取用戶的 LINE ID
-// Map<String, Object> source = (Map<String, Object>) event.get("source");
-// String lineId = (String) source.get("userId");
-
-// // 在此獲得lineId後，透過產生token插入臨時表中，綁定lineId和token。並產生要發送給用戶line訊息的綁定鏈結
-// String bindingToken =
-// lineBindingService.generateBindingLinkForLineId(lineId);
-// String bindingLink = ngrokUrl + "/line/bindComplete?token=" + bindingToken;
-
-// // 發送綁定鏈接到用戶的 LINE
-// lineNotificationService.sendBindingMessage(lineId, bindingLink);
-
-// System.out.println("新用戶的 LINE ID: " + lineId + " 已收到綁定消息。");
-
-// }
-// }
 
 // 回傳HTTP response，LINE平台需要接收到HTTP
 // 200回應已確定Webhook請求處理成功。如果LINE平台未收到成功回應，將視為事件處理失敗，並可能重試推送
+
+//當用戶點選案件變更訊息的察看按鈕，會回傳此給後端
+//{
+//	  "events": [
+//	    {
+//	      "type": "postback",
+//	      "replyToken": "xxxxxxxxxxxxxxxx",
+//	      "source": {
+//	        "userId": "Uxxxxxxxxxxxxxxxxxxxxx",
+//	        "type": "user"
+//	      },
+//	      "postback": {
+//	        "data": "action=view_case&caseId=123"
+//	      }
+//	    }
+//	  ]
+//	}

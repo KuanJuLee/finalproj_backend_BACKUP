@@ -63,6 +63,9 @@ public class RescueCaseService {
 	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
 
+	@Value("${front.domainName.url}")  // http://localhost:5173
+	private String frontDomainName;
+	
 	@Value("${file.final-upload-dir}") // 圖片儲存於後端的路徑
 	private String finalUploadDir;
 
@@ -428,6 +431,9 @@ public class RescueCaseService {
     	List<Integer> memberIds = followRepository.findMemberIdsByRescueCaseId(rescueCase.getRescueCaseId());
     	
     	System.out.println("要發送給會員ID" + memberIds.toString());
+    	
+    	//可以訪問前端案件頁面的網址(因為這裡是rescueCase Service因此只會是編輯救援案件才會用到)
+    	String caseUrl =  frontDomainName + "/pet/rescueCase/"  + rescueCase.getRescueCaseId() ;
 
         for (Integer memberId : memberIds) {
             Member member = memberRepository.findById(memberId).orElse(null);
@@ -436,7 +442,7 @@ public class RescueCaseService {
             	lineNotificationService.sendFlexNotification(member.getLineId(),
             		    "案件變更通知",
             		    "你追蹤的案件「" + rescueCase.getCaseTitle() + "」已更新，請查看詳情。",
-            		    rescueCase.getCaseUrl());
+            		    caseUrl);
             }
         }
     }
