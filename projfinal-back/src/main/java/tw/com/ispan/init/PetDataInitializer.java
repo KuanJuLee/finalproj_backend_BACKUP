@@ -92,13 +92,6 @@ public class PetDataInitializer implements CommandLineRunner {
 		if (!speciesRepository.existsById(1) || !speciesRepository.existsById(2)) {
 		    throw new RuntimeException("Species 資料未成功儲存，請檢查交易提交狀態！");
 		}
-//		if (!speciesRepository.existsById(1)) {
-//			speciesRepository.save(new Species("狗"));
-//		}
-//		if (!speciesRepository.existsById(2)) {
-//			speciesRepository.save(new Species("貓"));
-//		}
-//		speciesRepository.flush();  // 強制同步
 
 		// 存入品種資料(狗貓放在同一表格，貓breedId為1~53 狗breedId 54~186)
 		// 檢查邏輯為breed資料表內是否有id 1-53的資料，返回的list如果不是共53筆就做新增

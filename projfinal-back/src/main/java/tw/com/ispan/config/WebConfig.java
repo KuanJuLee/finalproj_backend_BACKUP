@@ -1,12 +1,24 @@
 package tw.com.ispan.config;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import tw.com.ispan.interceptor.CartActionInterceptor;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+
+    @Autowired
+    private CartActionInterceptor cartActionInterceptor;
 
     // 全局 CORS 配置
     @Override
@@ -25,5 +37,19 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations("file:C:/upload/");
+
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:C:/meowWebsite/images/"); // ✅ 確保這裡是圖片存放的實際路徑
+    }
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(cartActionInterceptor)
+                .addPathPatterns("/pages/cart/list/**"); // ✅ 指定攔截購物車 API
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new MappingJackson2HttpMessageConverter()); // ✅ 確保 JSON 轉換器可用
     }
 }

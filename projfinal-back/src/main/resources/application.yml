@@ -1,9 +1,31 @@
 spring:
   application:
-    name: projfinal-meow
+    name: projfinal-back
 
+#Spring Boot 啟動時應加載的基礎包(老米)
+  main:
+    sources:
+      - tw.com.ispan
+
+
+  #Docker環境下的設定(老米)
   profiles:
-    active: "@xxxx@"
+    active: "dev"
+
+
+  #靜態檔案存取路徑: 分為專案內外部(老米)
+  web:
+    resources:
+      static-locations: 
+        - classpath:/static/
+        - file:C:/meowWebsite/images/
+
+  #json格式
+  jackson:
+    date-format: "yyyy-MM-dd"
+    time-zone: Asia/Taipei
+    serialization:
+      fail-on-empty-beans: false
 
   #資料庫連線設定
   datasource:
@@ -33,13 +55,13 @@ spring:
       password: a123 # 如果沒有設密碼可以留空
       timeout: 3000 # 請求超時時間，毫秒
       repositories:
-        enabled: false #禁止Redis 的自動儲存庫掃描，改手動啟用所需的 Redis 儲存庫
+        enabled: false #禁止Redis 的自動儲存庫掃描，改手動啟用所需的 Redis 儲存庫(避免和使用sql server資料庫的打架)
 
   #圖片大小限制
   servlet:
     multipart:
       max-file-size: 5MB
-      max-request-size: 5MB
+      max-request-size: 20MB
       enabled: true
 
     #spring手動設定 HTTP 請求和回應的字符編碼(冠)
@@ -48,21 +70,20 @@ spring:
       enabled: true
       force: true
 
-  #寵物圖片暫存路徑(冠)
+ 
 file:
-  tmp-upload-dir: C:/upload/tmp/pet/images/
+  storage:
+    uploadDir: C:/meowWebsite/images #指向實際的存儲目錄
+    baseUrl: ${BASE_URL:http://localhost:8080/images} #對應圖片的訪問 URL
+  
+  tmp-upload-dir: C:/upload/tmp/pet/images/  #寵物圖片暫存路徑(冠)
 
-  #寵物圖片上傳路徑(冠)
-  final-upload-dir: C:/upload/final/pet/images/
+  final-upload-dir: C:/upload/final/pet/images/  #寵物圖片上傳路徑(冠)
 
   #conosle顏色
   output:
     ansi:
       enabled: always
-
-  jackson:
-    date-format: "yyyy-MM-dd"
-    time-zone: Asia/Taipei
 
 jwt:
   token:
@@ -119,3 +140,10 @@ line:
     redirect-uri: ${back.domainName.url}/line/callback
     channel-id: 2006807062
     channel-secret: 1f781b9cf730b0c4decdeba7eead6778
+
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: a0912829673+test@gmail.com
+  password: frww ocfi lxda dscs

@@ -15,7 +15,7 @@ import tw.com.ispan.service.MemberService;
 @RestController
 public class LoginController {
     @Autowired
-    private MemberService MemberService;
+    private MemberService memberService;
 
     @Autowired
     private JsonWebTokenUtility jsonWebTokenUtility;
@@ -26,25 +26,23 @@ public class LoginController {
 
         // 接收資料
         JSONObject obj = new JSONObject(entity);
-        String username = obj.isNull("username") ? null : obj.getString("username");
+        String email = obj.isNull("email") ? null : obj.getString("email");
         String password = obj.isNull("password") ? null : obj.getString("password");
 
         // 驗證資料
-        if (username == null || username.length() == 0 || password == null ||
-                password.length() == 0) {
+        if (email == null || email.length() == 0 || password == null || password.length() == 0) {
             responseJson.put("success", false);
             responseJson.put("message", "請輸入帳號/密碼");
             return responseJson.toString();
         }
-
-        // 呼叫Model
-        //返回對應的member資料
-        Member bean = MemberService.login(username, password);
+       // 呼叫 Service 層的 login 方法，使用email和密碼登入
+       Member bean = memberService.login(email, password);
 
         // 根據Model執行結果決定要呼叫的View
         if (bean == null) {
             responseJson.put("success", false);
             responseJson.put("message", "登入失敗");
+            System.out.println("查無此會員: " + email);
         } else {
             responseJson.put("success", true);
             responseJson.put("message", "登入成功");

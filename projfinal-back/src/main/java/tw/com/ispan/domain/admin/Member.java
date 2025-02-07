@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -24,8 +25,11 @@ import tw.com.ispan.domain.pet.Follow;
 import tw.com.ispan.domain.pet.LostCase;
 import tw.com.ispan.domain.pet.ReportCase;
 import tw.com.ispan.domain.pet.RescueCase;
-//import tw.com.ispan.domain.shop.Order;
 import tw.com.ispan.domain.pet.forAdopt.AdoptionCaseApply;
+import tw.com.ispan.domain.shop.Cart;
+import tw.com.ispan.domain.shop.CartActionLog;
+import tw.com.ispan.domain.shop.Orders;
+import tw.com.ispan.domain.shop.WishList;
 @Entity
 @Table(name = "Member")
 public class Member {
@@ -103,39 +107,65 @@ public class Member {
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 	private Set<AdoptionCaseApply> adoptionCaseApply = new HashSet<>();
 
+
+	//以下為商城相關的欄位---------------------------------------------------------------------------------------------
+	@OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
+    @JsonBackReference("member")
+    private List<WishList> wishList;
+
+    @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
+    private Set<Cart> cart;
+
+    @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JsonBackReference("member")
+    private Set<CartActionLog> cartActionLog;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Orders> orders;
+
+
+
+
 	// Constructors, getters, setters, toString()
 	public Member() {
 		// 這是默認構造函數，Hibernate 需要
 	}
 
 	public Member(Integer memberId, String nickName, String password, String name, String email, String phone,
-			String address, LocalDate birthday, LocalDateTime createDate, LocalDateTime updateDate,
-			List<Activity> activity, List<ActivityParticipantList> acitvityParticipantLists,
-			// List<WishListBean> wishList, Set<Cart> cart,List<Order> order,
-			List<RescueCase> rescueCases, List<Follow> follow, List<LostCase> lostCase, List<AdoptionCase> adoptionCase,
-			List<ReportCase> reportCase, Set<AdoptionCaseApply> adoptionCaseApply) {
-		this.memberId = memberId;
-		this.nickName = nickName;
-		this.password = password;
-		this.name = name;
-		this.email = email;
-		this.phone = phone;
-		this.address = address;
-		this.birthday = birthday;
-		this.createDate = createDate;
-		this.updateDate = updateDate;
-		this.activity = activity;
-		this.acitvityParticipantLists = acitvityParticipantLists;
-		// this.wishList = wishList;
-		// this.cart = cart;
-		// this.order = order;
-		this.rescueCases = rescueCases;
-		this.follows = follow;
-		this.lostCase = lostCase;
-		this.adoptionCase = adoptionCase;
-		this.reportCase = reportCase;
-		this.adoptionCaseApply = adoptionCaseApply;
-	}
+            String address, LocalDate birthday, LocalDateTime createDate, LocalDateTime updateDate,
+            List<Activity> activity, List<ActivityParticipantList> acitvityParticipantList, String lineId,
+            String lineName, String linePicture, boolean followed, boolean userType, List<WishList> wishList,
+            Set<Cart> cart, Set<CartActionLog> cartActionLog, List<Orders> orders, List<Follow> follows,
+            List<LostCase> lostCase, List<AdoptionCase> adoptionCase, List<ReportCase> reportCase,
+            Set<AdoptionCaseApply> adoptionCaseApply) {
+        this.memberId = memberId;
+        this.nickName = nickName;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.birthday = birthday;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+        this.activity = activity;
+        this.acitvityParticipantLists = acitvityParticipantList;
+        this.lineId = lineId;
+        this.lineName = lineName;
+        this.linePicture = linePicture;
+        this.followed = followed;
+        this.userType = userType;
+        this.wishList = wishList;
+        this.cart = cart;
+        this.cartActionLog = cartActionLog;
+        this.orders = orders;
+        this.follows = follows;
+        this.lostCase = lostCase;
+        this.adoptionCase = adoptionCase;
+        this.reportCase = reportCase;
+        this.adoptionCaseApply = adoptionCaseApply;
+    }
 
 	public Integer getMemberId() {
 		return memberId;
@@ -256,6 +286,107 @@ public class Member {
 	public void setUserType(boolean userType) {
 		this.userType = userType;
 	}
+
+	public List<RescueCase> getRescueCases() {
+		return rescueCases;
+	}
+
+	public void setRescueCases(List<RescueCase> rescueCases) {
+		this.rescueCases = rescueCases;
+	}
+
+	public List<Activity> getActivity() {
+		return activity;
+	}
+
+	public void setActivity(List<Activity> activity) {
+		this.activity = activity;
+	}
+
+	public List<ActivityParticipantList> getAcitvityParticipantLists() {
+		return acitvityParticipantLists;
+	}
+
+	public void setAcitvityParticipantLists(List<ActivityParticipantList> acitvityParticipantLists) {
+		this.acitvityParticipantLists = acitvityParticipantLists;
+	}
+
+	public List<Follow> getFollows() {
+		return follows;
+	}
+
+	public void setFollows(List<Follow> follows) {
+		this.follows = follows;
+	}
+
+	public List<LostCase> getLostCase() {
+		return lostCase;
+	}
+
+	public void setLostCase(List<LostCase> lostCase) {
+		this.lostCase = lostCase;
+	}
+
+	public List<AdoptionCase> getAdoptionCase() {
+		return adoptionCase;
+	}
+
+	public void setAdoptionCase(List<AdoptionCase> adoptionCase) {
+		this.adoptionCase = adoptionCase;
+	}
+
+	public List<ReportCase> getReportCase() {
+		return reportCase;
+	}
+
+	public void setReportCase(List<ReportCase> reportCase) {
+		this.reportCase = reportCase;
+	}
+
+	public Set<AdoptionCaseApply> getAdoptionCaseApply() {
+		return adoptionCaseApply;
+	}
+
+	public void setAdoptionCaseApply(Set<AdoptionCaseApply> adoptionCaseApply) {
+		this.adoptionCaseApply = adoptionCaseApply;
+	}
+
+	public List<WishList> getWishList() {
+		return wishList;
+	}
+
+	public void setWishList(List<WishList> wishList) {
+		this.wishList = wishList;
+	}
+
+	public Set<Cart> getCart() {
+		return cart;
+	}
+
+	public void setCart(Set<Cart> cart) {
+		this.cart = cart;
+	}
+
+	public Set<CartActionLog> getCartActionLog() {
+		return cartActionLog;
+	}
+
+	public void setCartActionLog(Set<CartActionLog> cartActionLog) {
+		this.cartActionLog = cartActionLog;
+	}
+
+	public List<Orders> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Orders> orders) {
+		this.orders = orders;
+	}
+
+	public Integer getId() {
+        return this.memberId;
+    }
+
 
 	@Override
 	public String toString() {
