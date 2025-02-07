@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-import lombok.Setter;
 import tw.com.ispan.domain.pet.RescueCase;
 
-@Getter
-@Setter
+
 public class OutputRescueCaseDTO {
 
 	private Integer rescueCaseId;

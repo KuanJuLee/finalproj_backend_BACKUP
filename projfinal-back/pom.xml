@@ -33,14 +33,30 @@
 	
 	
 	<dependencies>
+		
+		
+		<!--以下三個為了解析line登入後拿取email-->
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>0.12.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>0.12.6</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-jackson</artifactId>
+		    <version>0.12.6</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
 		<dependency>
    			 <groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-    		<groupId>org.projectlombok</groupId>
-    		<artifactId>lombok</artifactId>
-    		<scope>provided</scope>
 		</dependency>
 		<dependency>
     		<groupId>com.linecorp.bot</groupId>

@@ -1,7 +1,10 @@
 package tw.com.ispan.service.line;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,6 +21,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.dto.pet.LineUserProfile;
 import tw.com.ispan.repository.admin.MemberRepository;
@@ -25,7 +33,10 @@ import tw.com.ispan.repository.admin.MemberRepository;
 @Service
 @Transactional
 public class LineLoginService {
-
+	
+	 private static final String VERIFY_TOKEN_URL = "https://api.line.me/oauth2/v2.1/verify";
+	
+	
 	@Value("${line.login.channel-id}")
 	private String channelId;
 
@@ -49,7 +60,10 @@ public class LineLoginService {
 	// 產生授權url，返回給前端
 	public String generateAuthorizeUrl(String state) {
 		return "https://access.line.me/oauth2/v2.1/authorize" + "?response_type=code" + "&client_id=" + channelId
-				+ "&redirect_uri=" + redirectUri + "&scope=profile%20openid" + "&state=" + state;
+				+ "&redirect_uri=" + redirectUri + "&scope=profile%20openid%20email" + "&state=" + state;
+		
+		//如果希望包含email資訊(為敏感資訊)，需要在超連結中加上&scope=profile openid email，再利用返回的acesstoken換取 ID Token並解析其中的email
+		//%20 是 URL 編碼的 空格
 	}
 
 	// 拿line callback返回的code(短暫效期)，去交換accesstoken(用於表示有權利獲取line中用戶訊息)
@@ -93,6 +107,52 @@ public class LineLoginService {
 
 		return response.getBody();
 	}
+	
+
+	//使用 accessToken 換取 ID Token
+	 public String getIdTokenFromAccessToken(String accessToken) {
+	        String url = VERIFY_TOKEN_URL + "?access_token=" + accessToken;
+
+	        RestTemplate restTemplate = new RestTemplate();
+	        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+
+	        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+	            return (String) response.getBody().get("id_token");
+	        }
+	        return null;
+	    }
+	
+	//從IDToken中解析出用戶的email(敏感資訊)
+//	 public String extractEmailFromIdToken(String idToken) {
+//	        if (idToken == null) {
+//	            return null;
+//	        }
+//
+//	        try {
+//	            // 1. 解析 JWT 的 payload
+//	            String[] parts = idToken.split("\\.");
+//	            String payloadJson = new String(Base64.getDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+//	            System.out.println("Payload JSON: " + payloadJson);
+//
+//	            // 2. 生成密鑰
+//	            Key key = Keys.hmacShaKeyFor(channelId.getBytes(StandardCharsets.UTF_8));
+//
+//	            // 3. 解析 JWT Token
+//	            JwtParser parser = Jwts.parserBuilder()
+//	                .setSigningKey(key)
+//	                .build();
+//	            
+//	            Jws<Claims> claimsJws = parser.parseClaimsJws(idToken);
+//	            Claims claims = claimsJws.getBody();
+//
+//	            System.out.println("JWT Claims: " + claims);
+//	        } catch (Exception e) {
+//	            System.err.println("解析 JWT 失敗: " + e.getMessage());
+//	        }
+//	    }
+	
+
+	
 
 	// 檢查 LINE 用戶是否已存在
 	public boolean isLineUserExists(String lineId) {
@@ -110,6 +170,8 @@ public class LineLoginService {
 		member.setLinePicture(profile.getPictureUrl());
 		memberRepository.save(member);
 	}
+	
+	
 
 	// 非會員：新增 LINE 用戶
 	public void createLineOnlyUser(LineUserProfile profile) {
@@ -120,7 +182,7 @@ public class LineLoginService {
 		member.setLinePicture(profile.getPictureUrl());
 
 		// 自動填充默認值以滿足非空約束
-		member.setNickName("LINE_USER_" + profile.getUserId().substring(0, 8)); // 使用 LINE ID 生成默認名稱
+		member.setNickName(profile.getDisplayName()); // 取line中暱稱
 		member.setPassword("@Fakepswrd"); // 默認密碼
 		member.setName(profile.getDisplayName());
 		member.setEmail("unknown@line.com"); // 假設值
@@ -129,6 +191,7 @@ public class LineLoginService {
 		member.setBirthday(LocalDate.now()); // 默認填充當前日期
 		member.setCreateDate(LocalDateTime.now());
 		member.setUpdateDate(LocalDateTime.now());
+		member.setUserType(true);   //類型為line用戶
 
 		memberRepository.save(member);
 	}

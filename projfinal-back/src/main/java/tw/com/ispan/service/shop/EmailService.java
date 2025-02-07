@@ -25,6 +25,9 @@ public class EmailService {
             helper.setText(body, true); // 🔹 HTML 格式
 
             helper.setFrom("abc61130208@yahoo.com.tw"); // 🔹 你的 Yahoo 信箱
+            
+            
+            //line傳訊息寫在這邊
 
             javaMailSender.send(mimeMessage);
         } catch (MailException | MessagingException e) {
