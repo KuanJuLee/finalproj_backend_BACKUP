@@ -20,6 +20,7 @@ public class JwtConfig implements WebMvcConfigurer {
                 .addPathPatterns("/line/**") // line綁定相關功能
                 .addPathPatterns("/validateToken") // 進行前端token時效、持有驗證
                 .excludePathPatterns("/RescueCase/search/**", "/pet/**", "/RescueCase/getLocations/**", "/casePicture/**","/RescueCase/rescueProgress/{caseId}") // 查詢功能為非會員也能使用
+                .excludePathPatterns("/RescueCase/analysis") //管理員後台
                 .excludePathPatterns("/line/authorize", "/line/callback") // line登入相關功能
                 .excludePathPatterns("/"); // 排除首頁相關頁面
     }

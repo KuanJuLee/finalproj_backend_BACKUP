@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.domain.pet.CasePicture;
 import tw.com.ispan.domain.pet.RescueCase;
 import tw.com.ispan.dto.pet.EditSearchDTO;
@@ -36,6 +36,7 @@ import tw.com.ispan.dto.pet.OutputRescueCaseDTO;
 import tw.com.ispan.dto.pet.RescueCaseResponse;
 import tw.com.ispan.dto.pet.RescueSearchCriteria;
 import tw.com.ispan.repository.admin.MemberRepository;
+import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.service.line.LineNotificationService;
 import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
@@ -54,6 +55,9 @@ public class RescueController {
 
 	@Autowired
 	private MemberRepository memberRepository;
+	
+	@Autowired
+	private RescueCaseRepository rescueCaseRepository;
 	
 	@Autowired
 	private LineNotificationService lineNotificationService; // 引入 LINE 通知服務
@@ -358,4 +362,64 @@ public class RescueController {
 
 		return ResponseEntity.ok(cases);
 	}
+	
+	
+	//管理員分析案件數據，搭配char.js
+	@GetMapping("/analysis")
+	public Map<String, Object> getCaseStats() {
+	    Map<String, Object> stats = new HashMap<>();
+
+	    // **前10名最多瀏覽/追蹤的案件**
+	    List<RescueCase> topCases = rescueCaseRepository.findTop10ByOrderByViewCountDesc();
+	    List<Map<String, Object>> caseData = topCases.stream()
+	    	    .map(c -> {
+	    	        Map<String, Object> map = new HashMap<>(); 
+	    	        map.put("caseTitle", c.getCaseTitle());
+	    	        map.put("viewCount", c.getViewCount());
+	    	        map.put("follow", c.getFollow());
+	    	        map.put("rescueCaseId", c.getRescueCaseId());
+	    	        return map;
+	    	    })
+	    	    .collect(Collectors.toList()); 
+	    stats.put("topCases", caseData);
+	    
+	    
+	    //最後10名瀏覽/追蹤的案件**
+        List<RescueCase> bottomCases = rescueCaseRepository.findTop10ByOrderByViewCountAsc();
+        List<Map<String, Object>> bottomCaseData = bottomCases.stream()
+        		.map(c -> {
+	    	        Map<String, Object> map = new HashMap<>(); 
+	    	        map.put("caseTitle", c.getCaseTitle());
+	    	        map.put("viewCount", c.getViewCount());
+	    	        map.put("follow", c.getFollow());
+	    	        map.put("rescueCaseId", c.getRescueCaseId());
+	    	        return map;
+	    	    })
+	    	    .collect(Collectors.toList()); 
+        stats.put("bottomCases", bottomCaseData);
+	    
+	 // **各縣市案件數量**
+	    List<Object[]> cityCases = rescueCaseRepository.countCasesByCity();
+	    List<Map<String, Object>> cityData = cityCases.stream()
+	        .map(c -> {
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("city", c[0]);
+	            map.put("count", c[1]);
+	            return map;
+	        })
+	        .collect(Collectors.toList()); // ✅ Java 8 兼容寫法
+	    stats.put("caseByCity", cityData);
+
+	    // **狗 vs 貓案件數量**
+	    long dogCases = rescueCaseRepository.countBySpecies_Species("狗");
+	    long catCases = rescueCaseRepository.countBySpecies_Species("貓");
+
+	    Map<String, Object> speciesCount = new HashMap<>();
+	    speciesCount.put("dog", dogCases);
+	    speciesCount.put("cat", catCases);
+	    stats.put("speciesCount", speciesCount);
+
+	    return stats;
+	}
+
 }
