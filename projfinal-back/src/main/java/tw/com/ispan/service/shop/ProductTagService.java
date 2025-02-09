@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import tw.com.ispan.domain.shop.Product;
 import tw.com.ispan.domain.shop.ProductTag;
-import tw.com.ispan.dto.ProductRequest;
-import tw.com.ispan.dto.ProductTagRequest;
-import tw.com.ispan.dto.ProductTagResponse;
+import tw.com.ispan.dto.shop.ProductRequest;
+import tw.com.ispan.dto.shop.ProductTagRequest;
+import tw.com.ispan.dto.shop.ProductTagResponse;
 import tw.com.ispan.repository.shop.ProductTagRepository;
 
 @Service
@@ -98,7 +98,7 @@ public class ProductTagService {
     }
 
     // 商品上架，處理標籤
-	public void processProductTags(Product product, Set<ProductTagRequest> tagRequests) {
+    public void processProductTags(Product product, Set<ProductTagRequest> tagRequests) {
         if (tagRequests == null || tagRequests.isEmpty()) {
             return; // 如果標籤列表為空，直接返回
         }
@@ -121,19 +121,19 @@ public class ProductTagService {
         if (tagName == null || tagName.isEmpty()) {
             throw new IllegalArgumentException("標籤名稱不能為空");
         }
-    
+
         // 查找是否已存在
         Optional<ProductTag> existingTag = productTagRepository.findByTagName(tagName);
         if (existingTag.isPresent()) {
             return existingTag.get();
         }
-    
+
         // 不存在則創建
         ProductTag newTag = new ProductTag();
         newTag.setTagName(tagName);
         productTagRepository.save(newTag);
         return newTag;
-    }    
+    }
 
     // 型別轉換: ProductRequest => ProductTagRequest
     public ProductTagRequest buildTagRequestFromProduct(ProductRequest productRequest) {

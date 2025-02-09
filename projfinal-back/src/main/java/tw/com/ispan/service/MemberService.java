@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.dto.MemberDto;
-import tw.com.ispan.dto.PasswordDto;
+import tw.com.ispan.dto.shop.PasswordDto;
 import tw.com.ispan.repository.admin.MemberRepository;
 
 @Service

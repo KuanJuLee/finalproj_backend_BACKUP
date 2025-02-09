@@ -34,6 +34,7 @@ import tw.com.ispan.repository.pet.BreedRepository;
 import tw.com.ispan.repository.pet.CaseStateRepository;
 import tw.com.ispan.repository.pet.CityRepository;
 import tw.com.ispan.repository.pet.DistrictAreaRepository;
+import tw.com.ispan.repository.pet.DistrictAreaRepository;
 import tw.com.ispan.repository.pet.FurColorRepository;
 import tw.com.ispan.repository.pet.RescueCaseRepository;
 import tw.com.ispan.repository.pet.SpeciesRepository;
@@ -67,17 +68,15 @@ public class PetDataInitializer implements CommandLineRunner {
 	private MemberRepository memberRepository;
 	@Autowired
 	private ImageService imageService;
-	
-	@Transactional
+
 	public void saveSpeciesData() {
-	    if (!speciesRepository.existsById(1)) {
-	        speciesRepository.save(new Species("狗"));
-	    }
-	    if (!speciesRepository.existsById(2)) {
-	        speciesRepository.save(new Species("貓"));
-	    }
+		if (!speciesRepository.existsById(1)) {
+			speciesRepository.save(new Species("狗"));
+		}
+		if (!speciesRepository.existsById(2)) {
+			speciesRepository.save(new Species("貓"));
+		}
 	}
-	
 
 	@Value("${file.final-upload-dir}") // 後端圖片最終路徑
 	private String imageBaseUrl;
@@ -89,9 +88,9 @@ public class PetDataInitializer implements CommandLineRunner {
 		// 存入物種資料
 		saveSpeciesData();
 		// 手動檢查是否成功存入
-		if (!speciesRepository.existsById(1) || !speciesRepository.existsById(2)) {
-		    throw new RuntimeException("Species 資料未成功儲存，請檢查交易提交狀態！");
-		}
+		// if (!speciesRepository.existsById(1) || !speciesRepository.existsById(2)) {
+		// throw new RuntimeException("Species 資料未成功儲存，請檢查交易提交狀態！");
+		// }
 
 		// 存入品種資料(狗貓放在同一表格，貓breedId為1~53 狗breedId 54~186)
 		// 檢查邏輯為breed資料表內是否有id 1-53的資料，返回的list如果不是共53筆就做新增
@@ -290,11 +289,10 @@ public class PetDataInitializer implements CommandLineRunner {
 				// 手動關聯實體
 				rescueCase.setMember(memberRepository.findById(dto.getMemberId())
 						.orElseThrow(() -> new RuntimeException("member not found")));
-				
-				System.out.println("物種ID"+dto.getSpeciesId());
-				System.out.println("找到物種為"+speciesRepository.findById(dto.getSpeciesId()));
-				
-				
+
+				System.out.println("物種ID" + dto.getSpeciesId());
+				System.out.println("找到物種為" + speciesRepository.findById(dto.getSpeciesId()));
+
 				rescueCase.setSpecies(speciesRepository.findById(dto.getSpeciesId())
 						.orElseThrow(() -> new RuntimeException("Species not found")));
 				rescueCase.setFurColor(furColorRepository.findById(dto.getFurColorId())

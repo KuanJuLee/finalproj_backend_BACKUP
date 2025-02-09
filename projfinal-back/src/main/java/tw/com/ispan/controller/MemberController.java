@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tw.com.ispan.dto.MemberDto;
-import tw.com.ispan.dto.PasswordDto;
+import tw.com.ispan.dto.shop.PasswordDto;
 import tw.com.ispan.service.MemberService;
 
 @RestController
