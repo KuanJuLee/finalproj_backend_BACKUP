@@ -14,10 +14,12 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
 	//(冠)
 	Optional<Member> findByNickName(String nickName);
-
+	//(冠)
 	List<Member> findByEmailContaining(String email);
-
+	//(冠)
 	Optional<Member> findByEmail(String email);
+	//(冠)
+	 Member findByLineId(String lineId);
 
 	// 默認情況下Spring Data JPA 的 @Query 方法僅用於查詢SELECT，當執行非查詢操作（如
 	// INSERT、UPDATE、DELETE）時，必須添加 @Modifying
