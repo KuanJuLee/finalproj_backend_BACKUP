@@ -1,6 +1,7 @@
 package tw.com.ispan.controller.pet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,20 @@ public class FollowController {
 
 	    return ResponseEntity.ok(response);
 	}
+
 	
-	
+	//用於返回某會員有追蹤的案件列表給前端(會員中心)
+	@GetMapping("/list")
+	public ResponseEntity<List<Map<String, Object>>> listFollowedCases(
+	        @RequestHeader("Authorization") String token,
+	        @RequestAttribute("memberId") Integer memberId) {
+
+	    if (memberId == null) {
+	        return ResponseEntity.badRequest().build();
+	    }
+
+	    // 呼叫 Service 層獲取追蹤的案件
+	    List<Map<String, Object>> followedCases = followService.getFollowedCasesByMember(memberId);
+	    return ResponseEntity.ok(followedCases);
+	}
 }

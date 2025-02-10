@@ -29,7 +29,7 @@ public class Follow {
 
 	@ManyToOne
 	@JoinColumn(name = "rescueCaseId", nullable = true)
-	private RescueCase rescueCase;
+	private RescueCase rescueCase;	
 
 	@ManyToOne
 	@JoinColumn(name = "lostCaseId", nullable = true)

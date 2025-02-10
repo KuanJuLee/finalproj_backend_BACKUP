@@ -384,7 +384,7 @@ public class RescueController {
 	    stats.put("topCases", caseData);
 	    
 	    
-	    //最後10名瀏覽/追蹤的案件**
+	    //最後10名瀏覽/追蹤的案件
         List<RescueCase> bottomCases = rescueCaseRepository.findTop10ByOrderByViewCountAsc();
         List<Map<String, Object>> bottomCaseData = bottomCases.stream()
         		.map(c -> {
@@ -398,7 +398,7 @@ public class RescueController {
 	    	    .collect(Collectors.toList()); 
         stats.put("bottomCases", bottomCaseData);
 	    
-	 // **各縣市案件數量**
+	 // 各縣市案件數量
 	    List<Object[]> cityCases = rescueCaseRepository.countCasesByCity();
 	    List<Map<String, Object>> cityData = cityCases.stream()
 	        .map(c -> {
@@ -422,4 +422,29 @@ public class RescueController {
 	    return stats;
 	}
 
+	
+	//用於返回某會員所屬的救援案件(會員中心使用)
+	@GetMapping("/memberRescueCases")
+	public ResponseEntity<List<Map<String, Object>>> getMemberRescueCases(
+	        @RequestHeader("Authorization") String token,
+	        @RequestAttribute("memberId") Integer memberId) {
+
+	    if (memberId == null) {
+	        return ResponseEntity.badRequest().build();
+	    }
+
+	    List<RescueCase> rescueCases = rescueCaseRepository.findByMemberId(memberId);
+
+	    List<Map<String, Object>> response = rescueCases.stream().map(caseItem -> {
+	        Map<String, Object> caseMap = new HashMap<>();
+	        caseMap.put("rescueCaseId", caseItem.getRescueCaseId());
+	        caseMap.put("caseTitle", caseItem.getCaseTitle());
+	        caseMap.put("caseState", caseItem.getCaseState().getCaseStatement());
+	        caseMap.put("lastUpdateTime", caseItem.getLastUpdateTime());
+	        caseMap.put("publicationTime", caseItem.getPublicationTime());
+	        return caseMap;
+	    }).collect(Collectors.toList());
+
+	    return ResponseEntity.ok(response);
+	}
 }

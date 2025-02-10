@@ -15,6 +15,10 @@ import tw.com.ispan.domain.pet.RescueCase;
 
 public interface FollowRepository extends JpaRepository<Follow, Integer> {
 	
+	//根據會員id找尋其所有追蹤的案件
+	@Query("SELECT f FROM Follow f WHERE f.member.memberId = :memberId")
+	List<Follow> findByMemberId(@Param("memberId") Integer memberId);
+	
 	//Spring Data JPA 提供的一種簡化資料庫查詢的方式，基於方法名稱自動生成對應的查詢語句
 	//對應於 Follow 實體中的關聯屬性 rescueCase 和 member。 JPA 會自動根據這些屬性映射到資料庫中的外鍵欄位（rescue_case_id 和 member_id）
 	boolean existsByRescueCaseAndMember(RescueCase rescueCase, Member member);

@@ -15,6 +15,10 @@ import tw.com.ispan.domain.pet.RescueCase;
 
 public interface RescueCaseRepository extends JpaRepository<RescueCase, Integer>, JpaSpecificationExecutor<RescueCase> {
 
+	//返回某會員建立的救援案件
+	List<RescueCase> findByMemberId(Integer memberId);
+	
+	
 	@EntityGraph(attributePaths = { "species" })
 	@Query("SELECT r FROM RescueCase r")
 	List<RescueCase> findAllCases(Pageable pageable);
@@ -50,4 +54,5 @@ public interface RescueCaseRepository extends JpaRepository<RescueCase, Integer>
     
     //這個方法會根據物種（狗或貓）計算案件數量 意思是 WHERE species.species = :species
     long countBySpecies_Species(String species);
+    
 }
