@@ -50,7 +50,8 @@ public class LoginController {
             //登入時有將memberid和email放進token中，
             JSONObject user = new JSONObject()
                     .put("memberId", bean.getMemberId())    //把小朱原本custid改成memberId
-                    .put("email", bean.getEmail());
+                    .put("email", bean.getEmail())
+                    .put("role", "member");  // 這裡新增角色資訊，給前台做權限驗證
             String token = jsonWebTokenUtility.createToken(user.toString());   //產生一個帶有memberid和email的token字串
             responseJson.put("token", token);              //Token 返回給前端，用於後續請求的身份驗證
             responseJson.put("user", bean.getEmail());

@@ -60,7 +60,9 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 				JsonNode jsonNode = objectMapper.readTree(payload);
 
 				// 從 payload 中提取 memberId (會轉換成int)
-				Integer memberId = jsonNode.get("memberId").asInt();
+				//管理員登入時token不會有memberId，因此要先檢查get("memberId")是否為null
+				JsonNode memberIdNode = jsonNode.get("memberId");
+				int memberId = (memberIdNode != null) ? memberIdNode.asInt(0) : 0;
 
 				// 將 memberId 添加到請求屬性
 				request.setAttribute("memberId", memberId);
@@ -75,6 +77,8 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 		}
 		return true;
 	}
+}
+
 
 //            //會把memberid提取出來
 //            JSONObject tokenData = processAuthorizationHeader(auth);
@@ -110,4 +114,3 @@ public class JsonWebTokenInterceptor implements HandlerInterceptor {
 //        }
 //        return null;
 //    }
-}
