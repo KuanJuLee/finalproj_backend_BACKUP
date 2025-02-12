@@ -1,0 +1,11 @@
+
+新增案件中的必填驗證
+if (rescueCaseDto.getCaseTitle() == null | rescueCaseDto.getSpeciesId() == null
+				| rescueCaseDto.getSuspLost() == null | rescueCaseDto.getCityId() == null
+				| rescueCaseDto.getDistinctAreaId() == null | rescueCaseDto.getRescueReason() == null
+				| rescueCaseDto.getCasePictures() == null | rescueCaseDto.getRescueDemands() == null
+				| rescueCaseDto.getCanAffords() == null) {
+			response.setSuccess(false);	
+			response.setMessage("請填入必填資料");
+			return response;
+		}
