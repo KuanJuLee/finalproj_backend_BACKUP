@@ -40,7 +40,7 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -116,15 +116,15 @@ back:
   domainName:
     url: http://localhost:8080
 
-#前端讀取後端圖片的路徑，用在init的案件資料controller中
+#前端讀取後端圖片的路徑，用在init的案件資料controller中(冠)
 image:
   base:
     url: http://localhost:8080/upload/final/pet/images/
 
-#用在後端圖片路徑轉前端路徑的rescueService檔案中
+#用在後端圖片路徑轉前端路徑的rescueService檔案中(冠)
 serverAddress-serverPort: localhost:8080
 
-#開發用公開網域url(冠)   //記得到時候也要去改LINE平台上webhook的url
+#開發用公開網域url(冠)   //記得到時候也要去改LINE平台上webhook的url(冠)
 ngrok:
   url: https://f632-36-225-194-22.ngrok-free.app
 
