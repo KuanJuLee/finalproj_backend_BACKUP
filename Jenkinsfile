@@ -70,14 +70,14 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: 'petFinder', keyFileVariable: 'SSH_KEY')]) {
                         sh """
                         ssh -i /var/jenkins_home/.ssh/jenkins_azure_key -o StrictHostKeyChecking=no $AZURE_VM <<EOF
-                            docker pull $FRONTEND_IMAGE
-                            docker pull $BACKEND_IMAGE
+                            docker pull $FRONTEND_IMAGE:latest
+                            docker pull $BACKEND_IMAGE:latest
                             docker stop frontend || true
                             docker stop backend || true
                             docker rm frontend || true
                             docker rm backend || true
-                            docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
-                            docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
+                            docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE:latest
+                            docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE:latest
         EOF
         """
             }
