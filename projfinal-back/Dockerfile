@@ -5,12 +5,27 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 2. 使用 OpenJDK 來運行應用
-FROM openjdk:17
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+
+# 第二步：使用 Tomcat 運行 .war 檔案
+FROM tomcat:9.0
+WORKDIR /usr/local/tomcat/webapps/
+
+# 複製 .war 到 Tomcat 的 webapps 目錄
+COPY --from=build /app/target/*.war petfinder.war
+
+# 讓 Tomcat 監聽 8080 端口
 EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+
+# 啟動 Tomcat
+CMD ["catalina.sh", "run"]
+
+
+# 使用 OpenJDK 來運行應用(如果輸出.jar)
+# FROM openjdk:17
+# WORKDIR /app
+# COPY --from=build /app/target/*.jar app.jar
+# EXPOSE 8080
+# CMD ["java", "-jar", "app.jar"]
 
 # 第一階段（建構 Maven 專案）
 
