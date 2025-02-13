@@ -11,12 +11,18 @@ pipeline {
     stages {
         stage('拉取程式碼') {
             steps {
-                git branch: 'main', url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git'
-                git url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git', branch: 'main', depth: 0
-
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git',
+                        credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'
+                    ]],
+                    extensions: [[$class: 'CloneOption', depth: 0]]
+                ])
             }
         }
-      
+        
         stage('建構前端 Docker 映像檔') {
             steps {
                 sh "docker build -t $FRONTEND_IMAGE ./vue-project"
