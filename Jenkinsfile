@@ -53,7 +53,7 @@ pipeline {
 
         stage('安裝前端依賴') {
             steps {
-                sh 'docker run --rm -v $PWD/frontend:/app -w /app node:18 npm install'
+                sh 'docker run --rm -v $PWD/frontend/vue-project:/app -w /app node:18 npm install'
             }
         }
 
