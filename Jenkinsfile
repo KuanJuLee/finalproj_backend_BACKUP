@@ -12,6 +12,8 @@ pipeline {
         stage('拉取程式碼') {
             steps {
                 git branch: 'main', url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git'
+                git url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git', branch: 'main', depth: 0
+
             }
         }
       
