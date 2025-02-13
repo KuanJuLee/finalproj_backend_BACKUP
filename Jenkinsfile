@@ -69,7 +69,7 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'petFinder', keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no azure-user@$AZURE_VM <<EOF
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no $AZURE_VM <<EOF
                         docker pull $FRONTEND_IMAGE:latest
                         docker pull $BACKEND_IMAGE:latest
                         docker stop frontend || true
