@@ -47,8 +47,6 @@ pipeline {
                 sh '''
                 cd frontend/vue-project
                 rm -rf node_modules .vite dist
-                npm install
-                '''
             }
         }
 
