@@ -41,10 +41,14 @@ pipeline {
                 sshagent(['azure-vm-ssh']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no $AZURE_VM <<EOF
-                    docker pull $DOCKER_IMAGE
-                    docker stop petfinder || true
-                    docker rm petfinder || true
-                    docker run -d -p 80:3000 --name petfinder $DOCKER_IMAGE
+                    docker pull $FRONTEND_IMAGE
+                    docker pull $BACKEND_IMAGE
+                    docker stop frontend || true
+                    docker stop backend || true
+                    docker rm frontend || true
+                    docker rm backend || true
+                    docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
+                    docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
                     EOF
                     """
                 }
