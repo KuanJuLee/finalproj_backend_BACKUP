@@ -77,7 +77,7 @@ pipeline {
                             docker rm frontend || true
                             docker rm backend || true
                             docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
-                            docker run -d -p 3000:3000 --name backend -e "SPRING_PROFILES_ACTIVE=production" $BACKEND_IMAGE
+                            docker run -d -p 8080:8080 --name backend -e "SPRING_PROFILES_ACTIVE=production" $BACKEND_IMAGE
 EOF"""
             }
         }
