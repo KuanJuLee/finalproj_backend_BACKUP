@@ -21,7 +21,7 @@ pipeline {
                                 url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git',
                                 credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'
                             ]],
-                            extensions: [[$class: 'CloneOption', depth: 0]]
+                            extensions: [[$class: 'CloneOption', depth: 1]]
                         ])
                     }
 
