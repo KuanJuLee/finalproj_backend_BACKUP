@@ -34,7 +34,7 @@ pipeline {
                                 url: 'https://github.com/KuanJuLee/finalproj_frontend_BACKUP.git',  // 你的前端 Repository URL
                                 credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'  // 你的前端 GitHub 憑證 ID
                             ]],
-                            extensions: [[$class: 'CloneOption', depth: 0]]
+                            extensions: [[$class: 'CloneOption', shallow: true, depth: 0]]
                         ])
                     }
                 }
