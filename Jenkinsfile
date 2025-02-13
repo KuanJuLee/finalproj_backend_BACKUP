@@ -77,8 +77,8 @@ pipeline {
                         docker stop backend || true
                         docker rm frontend || true
                         docker rm backend || true
-                        docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
-                        docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
+                        docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE:latest
+                        docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE:latest
                         EOF
                         """
             }
