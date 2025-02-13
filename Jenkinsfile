@@ -52,6 +52,12 @@ pipeline {
             }
         }
 
+        stage('安裝前端依賴') {
+            steps {
+                sh 'docker run --rm -v $PWD/frontend:/app -w /app node:18 npm install'
+            }
+        }
+
         stage('建構前端 Docker 映像檔') {
             steps {
                 sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"
