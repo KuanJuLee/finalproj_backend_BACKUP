@@ -11,15 +11,34 @@ pipeline {
     stages {
         stage('拉取程式碼') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git',
-                        credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'
-                    ]],
-                    extensions: [[$class: 'CloneOption', depth: 0]]
-                ])
+                script {
+                    // Clone 後端專案
+                    dir('backend') {
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: '*/main']],
+                            userRemoteConfigs: [[
+                                url: 'https://github.com/KuanJuLee/finalproj_backend_BACKUP.git',
+                                credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'
+                            ]],
+                            extensions: [[$class: 'CloneOption', depth: 0]]
+                        ])
+                    }
+
+                    // Clone 前端專案
+                    dir('frontend') {
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: '*/main']],
+                            userRemoteConfigs: [[
+                                url: 'https://github.com/KuanJuLee/finalproj_frontend_BACKUP.git',  // 你的前端 Repository URL
+                                credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'  // 你的前端 GitHub 憑證 ID
+                            ]],
+                            extensions: [[$class: 'CloneOption', depth: 0]]
+                        ])
+                    }
+                }
+                sh "ls -lah" // 確保代碼拉取成功
             }
         }
         
