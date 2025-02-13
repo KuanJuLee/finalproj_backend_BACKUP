@@ -64,23 +64,25 @@ pipeline {
                 }
             }
         }
-        stage('部署到 Azure VM') {
+        stage('部署到 Azure VM') { 
             steps {
-                sshagent(['azure-vm-ssh']) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no $AZURE_VM <<EOF
-                    docker pull $FRONTEND_IMAGE
-                    docker pull $BACKEND_IMAGE
-                    docker stop frontend || true
-                    docker stop backend || true
-                    docker rm frontend || true
-                    docker rm backend || true
-                    docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
-                    docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
-                    EOF
-                    """
-                }
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'petFinder', keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no azure-user@$AZURE_VM <<EOF
+                        docker pull $FRONTEND_IMAGE
+                        docker pull $BACKEND_IMAGE
+                        docker stop frontend || true
+                        docker stop backend || true
+                        docker rm frontend || true
+                        docker rm backend || true
+                        docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
+                        docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
+                        EOF
+                        """
             }
         }
+    }
+}
     }
 }
