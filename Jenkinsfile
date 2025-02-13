@@ -44,7 +44,8 @@ pipeline {
 
         stage('建構前端 Docker 映像檔') {
             steps {
-                sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"
+                sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"   
+                //從jenkins容器中讀取dockerfile，並啟動一個暫時的 Build 容器（這個容器會在 docker build 過程中運行）
             }
         }
 
