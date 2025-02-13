@@ -6,7 +6,6 @@ pipeline {
         BACKEND_IMAGE = 'leekuanju/backend:latest'
         DOCKER_CREDENTIALS_ID = 'petfinder'    //已於在jenkins中設定可以登入dokcer-hub的帳密和使用id
         AZURE_VM = 'KuanJu@20.2.146.70'    //username@vm公開ip
-        SSH_KEY = 'ssh -i /var/jenkins_home/.ssh/jenkins_azure_key'
     }
 
     stages {
@@ -70,7 +69,7 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'petFinder', keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no $AZURE_VM <<EOF
+                        ssh -i /var/jenkins_home/.ssh/jenkins_azure_key -o StrictHostKeyChecking=no $AZURE_VM <<EOF
                         docker pull $FRONTEND_IMAGE:latest
                         docker pull $BACKEND_IMAGE:latest
                         docker stop frontend || true
