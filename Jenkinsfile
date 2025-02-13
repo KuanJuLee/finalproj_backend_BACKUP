@@ -78,8 +78,8 @@ pipeline {
                             docker rm backend || true
                             docker run -d -p 80:80 --name frontend $FRONTEND_IMAGE
                             docker run -d -p 3000:3000 --name backend $BACKEND_IMAGE
-                        EOF
-                        """
+        EOF
+        """
             }
         }
     }
