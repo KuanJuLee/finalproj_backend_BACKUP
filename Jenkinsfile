@@ -42,11 +42,12 @@ pipeline {
             }
         }
 
-         stage('清除快取') {  // ✅ 新增清除快取的步驟
+         stage('清除快取') {
             steps {
                 sh '''
                 cd frontend/vue-project
                 rm -rf node_modules .vite dist
+                '''
             }
         }
 
