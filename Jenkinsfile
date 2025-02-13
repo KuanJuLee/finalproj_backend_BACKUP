@@ -41,6 +41,12 @@ pipeline {
                 sh "ls -lah" // 確保代碼拉取成功
             }
         }
+
+        stage('檢查 Vue 檔案是否存在') {
+            steps {
+                sh 'ls -lah frontend/vue-project/src/views/pages/'
+            }
+        }
         
         stage('建構前端 Docker 映像檔') {
             steps {
