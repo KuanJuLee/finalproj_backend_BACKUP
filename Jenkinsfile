@@ -44,13 +44,13 @@ pipeline {
         
         stage('建構前端 Docker 映像檔') {
             steps {
-                sh "docker build -t $FRONTEND_IMAGE ./frontend"
+                sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"
             }
         }
 
         stage('建構後端 Docker 映像檔') {
             steps {
-                sh "docker build -t $BACKEND_IMAGE ./backend"
+                sh "docker build -t $BACKEND_IMAGE ./backend/projfinal-back"
             }
         }
 
