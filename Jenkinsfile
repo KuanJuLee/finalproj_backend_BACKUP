@@ -42,12 +42,16 @@ pipeline {
             }
         }
 
-        stage('檢查 Vue 檔案是否存在') {
+         stage('清除快取') {  // ✅ 新增清除快取的步驟
             steps {
-                sh 'ls -lah frontend/vue-project/src/views/pages/'
+                sh '''
+                cd frontend/vue-project
+                rm -rf node_modules .vite dist
+                npm install
+                '''
             }
         }
-        
+
         stage('建構前端 Docker 映像檔') {
             steps {
                 sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"
