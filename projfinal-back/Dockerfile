@@ -11,7 +11,8 @@ FROM tomcat:9.0
 WORKDIR /usr/local/tomcat/webapps/
 
 # 複製 .war 到 Tomcat 的 webapps 目錄
-COPY --from=build /app/target/*.war petfinder.war
+# ROOT.war即部署在Tomcat webapps/目錄下，且Tomcat 會將 ROOT.war 當成根應用程式，不會加上額外的路徑。(其他檔名會需要多增加路徑)
+COPY --from=build /app/target/*.war ROOT.war
 
 # 讓 Tomcat 監聽 8080 端口
 EXPOSE 8080
