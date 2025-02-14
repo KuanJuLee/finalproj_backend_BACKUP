@@ -471,7 +471,7 @@ public class RescueCaseService {
 			List<Map<String, String>> updatedPictureUrls = rescueCase.getCasePictures().stream().map(picture -> {
 				Map<String, String> pictureMap = new HashMap<>();
 				pictureMap.put("pictureUrl",
-						picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
+						picture.getPictureUrl().replace(petUploadPath + "final/", domainName + "/upload/final/"));
 				return pictureMap;
 			}).toList();
 
