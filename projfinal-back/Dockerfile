@@ -7,7 +7,7 @@ RUN mvn clean package -DskipTests
 
 
 # 第二步：使用 Tomcat 運行 .war 檔案
-FROM tomcat:9.0
+FROM tomcat:10.1.16-jdk17
 WORKDIR /usr/local/tomcat/webapps/
 
 # 複製 .war 到 Tomcat 的 webapps 目錄
