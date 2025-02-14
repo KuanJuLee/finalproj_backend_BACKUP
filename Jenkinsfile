@@ -101,7 +101,7 @@ pipeline {
                                 -p 1433:1433 \\
                                 -v mssql_data:/var/opt/mssql \\
                                 --restart always \\
-                                $MSSQL_IMAGE
+                                \$MSSQL_IMAGE
 
                              #  等待 MSSQL 初始化，MSSQL 需要一點時間啟動，先等待 10 秒再啟動後端才能連線
                             sleep 10
@@ -113,18 +113,17 @@ pipeline {
                                 -p 6379:6379 \\
                                 -v redis_data:/data \\
                                 --restart always \\
-                                $REDIS_IMAGE
+                                \$REDIS_IMAGE
 
                              #  啟動前端 (Nginx)
-                            docker run -d -p 80:80 --name frontend --restart always $FRONTEND_IMAGE
+                            docker run -d -p 80:80 --name frontend --restart always \$FRONTEND_IMAGE
 
                              #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫
                             docker run -d -p 8080:8080 --name backend \\
-                                --link mssql:mssql \\
-                                --link redis:redis \\
+                                --network petfinder_network \\
                                 -e "SPRING_PROFILES_ACTIVE=production" \\
                                 --restart always \\
-                                $BACKEND_IMAGE
+                                \$BACKEND_IMAGE
 EOF"""
             }
         }
