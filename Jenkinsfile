@@ -35,7 +35,7 @@ pipeline {
                             userRemoteConfigs: [[
                                 url: 'https://github.com/KuanJuLee/finalproj_frontend_BACKUP.git',
                                 credentialsId: 'e4813fab-9926-4981-8396-c634f8c15fdd'  
-                                # 你的前端 GitHub 憑證 ID(和後端同屬於某帳戶)
+                                 // 你的前端 GitHub 憑證 ID(和後端同屬於某帳戶)
                             ]],
                             extensions: [[$class: 'CloneOption', shallow: true, depth: 1]]
                         ])
