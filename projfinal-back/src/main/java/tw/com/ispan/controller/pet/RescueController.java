@@ -42,7 +42,7 @@ import tw.com.ispan.service.pet.ImageService;
 import tw.com.ispan.service.pet.RescueCaseService;
 
 //此為救援案件crud
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin
 @RestController
 @RequestMapping(path = { "/RescueCase" })
 public class RescueController {
@@ -55,10 +55,10 @@ public class RescueController {
 
 	@Autowired
 	private MemberRepository memberRepository;
-	
+
 	@Autowired
 	private RescueCaseRepository rescueCaseRepository;
-	
+
 	@Autowired
 	private LineNotificationService lineNotificationService; // 引入 LINE 通知服務
 
@@ -165,17 +165,18 @@ public class RescueController {
 		// 修改圖片
 		// 先判斷getImageIdandUrl中有無不對應的部分(表示圖片被修改)，有修改的才需要被移到永存資料夾，同時修改圖片表中對應id的圖片url為新url
 		// 返回對應的CasePicture實體，等等用來存進case物件中
-//		List<CasePicture> newCasePictures = imageService.saveModify(dto.getImageIdandUrl());
-//		if (newCasePictures == null) {
-//			response.setSuccess(false);
-//			response.setMessage("圖片修改出問題");
-//			return response;
-//		}
+		// List<CasePicture> newCasePictures =
+		// imageService.saveModify(dto.getImageIdandUrl());
+		// if (newCasePictures == null) {
+		// response.setSuccess(false);
+		// response.setMessage("圖片修改出問題");
+		// return response;
+		// }
 
 		// 4. 驗證id存在，就去修改這筆資料，並且同時傳line message有追蹤該案件的會員(同時確定有追蹤商家line)
-		 RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
-		 RescueCase updatedCase = rescueCaseService.modify(rescueCaseEntity, caseId, dto.getCasePictures());
-		 		 
+		RescueCase rescueCaseEntity = rescueCaseService.modifyConvertToEntity(dto);
+		RescueCase updatedCase = rescueCaseService.modify(rescueCaseEntity, caseId, dto.getCasePictures());
+
 		if (updatedCase != null) {
 			// 修改成功
 			response.setSuccess(true);
@@ -237,26 +238,24 @@ public class RescueController {
 			return null;
 		}
 	}
-	
-	
-	// 於編輯頁面中去查詢單筆救援案件(用戶編輯某case) 因為查詢單筆案件會返回字串，但我希望返回id才能正確回填，因此多寫一個方法嗚嗚--------------------------------------
-		@GetMapping("/editSearch/{id}")
-		public EditSearchDTO editRescueCase(@PathVariable("id") Integer caseId) {
 
-			// 1. 會員功能，需要驗證token(JwtConfig中)
+	// 於編輯頁面中去查詢單筆救援案件(用戶編輯某case)
+	// 因為查詢單筆案件會返回字串，但我希望返回id才能正確回填，因此多寫一個方法嗚嗚--------------------------------------
+	@GetMapping("/editSearch/{id}")
+	public EditSearchDTO editRescueCase(@PathVariable("id") Integer caseId) {
 
-			EditSearchDTO rescueCase = rescueCaseService.editSearchRescueCase(caseId);
-			if (rescueCase != null) {
-				System.out.println(rescueCase.toString());
-				// 返回前端，java物件會被springboot自動序列化為json格式
-				return rescueCase;
-			} else {
-				System.out.println("此案件id不存在");
-				return null;
-			}
+		// 1. 會員功能，需要驗證token(JwtConfig中)
+
+		EditSearchDTO rescueCase = rescueCaseService.editSearchRescueCase(caseId);
+		if (rescueCase != null) {
+			System.out.println(rescueCase.toString());
+			// 返回前端，java物件會被springboot自動序列化為json格式
+			return rescueCase;
+		} else {
+			System.out.println("此案件id不存在");
+			return null;
 		}
-	
-	
+	}
 
 	// 根據條件查詢多筆救援案件(用戶使用條件搜尋欄)--------------------------------------------------------------------------------------------------------------
 	@PostMapping("/search")
@@ -285,28 +284,26 @@ public class RescueController {
 		return response;
 	}
 
-	
 	// 依搜尋條件分批(滾動加載)查詢救援案件-------------------------------------------------------------------------
 	@PostMapping("/search/infinite")
 	public Map<String, Object> searchRescueCasesInfiniteScroll(
-	        @RequestBody RescueSearchCriteria criteria,
-	        @RequestParam(defaultValue = "0") int offset,  // 起始位置
-	        @RequestParam(defaultValue = "10") int limit,  // 每次加載數量
-	        @RequestParam(defaultValue = "desc") String sortOrder  // 排序條件
+			@RequestBody RescueSearchCriteria criteria,
+			@RequestParam(defaultValue = "0") int offset, // 起始位置
+			@RequestParam(defaultValue = "10") int limit, // 每次加載數量
+			@RequestParam(defaultValue = "desc") String sortOrder // 排序條件
 	) {
-	    // 呼叫 service 層的方法來獲取數據
-	    List<OutputRescueCaseDTO> cases = rescueCaseService.searchRescueCasesInfinite(criteria, offset, limit, sortOrder);
+		// 呼叫 service 層的方法來獲取數據
+		List<OutputRescueCaseDTO> cases = rescueCaseService.searchRescueCasesInfinite(criteria, offset, limit,
+				sortOrder);
 
-	    // 建立回傳格式
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("cases", cases);
-	    response.put("hasMore", cases.size() == limit);  // 是否還有更多數據
+		// 建立回傳格式
+		Map<String, Object> response = new HashMap<>();
+		response.put("cases", cases);
+		response.put("hasMore", cases.size() == limit); // 是否還有更多數據
 
-	    return response;
+		return response;
 	}
-	
-	
-	
+
 	// 返回某類型全部案件座標給前端google地圖使用(要幫另外兩種案件也加上這個)
 	@GetMapping("/getLocations")
 	public List<Map<String, Object>> getRescueCasesLocations() {
@@ -353,98 +350,95 @@ public class RescueController {
 			@RequestParam(required = false) Boolean suspLost,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-		
+
 		// 調用 Service 層獲取篩選結果
 		List<Map<String, Object>> cases = rescueCaseService.getFilteredCases(caseState, city, district, species,
 				breedId, furColors, suspLost, startDate, endDate);
-		
+
 		//
 
 		return ResponseEntity.ok(cases);
 	}
-	
-	
-	//管理員分析案件數據，搭配char.js
+
+	// 管理員分析案件數據，搭配char.js
 	@GetMapping("/analysis")
 	public Map<String, Object> getCaseStats() {
-	    Map<String, Object> stats = new HashMap<>();
+		Map<String, Object> stats = new HashMap<>();
 
-	    // **前10名最多瀏覽/追蹤的案件**
-	    List<RescueCase> topCases = rescueCaseRepository.findTop10ByOrderByViewCountDesc();
-	    List<Map<String, Object>> caseData = topCases.stream()
-	    	    .map(c -> {
-	    	        Map<String, Object> map = new HashMap<>(); 
-	    	        map.put("caseTitle", c.getCaseTitle());
-	    	        map.put("viewCount", c.getViewCount());
-	    	        map.put("follow", c.getFollow());
-	    	        map.put("rescueCaseId", c.getRescueCaseId());
-	    	        return map;
-	    	    })
-	    	    .collect(Collectors.toList()); 
-	    stats.put("topCases", caseData);
-	    
-	    
-	    //最後10名瀏覽/追蹤的案件
-        List<RescueCase> bottomCases = rescueCaseRepository.findTop10ByOrderByViewCountAsc();
-        List<Map<String, Object>> bottomCaseData = bottomCases.stream()
-        		.map(c -> {
-	    	        Map<String, Object> map = new HashMap<>(); 
-	    	        map.put("caseTitle", c.getCaseTitle());
-	    	        map.put("viewCount", c.getViewCount());
-	    	        map.put("follow", c.getFollow());
-	    	        map.put("rescueCaseId", c.getRescueCaseId());
-	    	        return map;
-	    	    })
-	    	    .collect(Collectors.toList()); 
-        stats.put("bottomCases", bottomCaseData);
-	    
-	 // 各縣市案件數量
-	    List<Object[]> cityCases = rescueCaseRepository.countCasesByCity();
-	    List<Map<String, Object>> cityData = cityCases.stream()
-	        .map(c -> {
-	            Map<String, Object> map = new HashMap<>();
-	            map.put("city", c[0]);
-	            map.put("count", c[1]);
-	            return map;
-	        })
-	        .collect(Collectors.toList()); // ✅ Java 8 兼容寫法
-	    stats.put("caseByCity", cityData);
+		// **前10名最多瀏覽/追蹤的案件**
+		List<RescueCase> topCases = rescueCaseRepository.findTop10ByOrderByViewCountDesc();
+		List<Map<String, Object>> caseData = topCases.stream()
+				.map(c -> {
+					Map<String, Object> map = new HashMap<>();
+					map.put("caseTitle", c.getCaseTitle());
+					map.put("viewCount", c.getViewCount());
+					map.put("follow", c.getFollow());
+					map.put("rescueCaseId", c.getRescueCaseId());
+					return map;
+				})
+				.collect(Collectors.toList());
+		stats.put("topCases", caseData);
 
-	    // **狗 vs 貓案件數量**
-	    long dogCases = rescueCaseRepository.countBySpecies_Species("狗");
-	    long catCases = rescueCaseRepository.countBySpecies_Species("貓");
+		// 最後10名瀏覽/追蹤的案件
+		List<RescueCase> bottomCases = rescueCaseRepository.findTop10ByOrderByViewCountAsc();
+		List<Map<String, Object>> bottomCaseData = bottomCases.stream()
+				.map(c -> {
+					Map<String, Object> map = new HashMap<>();
+					map.put("caseTitle", c.getCaseTitle());
+					map.put("viewCount", c.getViewCount());
+					map.put("follow", c.getFollow());
+					map.put("rescueCaseId", c.getRescueCaseId());
+					return map;
+				})
+				.collect(Collectors.toList());
+		stats.put("bottomCases", bottomCaseData);
 
-	    Map<String, Object> speciesCount = new HashMap<>();
-	    speciesCount.put("dog", dogCases);
-	    speciesCount.put("cat", catCases);
-	    stats.put("speciesCount", speciesCount);
+		// 各縣市案件數量
+		List<Object[]> cityCases = rescueCaseRepository.countCasesByCity();
+		List<Map<String, Object>> cityData = cityCases.stream()
+				.map(c -> {
+					Map<String, Object> map = new HashMap<>();
+					map.put("city", c[0]);
+					map.put("count", c[1]);
+					return map;
+				})
+				.collect(Collectors.toList()); // ✅ Java 8 兼容寫法
+		stats.put("caseByCity", cityData);
 
-	    return stats;
+		// **狗 vs 貓案件數量**
+		long dogCases = rescueCaseRepository.countBySpecies_Species("狗");
+		long catCases = rescueCaseRepository.countBySpecies_Species("貓");
+
+		Map<String, Object> speciesCount = new HashMap<>();
+		speciesCount.put("dog", dogCases);
+		speciesCount.put("cat", catCases);
+		stats.put("speciesCount", speciesCount);
+
+		return stats;
 	}
 
-	
-	//用於返回某會員所屬的救援案件(會員中心使用)
+	// 用於返回某會員所屬的救援案件(會員中心使用)
 	@GetMapping("/memberRescueCases")
 	public ResponseEntity<List<Map<String, Object>>> getMemberRescueCases(
-	        @RequestHeader("Authorization") String token,
-	        @RequestAttribute("memberId") Integer memberId) {
+			@RequestHeader("Authorization") String token,
+			@RequestAttribute("memberId") Integer memberId) {
 
-	    if (memberId == null) {
-	        return ResponseEntity.badRequest().build();
-	    }
+		if (memberId == null) {
+			return ResponseEntity.badRequest().build();
+		}
 
-	    List<RescueCase> rescueCases = rescueCaseRepository.findByMemberId(memberId);
+		List<RescueCase> rescueCases = rescueCaseRepository.findByMemberId(memberId);
 
-	    List<Map<String, Object>> response = rescueCases.stream().map(caseItem -> {
-	        Map<String, Object> caseMap = new HashMap<>();
-	        caseMap.put("rescueCaseId", caseItem.getRescueCaseId());
-	        caseMap.put("caseTitle", caseItem.getCaseTitle());
-	        caseMap.put("caseState", caseItem.getCaseState().getCaseStatement());
-	        caseMap.put("lastUpdateTime", caseItem.getLastUpdateTime());
-	        caseMap.put("publicationTime", caseItem.getPublicationTime());
-	        return caseMap;
-	    }).collect(Collectors.toList());
+		List<Map<String, Object>> response = rescueCases.stream().map(caseItem -> {
+			Map<String, Object> caseMap = new HashMap<>();
+			caseMap.put("rescueCaseId", caseItem.getRescueCaseId());
+			caseMap.put("caseTitle", caseItem.getCaseTitle());
+			caseMap.put("caseState", caseItem.getCaseState().getCaseStatement());
+			caseMap.put("lastUpdateTime", caseItem.getLastUpdateTime());
+			caseMap.put("publicationTime", caseItem.getPublicationTime());
+			return caseMap;
+		}).collect(Collectors.toList());
 
-	    return ResponseEntity.ok(response);
+		return ResponseEntity.ok(response);
 	}
 }

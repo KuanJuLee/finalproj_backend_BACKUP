@@ -7,9 +7,9 @@ spring:
     sources:
       - tw.com.ispan
 
-  #Docker環境下的設定(老米)
+  # 代表使用 application-production.yml
   profiles:
-    active: "dev"
+    active: production
 
   #靜態檔案存取路徑: 分為專案內外部(老米)
   web:

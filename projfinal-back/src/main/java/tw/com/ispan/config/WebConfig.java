@@ -16,7 +16,6 @@ import tw.com.ispan.interceptor.CartActionInterceptor;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-
     @Autowired
     private CartActionInterceptor cartActionInterceptor;
 
@@ -24,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 對所有路徑生效
-                .allowedOrigins("http://localhost:5173") // 允許的前端 URL
+                .allowedOrigins("*") // 允許的前端 URL
                 .allowedMethods("*") // 允許的請求方法
                 .allowedHeaders("*") // 允許的請求頭
                 .allowCredentials(true); // 是否允許攜帶憑證
@@ -41,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:C:/meowWebsite/images/"); // ✅ 確保這裡是圖片存放的實際路徑
     }
-    
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(cartActionInterceptor)

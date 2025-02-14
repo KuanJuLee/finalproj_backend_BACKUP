@@ -11,7 +11,7 @@ import tw.com.ispan.domain.admin.Member;
 import tw.com.ispan.jwt.JsonWebTokenUtility;
 import tw.com.ispan.service.MemberService;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin
 @RestController
 public class LoginController {
     @Autowired
@@ -35,8 +35,8 @@ public class LoginController {
             responseJson.put("message", "請輸入帳號/密碼");
             return responseJson.toString();
         }
-       // 呼叫 Service 層的 login 方法，使用email和密碼登入
-       Member bean = memberService.login(email, password);
+        // 呼叫 Service 層的 login 方法，使用email和密碼登入
+        Member bean = memberService.login(email, password);
 
         // 根據Model執行結果決定要呼叫的View
         if (bean == null) {
@@ -47,13 +47,13 @@ public class LoginController {
             responseJson.put("success", true);
             responseJson.put("message", "登入成功");
 
-            //登入時有將memberid和email放進token中，
+            // 登入時有將memberid和email放進token中，
             JSONObject user = new JSONObject()
-                    .put("memberId", bean.getMemberId())    //把小朱原本custid改成memberId
+                    .put("memberId", bean.getMemberId()) // 把小朱原本custid改成memberId
                     .put("email", bean.getEmail())
-                    .put("role", "member");  // 這裡新增角色資訊，給前台做權限驗證
-            String token = jsonWebTokenUtility.createToken(user.toString());   //產生一個帶有memberid和email的token字串
-            responseJson.put("token", token);              //Token 返回給前端，用於後續請求的身份驗證
+                    .put("role", "member"); // 這裡新增角色資訊，給前台做權限驗證
+            String token = jsonWebTokenUtility.createToken(user.toString()); // 產生一個帶有memberid和email的token字串
+            responseJson.put("token", token); // Token 返回給前端，用於後續請求的身份驗證
             responseJson.put("user", bean.getEmail());
         }
         return responseJson.toString();
