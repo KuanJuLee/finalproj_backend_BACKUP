@@ -169,6 +169,7 @@
     			</configuration>
 			</plugin>
 		</plugins>
+		<finalName>ROOT</finalName>
 	</build>
 
 </project>
