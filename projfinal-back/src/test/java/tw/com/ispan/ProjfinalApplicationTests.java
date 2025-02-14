@@ -1,15 +1,14 @@
-package tw.com.ispan.projfinal_back;
+package tw.com.ispan;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import tw.com.ispan.ProjfinalApplication;
 
 @SpringBootTest(classes = ProjfinalApplication.class)
 class ProjfinalApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("Application Context Loaded Successfully!");
 	}
 
 }
