@@ -81,10 +81,11 @@
 			<version>2.11.0</version>  <!-- 可依需要更新版本 -->
 		</dependency>
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-    	</dependency>
+    		<groupId>jakarta.servlet</groupId>
+    		<artifactId>jakarta.servlet-api</artifactId>
+    		<version>5.0.0</version>
+    		<scope>provided</scope>
+		</dependency>
 		<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-mail</artifactId>
@@ -139,12 +140,6 @@
 <dependency>
     <groupId>com.fasterxml.jackson.datatype</groupId>
     <artifactId>jackson-datatype-jsr310</artifactId>
-</dependency>
-<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>4.0.1</version> <!-- 版本可以根据需要调整 -->
-    <scope>provided</scope>
 </dependency>
 		
 		<!--spring-boot-starter-test 依賴中排除測試中可能自動引入的 android-json-->

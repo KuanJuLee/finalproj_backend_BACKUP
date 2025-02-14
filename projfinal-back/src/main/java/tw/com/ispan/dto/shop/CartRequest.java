@@ -1,7 +1,8 @@
 package tw.com.ispan.dto.shop;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.NotNull;
 import tw.com.ispan.domain.shop.CartItem;
 
 public class CartRequest {

@@ -2,9 +2,9 @@ package tw.com.ispan.dto.shop;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.constraints.NotBlank;
 
 /*  ProductImageRequest 的責任
     1. 負責單張圖片的數據傳遞

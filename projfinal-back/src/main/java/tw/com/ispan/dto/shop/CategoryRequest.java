@@ -1,6 +1,6 @@
 package tw.com.ispan.dto.shop;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class CategoryRequest {
     private Integer categoryId;

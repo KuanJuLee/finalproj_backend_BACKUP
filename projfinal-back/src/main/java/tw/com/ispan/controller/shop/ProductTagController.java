@@ -1,7 +1,5 @@
 package tw.com.ispan.controller.shop;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import tw.com.ispan.dto.shop.ProductTagRequest;
 import tw.com.ispan.dto.shop.ProductTagResponse;
 import tw.com.ispan.service.shop.ProductTagService;
