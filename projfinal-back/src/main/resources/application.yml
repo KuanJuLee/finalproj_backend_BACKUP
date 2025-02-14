@@ -73,6 +73,10 @@ file:
     uploadDir: C:/meowWebsite/images #指向實際的存儲目錄
     baseUrl: ${BASE_URL:http://localhost:8080/images} #對應圖片的訪問 URL
 
+  petUpload: #在webconfig中設定前後端對應的靜態圖片路徑
+    path: C:/upload/
+  shopUpload:
+    path: C:/meowWebsite/images/
   tmp-upload-dir: C:/upload/tmp/pet/images/ #寵物圖片暫存路徑(冠)
 
   final-upload-dir: C:/upload/final/pet/images/ #寵物圖片上傳路徑(冠)
@@ -119,7 +123,7 @@ back:
 #前端讀取後端圖片的路徑，用在init的案件資料controller中(冠)
 image:
   base:
-    url: http://localhost:8080/upload/final/pet/images/
+    url: ${back.domainName.url}/upload/final/pet/images/
 
 #用在後端圖片路徑轉前端路徑的rescueService檔案中(冠)
 serverAddress-serverPort: localhost:8080
