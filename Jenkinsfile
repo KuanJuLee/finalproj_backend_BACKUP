@@ -74,16 +74,16 @@ pipeline {
                         sh """
                         ssh -i /var/jenkins_home/.ssh/jenkins_azure_key -o StrictHostKeyChecking=no $AZURE_VM <<EOF
 
-                            // 創建 Docker 網路 (確保 MSSQL、Redis、後端在同一個網路，可互相連通，其他不在 petfinder_network 內的容器無法存取 MSSQL & Redis)
+                            # 創建 Docker 網路 (確保 MSSQL、Redis、後端在同一個網路，可互相連通，其他不在 petfinder_network 內的容器無法存取 MSSQL & Redis)
                             docker network create petfinder_network || true
                             
-                            // 拉取最新的 Docker 映像檔
+                            # 拉取最新的 Docker 映像檔
                             docker pull $FRONTEND_IMAGE
                             docker pull $BACKEND_IMAGE
                             docker pull $MSSQL_IMAGE
                             docker pull $REDIS_IMAGE
 
-                             // 停止並刪除舊容器
+                             #  停止並刪除舊容器
                             docker stop frontend || true
                             docker stop backend || true
                             docker stop mssql || true
@@ -93,7 +93,7 @@ pipeline {
                             docker rm mssql || true
                             docker rm redis || true
 
-                             // 啟動 MSSQL 資料庫 (掛載 volume 以保存資料庫內資料) (restart always可以讓VM每次重新啟動，此container也重啟)
+                             #  啟動 MSSQL 資料庫 (掛載 volume 以保存資料庫內資料) (restart always可以讓VM每次重新啟動，此container也重啟)
                             docker run -d --name mssql \\
                                 --network petfinder_network \\
                                 -e 'ACCEPT_EULA=Y' \\
@@ -103,11 +103,11 @@ pipeline {
                                 --restart always \\
                                 $MSSQL_IMAGE
 
-                             // 等待 MSSQL 初始化，MSSQL 需要一點時間啟動，先等待 10 秒再啟動後端才能連線
+                             #  等待 MSSQL 初始化，MSSQL 需要一點時間啟動，先等待 10 秒再啟動後端才能連線
                             sleep 10
 
 
-                             // 啟動 Redis (掛載 volume)
+                             #  啟動 Redis (掛載 volume)
                             docker run -d --name redis \\
                                 --network petfinder_network \\
                                 -p 6379:6379 \\
@@ -115,10 +115,10 @@ pipeline {
                                 --restart always \\
                                 $REDIS_IMAGE
 
-                             // 啟動前端 (Nginx)
+                             #  啟動前端 (Nginx)
                             docker run -d -p 80:80 --name frontend --restart always $FRONTEND_IMAGE
 
-                             // 啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫
+                             #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫
                             docker run -d -p 8080:8080 --name backend \\
                                 --link mssql:mssql \\
                                 --link redis:redis \\
