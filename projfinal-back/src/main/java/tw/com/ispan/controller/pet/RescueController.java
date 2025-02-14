@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,12 @@ public class RescueController {
 
 	@Autowired
 	private LineNotificationService lineNotificationService; // 引入 LINE 通知服務
+
+	@Value("${back.domainName.url}")
+	private String backDomainName;
+
+	@Value("${file.petUpload.path2}") // 讀取 application-*.properties 中的 file.upload.path2
+	private String petUploadPath;
 
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
 	@PostMapping(path = { "/add" })
@@ -328,7 +335,7 @@ public class RescueController {
 			for (CasePicture picture : rescueCase.getCasePictures()) {
 				Map<String, String> pictureData = new HashMap<>();
 				String originalPath = picture.getPictureUrl(); // 取得原始路徑
-				String fixedPath = originalPath.replace("C:/upload", "http://localhost:8080/upload"); // 替換成可訪問 URL
+				String fixedPath = originalPath.replace(petUploadPath, backDomainName + "/upload"); // 替換成可訪問 URL
 				pictureData.put("pictureUrl", fixedPath);
 				fixedCasePictures.add(pictureData);
 			}

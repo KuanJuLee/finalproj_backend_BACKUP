@@ -75,6 +75,7 @@ file:
 
   petUpload: #在webconfig中設定前後端對應的靜態圖片路徑
     path: C:/upload/
+    path2: C:/upload #用在rescueController...
   shopUpload:
     path: C:/meowWebsite/images/
   tmp-upload-dir: C:/upload/tmp/pet/images/ #寵物圖片暫存路徑(冠)

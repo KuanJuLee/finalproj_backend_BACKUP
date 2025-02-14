@@ -63,11 +63,14 @@ public class RescueCaseService {
 	@Value("${back.domainName.url}") // http://localhost:8080
 	private String domainName;
 
-	@Value("${front.domainName.url}")  // http://localhost:5173
+	@Value("${front.domainName.url}") // http://localhost:5173
 	private String frontDomainName;
-	
+
 	@Value("${file.final-upload-dir}") // 圖片儲存於後端的路徑
 	private String finalUploadDir;
+
+	@Value("${file.petUpload.path}")
+	private String petUploadPath;
 
 	@Autowired
 	private MemberRepository memberRepository;
@@ -297,28 +300,25 @@ public class RescueCaseService {
 		if (result != null && result.isPresent()) {
 
 			RescueCase old = result.get();
-			
-			
+
 			// 決定是否通知會員的新舊變更比對，確保是「重要的變更」才發通知
 			// 包含標題、物種、品種、毛色、性別、絕育狀況、年齡、晶片號碼、是否懷疑遺失、救援原因、地址、
 			// 使用Objects.equals(a, b) 會自動處理 null，避免 NullPointerException
-	        boolean isSignificantUpdate = 
-	                !Objects.equals(old.getCaseTitle(), rescueCase.getCaseTitle()) ||
-	                !Objects.equals(old.getSpecies(), rescueCase.getSpecies()) ||
-	                !Objects.equals(old.getBreed(), rescueCase.getBreed()) ||
-	                !Objects.equals(old.getFurColor(), rescueCase.getFurColor()) ||
-	                !Objects.equals(old.getGender(), rescueCase.getGender()) ||
-	                !Objects.equals(old.getSterilization(), rescueCase.getSterilization()) ||
-	                !Objects.equals(old.getAge(), rescueCase.getAge()) ||
-	                !Objects.equals(old.getMicroChipNumber(), rescueCase.getMicroChipNumber()) ||
-	                !Objects.equals(old.getSuspLost(), rescueCase.getSuspLost()) ||
-	                !Objects.equals(old.getDistrictArea(), rescueCase.getDistrictArea()) ||
-	                !Objects.equals(old.getCity(), rescueCase.getCity()) ||
-	                !Objects.equals(old.getStreet(), rescueCase.getStreet()) ||
-	                !Objects.equals(old.getCaseState(), rescueCase.getCaseState()) ||
-	                !Objects.equals(old.getRescueReason(), rescueCase.getRescueReason());
-			
-			
+			boolean isSignificantUpdate = !Objects.equals(old.getCaseTitle(), rescueCase.getCaseTitle()) ||
+					!Objects.equals(old.getSpecies(), rescueCase.getSpecies()) ||
+					!Objects.equals(old.getBreed(), rescueCase.getBreed()) ||
+					!Objects.equals(old.getFurColor(), rescueCase.getFurColor()) ||
+					!Objects.equals(old.getGender(), rescueCase.getGender()) ||
+					!Objects.equals(old.getSterilization(), rescueCase.getSterilization()) ||
+					!Objects.equals(old.getAge(), rescueCase.getAge()) ||
+					!Objects.equals(old.getMicroChipNumber(), rescueCase.getMicroChipNumber()) ||
+					!Objects.equals(old.getSuspLost(), rescueCase.getSuspLost()) ||
+					!Objects.equals(old.getDistrictArea(), rescueCase.getDistrictArea()) ||
+					!Objects.equals(old.getCity(), rescueCase.getCity()) ||
+					!Objects.equals(old.getStreet(), rescueCase.getStreet()) ||
+					!Objects.equals(old.getCaseState(), rescueCase.getCaseState()) ||
+					!Objects.equals(old.getRescueReason(), rescueCase.getRescueReason());
+
 			// 更新案件資訊:
 			// 舊物件一定有的，且不會被會員改寫的有member、publicationTime、lastUpadteTime，不用去動(更新時間會受到domain
 			// jpa註解自動改變)
@@ -401,14 +401,13 @@ public class RescueCaseService {
 				e.printStackTrace();
 			}
 
-			
 			// 修改完後，將含有新資料的舊物件存回去
 			RescueCase savedcase = rescueCaseRepository.save(old);
 			if (savedcase != null) {
 				// **如果是重要變更，則發送 LINE 通知**
-		        if (isSignificantUpdate) {
-		            notifyFollowers(old);
-		        }
+				if (isSignificantUpdate) {
+					notifyFollowers(old);
+				}
 				System.out.println("案件修改成功");
 				return savedcase;
 			} else {
@@ -420,36 +419,32 @@ public class RescueCaseService {
 			return null;
 		}
 	}
-	
-	
-	// **發送 LINE 通知給追蹤者**
-    private void notifyFollowers(RescueCase rescueCase) {
-        
-    	System.out.println(rescueCase + "有發生變更，要傳送通知了!!!");
-    	
-    	//找尋追蹤表中有追蹤此案件的會員
-    	List<Integer> memberIds = followRepository.findMemberIdsByRescueCaseId(rescueCase.getRescueCaseId());
-    	
-    	System.out.println("要發送給會員ID" + memberIds.toString());
-    	
-    	//可以訪問前端案件頁面的網址(因為這裡是rescueCase Service因此只會是編輯救援案件才會用到)
-    	String caseUrl =  frontDomainName + "/pet/rescueCase/"  + rescueCase.getRescueCaseId() ;
 
-        for (Integer memberId : memberIds) {
-            Member member = memberRepository.findById(memberId).orElse(null);
-            //如果此會員id存在+有用line登入+有開啟平台line追蹤
-            if (member != null && member.getLineId() != null && member.isFollowed()) {
-            	lineNotificationService.sendFlexNotification(member.getLineId(),
-            		    "案件變更通知",
-            		    "你追蹤的案件「" + rescueCase.getCaseTitle() + "」已更新，請查看詳情。",
-            		    caseUrl);
-            }
-        }
-    }
-	
-	
-	
-	
+	// **發送 LINE 通知給追蹤者**
+	private void notifyFollowers(RescueCase rescueCase) {
+
+		System.out.println(rescueCase + "有發生變更，要傳送通知了!!!");
+
+		// 找尋追蹤表中有追蹤此案件的會員
+		List<Integer> memberIds = followRepository.findMemberIdsByRescueCaseId(rescueCase.getRescueCaseId());
+
+		System.out.println("要發送給會員ID" + memberIds.toString());
+
+		// 可以訪問前端案件頁面的網址(因為這裡是rescueCase Service因此只會是編輯救援案件才會用到)
+		String caseUrl = frontDomainName + "/pet/rescueCase/" + rescueCase.getRescueCaseId();
+
+		for (Integer memberId : memberIds) {
+			Member member = memberRepository.findById(memberId).orElse(null);
+			// 如果此會員id存在+有用line登入+有開啟平台line追蹤
+			if (member != null && member.getLineId() != null && member.isFollowed()) {
+				lineNotificationService.sendFlexNotification(member.getLineId(),
+						"案件變更通知",
+						"你追蹤的案件「" + rescueCase.getCaseTitle() + "」已更新，請查看詳情。",
+						caseUrl);
+			}
+		}
+	}
+
 	// 刪除案件------------------------------------------------------------------------------------------
 	public boolean delete(Integer id) {
 		if (id != null && rescueCaseRepository.existsById(id)) {
@@ -506,7 +501,8 @@ public class RescueCaseService {
 				Map<String, String> pictureMap = new HashMap<>();
 				pictureMap.put("casePictureId", String.valueOf(picture.getCasePictureId())); // 轉換成字串
 				pictureMap.put("pictureUrl",
-						picture.getPictureUrl().replace("C:/upload/final/", domainName + "/upload/final/"));
+						picture.getPictureUrl().replace(petUploadPath + "final/",
+								domainName + "/upload/final/"));
 				return pictureMap;
 			}).collect(Collectors.toList());
 
