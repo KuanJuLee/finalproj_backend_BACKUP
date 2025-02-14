@@ -9,7 +9,7 @@ spring:
 
   # 可以決定mvn打包時使用的檔案，加上production代表使用 application-production.yml
   profiles:
-    active: production
+    active:
 
   #靜態檔案存取路徑: 分為專案內外部(老米)
   web:
