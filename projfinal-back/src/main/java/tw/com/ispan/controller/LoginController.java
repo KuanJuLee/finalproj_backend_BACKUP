@@ -24,6 +24,7 @@ public class LoginController {
     public String login(@RequestBody String entity) {
         JSONObject responseJson = new JSONObject();
 
+        System.out.println("接收到登入請求");
         // 接收資料
         JSONObject obj = new JSONObject(entity);
         String email = obj.isNull("email") ? null : obj.getString("email");
