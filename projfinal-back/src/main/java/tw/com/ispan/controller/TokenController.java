@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TokenController {
 
-    @PostMapping("/validateToken")
+    @PostMapping("/api/validateToken")
     public ResponseEntity<Map<String, Object>> validateToken(
             @RequestAttribute("memberId") Integer memberId) {
 

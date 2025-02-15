@@ -17,7 +17,7 @@ import tw.com.ispan.service.pet.ImageService;
 
 //三個案件共用的單個圖片上傳
 @RestController
-@RequestMapping(path = { "/Case" })
+@RequestMapping(path = { "/api/Case" })
 public class UploadImageController {
 
 	@Autowired

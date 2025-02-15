@@ -21,21 +21,21 @@ import tw.com.ispan.service.pet.FollowService;
 
 //此為會員追蹤某案件
 @RestController
-@RequestMapping(path = { "/Case/follow" })
+@RequestMapping(path = { "/api/Case/follow" })
 public class FollowController {
-
 
 	@Autowired
 	private MemberRepository memberRepository;
 
-	@Autowired 
-	JsonWebTokenUtility jsonWebTokenUtility;   //用來解析不用驗證token的方法，裡面的memberId
+	@Autowired
+	JsonWebTokenUtility jsonWebTokenUtility; // 用來解析不用驗證token的方法，裡面的memberId
 
 	@Autowired
 	private FollowService followService;
 
 	// 會員追蹤或取消追蹤某案件(重複按就會追蹤或取消追蹤)
-	// 當按下follow要能區分使用者是對rescue, lost還是adoption case執行追蹤，因為相同caseId在這三表中都有，要查對表。caseType數據會藏在前端的按鈕中
+	// 當按下follow要能區分使用者是對rescue, lost還是adoption
+	// case執行追蹤，因為相同caseId在這三表中都有，要查對表。caseType數據會藏在前端的按鈕中
 	@PutMapping("/add")
 	public RescueCaseResponse followCase(@RequestHeader("Authorization") String token,
 			@RequestAttribute("memberId") Integer memberId, @RequestParam Integer caseId,
@@ -78,50 +78,48 @@ public class FollowController {
 
 		// 4. 確認沒追蹤過後，才增添follow表資料
 		followService.addFollow(memberId, caseId, caseType);
-		
+
 		// 5. 更新對應案件表中的follow欄位(總追蹤數)
-		 int newFollowCount = followService.updateFollowCount(caseId, caseType);
-		
+		int newFollowCount = followService.updateFollowCount(caseId, caseType);
+
 		response.setSuccess(true);
-		response.setCount(newFollowCount);   //返回被追蹤的案件目前總追蹤數
+		response.setCount(newFollowCount); // 返回被追蹤的案件目前總追蹤數
 		response.setMessage("會員id" + memberId + "的會員成功追蹤" + caseType + caseId + "案件");
 		return response;
 
 	}
-	
-	
-	//前端用於判斷該用戶有無追蹤此案件，決定顯示已追蹤或追蹤
+
+	// 前端用於判斷該用戶有無追蹤此案件，決定顯示已追蹤或追蹤
 	@GetMapping("/status")
 	public ResponseEntity<Map<String, Boolean>> checkFollowStatus(
-	        @RequestHeader("Authorization") String token,
-	        @RequestAttribute("memberId") Integer memberId,
-	        @RequestParam Integer caseId,
-	        @RequestParam String caseType) {
-		
-		//這個請求只需要用在已登入的會員(才需要判斷有沒有追蹤過)
-		//沒登入的會員不管怎麼樣都顯示追蹤，但如果想按會先跳到登入
+			@RequestHeader("Authorization") String token,
+			@RequestAttribute("memberId") Integer memberId,
+			@RequestParam Integer caseId,
+			@RequestParam String caseType) {
 
-	    System.out.println("會員 ID：" + memberId);		
-	    Map<String, Boolean> response = new HashMap<>();
-	    boolean isFollowing = followService.checkIfFollowExists(memberId, caseId, caseType);
-	    response.put("isFollowing", isFollowing);
+		// 這個請求只需要用在已登入的會員(才需要判斷有沒有追蹤過)
+		// 沒登入的會員不管怎麼樣都顯示追蹤，但如果想按會先跳到登入
 
-	    return ResponseEntity.ok(response);
+		System.out.println("會員 ID：" + memberId);
+		Map<String, Boolean> response = new HashMap<>();
+		boolean isFollowing = followService.checkIfFollowExists(memberId, caseId, caseType);
+		response.put("isFollowing", isFollowing);
+
+		return ResponseEntity.ok(response);
 	}
 
-	
-	//用於返回某會員有追蹤的案件列表給前端(會員中心)
+	// 用於返回某會員有追蹤的案件列表給前端(會員中心)
 	@GetMapping("/list")
 	public ResponseEntity<List<Map<String, Object>>> listFollowedCases(
-	        @RequestHeader("Authorization") String token,
-	        @RequestAttribute("memberId") Integer memberId) {
+			@RequestHeader("Authorization") String token,
+			@RequestAttribute("memberId") Integer memberId) {
 
-	    if (memberId == null) {
-	        return ResponseEntity.badRequest().build();
-	    }
+		if (memberId == null) {
+			return ResponseEntity.badRequest().build();
+		}
 
-	    // 呼叫 Service 層獲取追蹤的案件
-	    List<Map<String, Object>> followedCases = followService.getFollowedCasesByMember(memberId);
-	    return ResponseEntity.ok(followedCases);
+		// 呼叫 Service 層獲取追蹤的案件
+		List<Map<String, Object>> followedCases = followService.getFollowedCasesByMember(memberId);
+		return ResponseEntity.ok(followedCases);
 	}
 }

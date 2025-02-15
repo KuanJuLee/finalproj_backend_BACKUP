@@ -25,7 +25,7 @@ import tw.com.ispan.service.line.RedisService;
 //用來檢查用戶是否line登入、追蹤平台商家
 @CrossOrigin
 @RestController
-@RequestMapping("/line")
+@RequestMapping("/api/line")
 public class LineBindingController {
 
     @Value("${lineBot}")

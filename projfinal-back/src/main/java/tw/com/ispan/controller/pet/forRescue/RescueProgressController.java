@@ -23,7 +23,7 @@ import tw.com.ispan.service.pet.RescueCaseService;
 import tw.com.ispan.service.pet.forRescue.RescueProgressService;
 
 @RestController
-@RequestMapping(path = { "/RescueCase/rescueProgress" })
+@RequestMapping(path = { "/api/RescueCase/rescueProgress" })
 public class RescueProgressController {
 
 	@Value("${back.domainName.url}") // http://localhost:8080

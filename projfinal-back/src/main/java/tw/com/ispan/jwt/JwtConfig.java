@@ -16,12 +16,13 @@ public class JwtConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jsonWebTokenInterceptor)
-                .addPathPatterns("/RescueCase/**", "/Case/**","/Case/follow/add") // RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
-                .addPathPatterns("/line/**") // line綁定相關功能
-                .addPathPatterns("/validateToken") // 進行前端token時效、持有驗證
-                .excludePathPatterns("/RescueCase/search/**", "/pet/**", "/RescueCase/getLocations/**", "/casePicture/**","/RescueCase/rescueProgress/{caseId}") // 查詢功能為非會員也能使用
-                .excludePathPatterns("/RescueCase/analysis") //管理員後台
-                .excludePathPatterns("/line/authorize", "/line/callback") // line登入相關功能
+                .addPathPatterns("/api/RescueCase/**", "/api/Case/**", "/api/Case/follow/add") // RescueCase底下的增刪修均限制為會員使用，/Case底下的上傳圖檔、追蹤均限制為會員使用
+                .addPathPatterns("/api/line/**") // line綁定相關功能
+                .addPathPatterns("/api/validateToken") // 進行前端token時效、持有驗證
+                .excludePathPatterns("/api/RescueCase/search/**", "/api/pet/**", "/api/RescueCase/getLocations/**",
+                        "/api/casePicture/**", "/api/RescueCase/rescueProgress/{caseId}") // 查詢功能為非會員也能使用
+                .excludePathPatterns("/api/RescueCase/analysis") // 管理員後台
+                .excludePathPatterns("/api/line/authorize", "/line/callback") // line登入相關功能
                 .excludePathPatterns("/"); // 排除首頁相關頁面
     }
 }

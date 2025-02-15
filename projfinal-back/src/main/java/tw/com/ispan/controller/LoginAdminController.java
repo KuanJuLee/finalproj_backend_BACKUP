@@ -22,7 +22,7 @@ public class LoginAdminController {
     @Autowired
     private JsonWebTokenUtility jsonWebTokenUtility;
 
-    @PostMapping("/secure/loginadmin")
+    @PostMapping("/api/secure/loginadmin")
     public String login(@RequestBody String entity) {
         JSONObject responseJson = new JSONObject();
 
@@ -52,7 +52,7 @@ public class LoginAdminController {
 
             JSONObject user = new JSONObject()
                     .put("admin", bean.getAdminId())
-                    .put("role", "admin");  // 這裡新增角色資訊，給前台做權限驗證
+                    .put("role", "admin"); // 這裡新增角色資訊，給前台做權限驗證
             String token = jsonWebTokenUtility.createToken(user.toString());
             responseJson.put("token", token);
 

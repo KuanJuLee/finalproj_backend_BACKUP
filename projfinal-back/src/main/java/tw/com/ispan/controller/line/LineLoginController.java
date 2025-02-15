@@ -24,7 +24,7 @@ import tw.com.ispan.service.line.StateRedisService;
 
 @CrossOrigin // 允許前端不同的主機或埠運行下可訪問這個contorller
 @RestController
-@RequestMapping("/line")
+@RequestMapping("/api/line")
 public class LineLoginController {
 
 	@Value("${line.login.channel-id}")

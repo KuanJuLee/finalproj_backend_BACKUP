@@ -45,7 +45,7 @@ import tw.com.ispan.service.pet.RescueCaseService;
 //此為救援案件crud
 @CrossOrigin
 @RestController
-@RequestMapping(path = { "/RescueCase" })
+@RequestMapping(path = { "/api/RescueCase" })
 public class RescueController {
 
 	@Autowired
