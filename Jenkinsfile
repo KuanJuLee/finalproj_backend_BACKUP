@@ -148,7 +148,7 @@ EOF"""
                                 \$REDIS_IMAGE
 
                              #  啟動前端 (Nginx)
-                            docker run -d -p 80:80 --name frontend --restart always \$FRONTEND_IMAGE
+                            docker run -d -p 80:80 --name frontend --network petfinder_network --restart always \$FRONTEND_IMAGE
 
                              #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫，並掛載圖片 Volume
                             docker run -d -p 8080:8080 --name backend \\
