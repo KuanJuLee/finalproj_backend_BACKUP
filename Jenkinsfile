@@ -151,7 +151,7 @@ EOF"""
                             docker run -d -p 80:80 --name frontend --network petfinder_network --restart always \$FRONTEND_IMAGE
 
                              #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫，並掛載圖片 Volume
-                            docker run -d -p 8080:8080 --name backend \\
+                            docker run -d -p 8080:8080 -p 443:443 --name backend \\
                                 --network petfinder_network \\
                                 -e "SPRING_PROFILES_ACTIVE=production" \\
                                 -v $IMAGE_VOLUME:/usr/local/tomcat/upload \\
