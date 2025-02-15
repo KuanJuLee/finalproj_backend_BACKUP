@@ -50,7 +50,7 @@ pipeline {
             steps {
                  script {
                     // 下載 `defalut.conf` 到 `frontend/vue-project/`
-                    sh "cp backend/defalut.conf frontend/vue-project/defalut.conf"
+                    sh "cp backend/default.conf frontend/vue-project/default.conf"
                 }
                 sh "docker build -t $FRONTEND_IMAGE ./frontend/vue-project"   
                 // 從jenkins容器中讀取dockerfile，並啟動一個暫時的 Build 容器（這個容器會在 docker build 過程中運行）
