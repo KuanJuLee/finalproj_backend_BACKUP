@@ -335,7 +335,7 @@ public class RescueController {
 			for (CasePicture picture : rescueCase.getCasePictures()) {
 				Map<String, String> pictureData = new HashMap<>();
 				String originalPath = picture.getPictureUrl(); // 取得原始路徑
-				String fixedPath = originalPath.replace(petUploadPath, backDomainName + "/upload"); // 替換成可訪問 URL
+				String fixedPath = originalPath.replace(petUploadPath, backDomainName + "/upload/"); // 替換成可訪問 URL
 				pictureData.put("pictureUrl", fixedPath);
 				fixedCasePictures.add(pictureData);
 			}
