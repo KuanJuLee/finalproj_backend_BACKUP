@@ -75,6 +75,7 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: 'petFinder', keyFileVariable: 'SSH_KEY')]) {
                         sh """
                         # 上傳本機圖片到 Azure VM 的暫存目錄（只傳輸變更的檔案）
+                        # 在本機 Jenkins 容器內先安裝 rsync
                         # -a：保持檔案權限 -v：顯示傳輸進度 -z：壓縮資料，加速上傳 --ignore-existing：只傳輸新檔案不覆蓋舊檔案
                         rsync -avz --ignore-existing C:/upload/final/pet/images/ $AZURE_VM:/tmp/images/
         
