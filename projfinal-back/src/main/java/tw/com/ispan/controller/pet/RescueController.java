@@ -66,7 +66,7 @@ public class RescueController {
 	@Value("${back.domainName.url}")
 	private String backDomainName;
 
-	@Value("${file.petUpload.path2}") // 讀取 application-*.properties 中的 file.upload.path2
+	@Value("${file.petUpload.path}")
 	private String petUploadPath;
 
 	// 新增一筆救援案件----------------------------------------------------------------------------------------------------------------------
