@@ -46,6 +46,14 @@ pipeline {
             }
         }
 
+        stage('清理舊的 Docker Image') {
+            steps {
+                sh "docker image prune -f"
+                sh "docker rmi -f \$(docker images -q leekuanju/frontend | tail -n +2) || true"
+                sh "docker rmi -f \$(docker images -q leekuanju/backend | tail -n +2) || true"
+            }
+        }
+
         stage('建構前端 Docker 映像檔') {
             steps {
                  script {
