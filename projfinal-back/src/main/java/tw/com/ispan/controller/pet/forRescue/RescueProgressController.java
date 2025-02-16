@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -90,5 +91,53 @@ public class RescueProgressController {
 		}
 
 		return ResponseEntity.ok(progressList);
+	}
+
+	// 根據案件ID 和 progressId 查詢特定的進度
+	@GetMapping("/{caseId}/{progressId}")
+	public ResponseEntity<RescueProgress> getProgressByCaseIdAndProgressId(
+			@PathVariable Integer caseId, @PathVariable Integer progressId) {
+
+		Optional<RescueProgress> progressOptional = rescueProgressService
+				.getProgressByCaseIdAndProgressId(caseId, progressId);
+
+		if (progressOptional.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		RescueProgress progress = progressOptional.get();
+
+		// 修改圖片路徑，將 `C:/upload/final/pet/images/...` 轉換為
+		// `http://localhost:8080/upload/...`
+		if (progress.getImageUrl() != null && !progress.getImageUrl().isEmpty()) {
+			String baseUrl = domainName + "/upload/final/pet/images/";
+			String imageFileName = progress.getImageUrl().substring(progress.getImageUrl().lastIndexOf("/") + 1);
+			progress.setImageUrl(baseUrl + imageFileName);
+		}
+
+		return ResponseEntity.ok(progress);
+	}
+
+	// 更新特定進度
+	@PutMapping("/{caseId}/{progressId}")
+	public ResponseEntity<?> updateRescueProgress(
+			@PathVariable Integer caseId,
+			@PathVariable Integer progressId,
+			@RequestBody RescueProgress updatedProgress) {
+
+		Optional<RescueProgress> progressOptional = rescueProgressService.getProgressByCaseIdAndProgressId(caseId,
+				progressId);
+		if (!progressOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		RescueProgress progress = progressOptional.get();
+		progress.setProgressDetail(updatedProgress.getProgressDetail());
+
+		String finalProgressImage = imageService.moveImage(updatedProgress.getImageUrl());
+		progress.setImageUrl(finalProgressImage);
+
+		RescueProgress savedProgress = rescueProgressService.updateRescueProgress(progress);
+		return ResponseEntity.ok(savedProgress);
 	}
 }

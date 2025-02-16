@@ -36,6 +36,9 @@ public class LineLoginController {
 	@Value("${line.login.redirect-uri}")
 	private String redirectUri;
 
+	@Value("${front.domainName.url}") // front.domainName.url
+	private String frontDomainName;
+
 	@Autowired
 	private StateRedisService stateRedisService;
 	@Autowired
@@ -141,7 +144,7 @@ public class LineLoginController {
 		// 改為讓後端返回一個 API，而不是直接跳轉。前端在收到後端的登入成功響應後，將 token 儲存然後透過前端執行跳轉。
 		// response.sendRedirect("http://localhost:5173/");
 		// **透過 URL Redirect，讓用戶帶著 Token 回首頁**
-		response.sendRedirect("http://localhost:5173/?token=" + token);
+		response.sendRedirect(frontDomainName + "/advanced-settings?token=" + token);
 		return null;
 	}
 

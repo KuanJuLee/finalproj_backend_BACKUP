@@ -69,7 +69,8 @@ public class LineLoginService {
 		// %20 是 URL 編碼的 空格
 	}
 
-	// 拿line callback返回的code(短暫效期)，取得 access_token 和 id_token(用於表示有權利獲取line中用戶訊息)---------------------------------------------
+	// 拿line callback返回的code(短暫效期)，取得 access_token 和
+	// id_token(用於表示有權利獲取line中用戶訊息)---------------------------------------------
 	public Map<String, Object> exchangeCodeForTokens(String code) {
 
 		RestTemplate restTemplate = new RestTemplate();
@@ -91,24 +92,21 @@ public class LineLoginService {
 
 		return null;
 	}
-	
-	
+
 	// 解析 id_token(內含userid, picture等等)---------------------------------------------
-    public Map<String, Object> decodeIdToken(String idToken) {
-        try {
-            String[] parts = idToken.split("\\.");
-            String payloadJson = new String(Base64.getDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(payloadJson, Map.class);
-        } catch (Exception e) {
-            System.err.println("解析 id_token 失敗：" + e.getMessage());
-            return null;
-        }
-    }
-    
-  //登入後產生jwttoken儲存memberid作為會員身分驗證(直接使用jsonwebtokenutility中那個)---------------------------------------------
-	
-	
+	public Map<String, Object> decodeIdToken(String idToken) {
+		try {
+			String[] parts = idToken.split("\\.");
+			String payloadJson = new String(Base64.getDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+			ObjectMapper objectMapper = new ObjectMapper();
+			return objectMapper.readValue(payloadJson, Map.class);
+		} catch (Exception e) {
+			System.err.println("解析 id_token 失敗：" + e.getMessage());
+			return null;
+		}
+	}
+
+	// 登入後產生jwttoken儲存memberid作為會員身分驗證(直接使用jsonwebtokenutility中那個)---------------------------------------------
 
 	// 調用 LINE 的 GET https://api.line.me/v2/profile獲取用戶訊息(如userId, displayName,
 	// pictureUrl)
@@ -127,7 +125,8 @@ public class LineLoginService {
 		return response.getBody();
 	}
 
-	// 使用 accessToken 換取 ID Token---------------------------------------------------------------------
+	// 使用 accessToken 換取 ID
+	// Token---------------------------------------------------------------------
 	public String getIdTokenFromAccessToken(String accessToken) {
 		String url = VERIFY_TOKEN_URL + "?access_token=" + accessToken;
 
@@ -140,20 +139,20 @@ public class LineLoginService {
 		return null;
 	}
 
-	
-	//透過lineid找到對應的memberid
-	  public Integer findMemberIdByLineUserId(String lineId) {
-	        Member member = memberRepository.findByLineId(lineId);
-	        return member != null ? member.getMemberId() : null;
-	  }
-	
-	
-	// 檢查 LINE 用戶是否已存在---------------------------------------------------------------------
+	// 透過lineid找到對應的memberid
+	public Integer findMemberIdByLineUserId(String lineId) {
+		Member member = memberRepository.findByLineId(lineId);
+		return member != null ? member.getMemberId() : null;
+	}
+
+	// 檢查 LINE
+	// 用戶是否已存在---------------------------------------------------------------------
 	public boolean isLineUserExists(String lineId) {
 		return memberRepository.existsByLineId(lineId);
 	}
 
-	// line login時進行lineid和memberid的綁定---------------------------------------------------------------------
+	// line
+	// login時進行lineid和memberid的綁定---------------------------------------------------------------------
 	// 已註冊會員：綁定 LINE 信息
 	public void bindLineInfoToMember(Integer memberId, LineUserProfile profile) {
 		Member member = memberRepository.findById(memberId)
@@ -165,7 +164,8 @@ public class LineLoginService {
 		memberRepository.save(member);
 	}
 
-	// 非會員：新增 LINE 用戶-----------------------------------------------------------------------------------------
+	// 非會員：新增 LINE
+	// 用戶-----------------------------------------------------------------------------------------
 	public void createLineOnlyUser(LineUserProfile profile) {
 		Member member = new Member();
 		member.setUserType(false); // false等於標記為LINE用戶
