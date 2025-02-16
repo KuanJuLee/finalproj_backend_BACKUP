@@ -148,8 +148,8 @@ EOF"""
                                 \$REDIS_IMAGE
 
                              #  啟動前端 (Nginx)
-                            docker run -d -p 80:80 -p 443:443 \\ 
-                                --name frontend --network petfinder_network \\ 
+                            docker run -d -p 80:80 -p 443:443 --name frontend \\ 
+                                --network petfinder_network \\ 
                                 --restart always \\
                                 -v /etc/letsencrypt/live/petfinder.duckdns.org/fullchain.pem:/etc/nginx/certs/fullchain.pem \\ 
                                 -v /etc/letsencrypt/live/petfinder.duckdns.org/privkey.pem:/etc/nginx/certs/privkey.pem \\ 
