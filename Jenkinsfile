@@ -46,6 +46,14 @@ pipeline {
             }
         }
 
+        stage('清理舊的 Docker Image') {
+            steps {
+                sh "docker image prune -f"
+                sh "docker rmi -f \$(docker images -q leekuanju/frontend | tail -n +2) || true"
+                sh "docker rmi -f \$(docker images -q leekuanju/backend | tail -n +2) || true"
+            }
+        }
+
         stage('建構前端 Docker 映像檔') {
             steps {
                  script {
@@ -148,7 +156,7 @@ EOF"""
                                 \$REDIS_IMAGE
 
                              #  啟動前端 (Nginx)
-                            docker run -d -p 80:80 --name frontend --network petfinder_network --restart always \$FRONTEND_IMAGE
+                            docker run -d -p 80:80 -p 443:443 --name frontend --network petfinder_network --restart always -v /etc/letsencrypt/live/petfinder.duckdns.org/fullchain.pem:/etc/nginx/certs/fullchain.pem -v /etc/letsencrypt/live/petfinder.duckdns.org/privkey.pem:/etc/nginx/certs/privkey.pem $FRONTEND_IMAGE
 
                              #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫，並掛載圖片 Volume
                             docker run -d -p 8080:8080 --name backend \\
