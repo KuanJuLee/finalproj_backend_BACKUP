@@ -153,7 +153,7 @@ EOF"""
                                 --restart always \\
                                 -v /etc/letsencrypt/live/petfinder.duckdns.org/fullchain.pem:/etc/nginx/certs/fullchain.pem \\ 
                                 -v /etc/letsencrypt/live/petfinder.duckdns.org/privkey.pem:/etc/nginx/certs/privkey.pem \\ 
-                                $FRONTEND_IMAGE
+                                \$FRONTEND_IMAGE
 
                              #  啟動後端 (Tomcat，連結到 MSSQL & Redis) link讓後端可以透過 mssql 和 redis 這兩個名稱存取資料庫，並掛載圖片 Volume
                             docker run -d -p 8080:8080 --name backend \\
