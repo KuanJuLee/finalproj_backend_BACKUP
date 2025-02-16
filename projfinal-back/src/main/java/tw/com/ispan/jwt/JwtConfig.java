@@ -22,7 +22,7 @@ public class JwtConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/RescueCase/search/**", "/api/pet/**", "/api/RescueCase/getLocations/**",
                         "/api/casePicture/**", "/api/RescueCase/rescueProgress/{caseId}") // 查詢功能為非會員也能使用
                 .excludePathPatterns("/api/RescueCase/analysis") // 管理員後台
-                .excludePathPatterns("/api/line/authorize", "/line/callback") // line登入相關功能
+                .excludePathPatterns("/api/line/authorize", "/api/line/callback") // line登入相關功能
                 .excludePathPatterns("/"); // 排除首頁相關頁面
     }
 }

@@ -139,7 +139,7 @@ lineBot: https://line.me/R/ti/p/@310pndih
 #line login相關設定(冠)
 line:
   login:
-    redirect-uri: ${back.domainName.url}/line/callback
+    redirect-uri: ${back.domainName.url}/api/line/callback
     channel-id: 2006807062
     channel-secret: 1f781b9cf730b0c4decdeba7eead6778
 

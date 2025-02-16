@@ -63,7 +63,7 @@ public class LineLoginController {
 		return ResponseEntity.ok(authorizeUrl); // 超連結返回給前端
 	}
 
-	// 此為用戶點擊授權連結後，LINE 平台本身不會主動發送 /line/callback，它只是將用戶 重定向 (redirect) 到你的後端
+	// 此為用戶點擊授權連結後，LINE 平台本身不會主動發送 /line/callback，它只是將用戶重定向 (redirect) 到你的後端
 	// /line/callback
 	// request(自定義於平台中)，url中夾帶code(line生成的)和state(我生成的)
 	// 如https://yourdomain.com/callback?code=abcd1234&state=xyz789
