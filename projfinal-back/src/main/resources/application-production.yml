@@ -21,11 +21,11 @@ spring:
 #Domain Name(冠)
 front:
   domainName:
-    url: http://20.2.146.70:80
+    url: https://petfinder.duckdns.org
 
 back:
   domainName:
-    url: http://20.2.146.70:8080
+    url: https://petfinder.duckdns.org
 
 #用在後端圖片路徑轉前端路徑的rescueService檔案中(冠)
 serverAddress-serverPort: 20.2.146.70:8080
