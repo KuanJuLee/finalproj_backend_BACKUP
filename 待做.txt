@@ -1,4 +1,0 @@
-<!-- 第一張圖片的上傳按鈕 -->
-<input type="file" id="uploadButton1" data-picture-id="1" onchange="handleFileUpload(event)">
-<!-- 第二張圖片的上傳按鈕 -->
-<input type="file" id="uploadButton2" data-picture-id="2" onchange="handleFileUpload(event)">
